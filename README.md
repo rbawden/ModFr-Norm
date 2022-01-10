@@ -3,14 +3,12 @@
 
 ## Download and prepare data
 
-### Download data
-
+Download data:
 ```
 git clone https://github.com/e-ditiones/PARALLEL17.git
 ```
 
-
-### Get dataset splits
+Get dataset splits:
 ```
 bash data-scripts/prepare_data.sh
 ```
