@@ -7,6 +7,8 @@ Get dataset splits:
 ```
 bash data-scripts/get_datasets.sh
 ```
+
+
 This involves:
 
 - splitting the files into train/dev/test
@@ -15,11 +17,8 @@ This involves:
 
 The final raw files are found in `data/raw/{train,dev,test}/{train,dev,test}.finalised.{src,trg,meta}`.
 
-To ensure that the dev and test sets contain a variety of different genres, including texts not represented in the train set, we distributed sentences as follows:
-
-- 
-
-Subsets of the dev and test sets are also available in the same subfolders. The subsets are determined by the selection method used to create the dataset splits. They represent different scenarios that could be used for separate analysis (same distribution as the train set, few-shot, zero-shot and specific domains (medicine, physics).
+Subsets of the dev and test sets are also available in the same subfolders. 
+They represent different scenarios that could be used for separate analysis.
 
 - 1-standard:
     - "belles-lettres" sentences taken from the same distribution as train
