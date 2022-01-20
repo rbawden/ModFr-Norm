@@ -22,16 +22,11 @@ The final raw files are found in `data/raw/{train,dev,test}/{train,dev,test}.fin
 Subsets of the dev and test sets are also available in the same subfolders. 
 They represent different scenarios that could be used for separate analysis.
 
-- _1-standard_:
-    - "belles-lettres" sentences taken from the same distribution as train (80%/10%/10% train/dev/test)
-- _2-test_: "zero-shot" sentences
-    - selected texts, distributed across periods and genres (0%/0%/100% train/dev/test)
-- _3-test+train_: "few-shot" sentences
-    - selected texts, distributed across periods and genres (10%/0%/90% train/dev/test)
-- _4-medecine_: medical domain
-    - 1 document in the dev and the other in the test (two very different documents) (none in train)
-- _5-physique_: physics/mechanics domain
-    - 1 document in dev and the other in test (none in train)
+- _1-standard_: "belles-lettres" sentences taken from the same distribution as train (80%/10%/10% train/dev/test)
+- _2-test_ ("zero-shot"): selected texts, distributed across periods and genres (0%/0%/100% train/dev/test)
+- _3-test+train_ ("few-shot"): selected texts, distributed across periods and genres (10%/0%/90% train/dev/test)
+- _4-medecine_ (medical domain): 1 document in the dev and the other in the test (two very different documents) (none in train)
+- _5-physique_ (physics/mechanics domain): 1 document in dev and the other in test (none in train)
 
 
 ## Approaches compared
