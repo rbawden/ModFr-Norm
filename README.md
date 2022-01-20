@@ -20,8 +20,7 @@ The final raw files are found in `data/raw/{train,dev,test}/{train,dev,test}.fin
 
 **Subsets of dev and test**
 
-Subsets of the dev and test sets are also available in the same subfolders. 
-They represent different scenarios that could be used for separate analysis.
+Subsets of dev/test are available in the same subfolders (different data selection scenarios that could be used for separate analysis).
 
 - _1-standard_: "belles-lettres" sentences taken from the same distribution as train (80%/10%/10% train/dev/test)
 - _2-test_ ("zero-shot"): selected texts, distributed across periods and genres (0%/0%/100% train/dev/test)
