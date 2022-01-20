@@ -21,20 +21,15 @@ Subsets of the dev and test sets are also available in the same subfolders.
 They represent different scenarios that could be used for separate analysis.
 
 - 1-standard:
-    - "belles-lettres" sentences taken from the same distribution as train
-    - 80% were in the train and 10% in each of the dev and test sets
+    - "belles-lettres" sentences taken from the same distribution as train (80%/10%/10% train/dev/test)
 - 2-test: "zero-shot" sentences
-    - concerns selected texts, distributed across periods and genres
-    - 100% of sentences go to the test set (i.e. 0% in train and dev)
+    - selected texts, distributed across periods and genres (0%/0%/100% train/dev/test)
 - 3-test+train: "few-shot" sentences
-    - concerns selected texts, distributed across periods and genres
-    - 10% of sentences go to the train set and 90% to the test set (none to the dev)
+    - selected texts, distributed across periods and genres (10%/0%/90% train/dev/test)
 - 4-medecine: medical domain
-    - 1 document in the dev and the other in the test (two very different documents)
-    - no such documents in the train
+    - 1 document in the dev and the other in the test (two very different documents) (none in train)
 - 5-physique: physics/mechanics domain
-    - 1 document in dev and the other in test
-    - no such documents in the train
+    - 1 document in dev and the other in test (none in train)
 
 
 ## Approaches compared
