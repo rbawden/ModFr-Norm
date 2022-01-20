@@ -8,6 +8,7 @@ Get dataset splits:
 bash data-scripts/get_datasets.sh
 ```
 
+The final raw files are found in `data/raw/{train,dev,test}/{train,dev,test}.finalised.{src,trg,meta}`.
 
 **What does this do?**
 
@@ -15,23 +16,17 @@ bash data-scripts/get_datasets.sh
 - filtering out sentences from the train and dev sets that also appear in the test set and contain over 4 tokens
 - normalisation of quotes, apostrophes and repeated spaces
 
-The final raw files are found in `data/raw/{train,dev,test}/{train,dev,test}.finalised.{src,trg,meta}`.
+
 
 **Subsets of dev and test**
 
-Subsets of the dev and test sets are also available in the same subfolders. 
-They represent different scenarios that could be used for separate analysis.
+Subsets of dev/test are available in the same subfolders (different data selection scenarios that could be used for separate analysis).
 
-- 1-standard:
-    - "belles-lettres" sentences taken from the same distribution as train (80%/10%/10% train/dev/test)
-- 2-test: "zero-shot" sentences
-    - selected texts, distributed across periods and genres (0%/0%/100% train/dev/test)
-- 3-test+train: "few-shot" sentences
-    - selected texts, distributed across periods and genres (10%/0%/90% train/dev/test)
-- 4-medecine: medical domain
-    - 1 document in the dev and the other in the test (two very different documents) (none in train)
-- 5-physique: physics/mechanics domain
-    - 1 document in dev and the other in test (none in train)
+- _1-standard_: "belles-lettres" sentences taken from the same distribution as train (80%/10%/10% train/dev/test)
+- _2-test_ ("zero-shot"): selected texts, distributed across periods and genres (0%/0%/100% train/dev/test)
+- _3-test+train_ ("few-shot"): selected texts, distributed across periods and genres (10%/0%/90% train/dev/test)
+- _4-medecine_ (medical domain): 1 document in the dev and the other in the test (two very different documents) (none in train)
+- _5-physique_ (physics/mechanics domain): 1 document in dev and the other in test (none in train)
 
 
 ## Approaches compared
