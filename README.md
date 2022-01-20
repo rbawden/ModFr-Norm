@@ -8,6 +8,7 @@ Get dataset splits:
 bash data-scripts/get_datasets.sh
 ```
 
+The final raw files are found in `data/raw/{train,dev,test}/{train,dev,test}.finalised.{src,trg,meta}`.
 
 **What does this do?**
 
@@ -15,7 +16,7 @@ bash data-scripts/get_datasets.sh
 - filtering out sentences from the train and dev sets that also appear in the test set and contain over 4 tokens
 - normalisation of quotes, apostrophes and repeated spaces
 
-The final raw files are found in `data/raw/{train,dev,test}/{train,dev,test}.finalised.{src,trg,meta}`.
+
 
 **Subsets of dev and test**
 
