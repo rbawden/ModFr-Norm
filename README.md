@@ -9,13 +9,15 @@ bash data-scripts/get_datasets.sh
 ```
 
 
-This involves:
+_What does this do?_
 
 - splitting the files into train/dev/test
 - filtering out sentences from the train and dev sets that also appear in the test set and contain over 4 tokens
 - normalisation of quotes, apostrophes and repeated spaces
 
 The final raw files are found in `data/raw/{train,dev,test}/{train,dev,test}.finalised.{src,trg,meta}`.
+
+_Subsets of dev and test_
 
 Subsets of the dev and test sets are also available in the same subfolders. 
 They represent different scenarios that could be used for separate analysis.
