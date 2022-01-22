@@ -31,19 +31,20 @@ Subsets of dev/test are available in the same subfolders (different data selecti
 
 ## Normalisation approaches
 
+Below you can find normalisation commands for each of the methods compared. All methods take a text from standard input and output normalised text to standard output.
+
 ### Rule-based
 
-### Post-processing using the contemporary French lexicon, the Le*fff* (Sagot, 2009)
-
-This approach can be applied after any of the other approaches. It normalises words that match with words in a contemporary French lexicon (the Le*fff*), where certain differences are neutralised (accents, capital letters, etc.).
+This approach applies a series of substitutions through a series of manually defined regular expressions:
 
 ```
-cat myfile.txt | perl 
+cat data/raw/dev/dev.finalised.src | bash norm-scripts/rule-based.sh > outputs/rule-based/dev-1.pred.trg
 ```
+
 
 ### ABA, alignment-based approach
 
-TODO
+
 
 ### Machine Translation (MT) approaches
 
@@ -57,6 +58,14 @@ TODO
 Normalise with a pretrained model:
 ```
 TODO
+```
+
+### Post-processing using the contemporary French lexicon, the Le*fff* (Sagot, 2009)
+
+This approach can be applied after any of the other approaches. It normalises words that match with words in a contemporary French lexicon (the Le*fff*), where certain differences are neutralised (accents, capital letters, etc.). Here the script is applied to the output of the rule-based approach above.
+
+```
+cat outputs/rule-based/dev-1.pred.trg | perl norm-scripts/lex-postproc.sh > cat outputs/rule-based+lex/dev-1.pred.trg
 ```
 
 #### Retrain a model:
