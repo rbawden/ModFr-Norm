@@ -88,7 +88,11 @@ E.g.
 ```
 bash eval-scripts/eval.sh data/raw/dev/dev.finalised.trg outputs/rule-based/dev-1.pred.trg all outputs/.cache.pickle
 ```
-This gives the following results: `all,bleu=74.2593 all,chrf=0.90544 all,lev_char=0.0 all,wordacc_r2h0.896 all,wordacc_h2r=0.894 all,wordacc_sym=0.895`
+which gives:
+```
+all,bleu=74.2593 all,chrf=0.90544 all,lev_char=0.0 all,wordacc_r2h0.896 all,wordacc_h2r=0.894 all,wordacc_sym=0.895
+```
+where `r2h` means that the reference is used as basis for the alignment, `h2r` that the hypothesis is used as basis for the alignment and `sym` means that the mean of the two directions is calculated.
 
 To evaluate with individual metrics:
 ```
