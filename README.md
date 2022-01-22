@@ -1,6 +1,15 @@
 # ModFr-Normalisation
 
-[__TOC__]
+
+## Citation
+
+## Requirements
+
+```
+virtualenv -p python3 venv
+source venv/bin/activate
+pip install -r requirements.txt
+
 
 ## Download and prepare data
 
@@ -65,12 +74,30 @@ cat outputs/rule-based/dev-1.pred.trg | bash norm-scripts/lex-postproc.sh > cat 
 ```
 or applied directly after the main approach:
 ```
-cat data/raw/dev/dev.finalised.src | bash norm-scripts/rule-based.sh | bash norm-scripts/lex-postproc.sh > outputs/rule-based/dev-1.pred.trg
+cat data/raw/dev/dev.finalised.src | bash norm-scripts/rule-based.sh | bash norm-scripts/lex-postproc.sh > outputs/rule-based+lex/dev-1.pred.trg
 ```
 
 ## Evaluation
 
-TODO
+Get evaluation scores for all of the following metrics: BLEU, ChrF, Levenshtein (character-based), Word accuracy (ref-to-pred, pred-to-ref and symmetrised):
+
+```
+bash eval-scripts/eval.sh <ref_file> <pred_file> all <cache_file>
+```
+E.g.
+```
+bash eval-scripts/eval.sh data/raw/dev/dev.finalised.trg outputs/rule-based/dev-1.pred.trg all outputs/.cache.pickle
+```
+This gives the following results: TODO
+
+To evaluate with individual metrics:
+```
+cat outputs/lstm/dev-1.pred.trg | bash eval-scripts/bleu.sh
+cat outputs/lstm/dev-1.pred.trg | bash eval-scripts/chrf.sh
+cat outputs/lstm/dev-1.pred.trg | bash eval-scripts/levenshtein.sh
+cat outputs/lstm/dev-1.pred.trg | bash eval-scripts/.sh
+cat outputs/lstm/dev-1.pred.trg | bash eval-scripts/bleu.sh
+```
 
 #### Retrain a model:
 
