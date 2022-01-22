@@ -79,7 +79,22 @@ cat data/raw/dev/dev.finalised.src | bash norm-scripts/rule-based.sh | bash norm
 
 ## Evaluation
 
-Get evaluation scores for all of the following metrics: BLEU, ChrF, Levenshtein (character-based), Word accuracy (ref-to-pred, pred-to-ref and symmetrised):
+### Evaluate with individual metrics
+
+```
+bash eval-scripts/bleu.sh <ref_file> <pred_file> fr
+bash eval-scripts/chrf.sh <ref_file> <pred_file> fr
+python eval-scripts/levenshtein.py <ref_file> <pred_file> -a {ref,pred}
+python eval-scripts/word_acc.py <ref_file> <pred_file> -a {ref,pred,both}
+```
+where `-a ref` means that the reference is used as basis for the alignment, `-a pred` that the prediction is used as basis for the alignment, and `-a both` that the average of the two is calculated.
+
+To calculate the average of a metric over several outputs (relevant for different random seeds of the MT approaches):
+
+TODO
+
+### Evaluate on all metrics at once (including on data subsets)
+Get evaluation scores for all of the following metrics: BLEU, ChrF, Levenshtein (character-based), Word accuracy (ref-to-pred, pred-to-ref and symmetrised) on the entire dataset:
 
 ```
 bash eval-scripts/eval.sh <ref_file> <pred_file> all (<cache_file>)
@@ -104,22 +119,12 @@ bash eval-scripts/eval-all.sh data/raw/dev/dev.finalised.trg data/raw/dev/dev.fi
 ```
 which gives:
 ```
-
+all,bleu=74.2593 all,chrf=0.90544 all,lev_char=0.0 all,wordacc_r2h0.896 all,wordacc_h2r=0.894 all,wordacc_sym=0.895 1-standard,bleu=73.3256 1-standard,chrf=0.90136 1-standard,lev_char=0.0 1-standard,wordacc_r2h0.892 1-standard,wordacc_h2r=0.891 1-standard,wordacc_sym=0.892 4-medecine-dev,bleu=83.9066 4-medecine-dev,chrf=0.94225 4-medecine-dev,lev_char=0.0 4-medecine-dev,wordacc_r2h0.933 4-medecine-dev,wordacc_h2r=0.929 4-medecine-dev,wordacc_sym=0.931 5-physique-dev,bleu=73.8570 5-physique-dev,chrf=0.90849 5-physique-dev,lev_char=0.0 5-physique-dev,wordacc_r2h0.901 5-physique-dev,wordacc_h2r=0.895 5-physique-dev,wordacc_sym=0.898
 ```
 
 where `r2h` means that the reference is used as basis for the alignment, `h2r` that the hypothesis is used as basis for the alignment and `sym` means that the mean of the two directions is calculated.
 
-To evaluate with individual metrics:
-```
-bash eval-scripts/bleu.sh <ref_file> <pred_file> fr
-bash eval-scripts/chrf.sh <ref_file> <pred_file> fr
-python eval-scripts/levenshtein.py <ref_file> <pred_file> -a {ref,pred}
-python eval-scripts/word_acc.py <ref_file> <pred_file> -a {ref,pred,both}
-```
 
-To calculate the average of a metric over several outputs (pertinent for different random seeds of the MT approaches):
-
-TODO
 
 #### Retrain a model:
 
