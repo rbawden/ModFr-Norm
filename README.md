@@ -58,11 +58,11 @@ TODO
 **Statistical MT (SMT):**
 
 ```
->>> bash norm-scripts/smt_translate.sh <input_file> <model_folder>
+>> bash norm-scripts/smt_translate.sh <input_file> <model_folder>
 ```
-E.g.
+outputting to standard output. E.g.
 ```
->>> bash norm-scripts/smt_translate.sh data/raw/dev.finalised.src mt-models/smt/1/model
+>> bash norm-scripts/smt_translate.sh data/raw/dev.finalised.src mt-models/smt/1/model
 ```
 N.B. If you want to use this script to translate SMT models that have been trained with other segmentations, make sure to change `segtype` in `smt_translate.sh`.
 
