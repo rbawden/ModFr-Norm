@@ -141,7 +141,7 @@ bash data-scripts/process_for_mt.sh
 
 This involves:
 
-- preparation of data with the addition of meta information (decades and years) on the source/target side of the data
+- preparation of data (+ meta information (decades and years))
 - subword segmentation using sentencepiece for the following (joint) vocab sizes:
   - char, 500, 1k, 2k, 4k, 8k, 16k, 24k
 - binarisation of the data in the fairseq format (for neural models)
