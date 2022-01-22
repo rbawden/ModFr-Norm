@@ -9,7 +9,7 @@
 virtualenv -p python3 venv
 source venv/bin/activate
 pip install -r requirements.txt
-
+```
 
 ## Download and prepare data
 
@@ -92,12 +92,15 @@ This gives the following results: TODO
 
 To evaluate with individual metrics:
 ```
-cat outputs/lstm/dev-1.pred.trg | bash eval-scripts/bleu.sh
-cat outputs/lstm/dev-1.pred.trg | bash eval-scripts/chrf.sh
-cat outputs/lstm/dev-1.pred.trg | bash eval-scripts/levenshtein.sh
-cat outputs/lstm/dev-1.pred.trg | bash eval-scripts/.sh
-cat outputs/lstm/dev-1.pred.trg | bash eval-scripts/bleu.sh
+bash eval-scripts/bleu.sh <ref_file> <pred_file> fr
+bash eval-scripts/chrf.sh <ref_file> <pred_file> fr
+python eval-scripts/levenshtein.py <ref_file> <pred_file> -a {ref,pred}
+python eval-scripts/word_acc.py <ref_file> <pred_file> -a {ref,pred,both}
 ```
+
+To calculate the average of a metric over several outputs (pertinent for different random seeds of the MT approaches):
+
+TODO
 
 #### Retrain a model:
 
