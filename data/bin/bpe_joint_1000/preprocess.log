@@ -1,0 +1,14 @@
+Namespace(align_suffix=None, alignfile=None, all_gather_list_size=16384, bf16=False, bpe=None, checkpoint_shard_count=1, checkpoint_suffix='', cpu=False, criterion='cross_entropy', dataset_impl='mmap', destdir='/gpfsdswork/projects/rech/ncm/ulv12mq/ModFr-Normalisation/data/bin/bpe_joint_1000', empty_cache_freq=0, fp16=False, fp16_init_scale=128, fp16_no_flatten_grads=False, fp16_scale_tolerance=0.0, fp16_scale_window=None, joined_dictionary=True, log_format=None, log_interval=100, lr_scheduler='fixed', memory_efficient_bf16=False, memory_efficient_fp16=False, min_loss_scale=0.0001, model_parallel_size=1, no_progress_bar=False, nwordssrc=-1, nwordstgt=-1, only_source=False, optimizer=None, padding_factor=8, profile=False, quantization_config_path=None, scoring='bleu', seed=1, source_lang='src', srcdict=None, target_lang='trg', task='translation', tensorboard_logdir=None, testpref='/gpfsdswork/projects/rech/ncm/ulv12mq/ModFr-Normalisation/data/preprocessed//test/test.bpe_joint_1000', tgtdict=None, threshold_loss_scale=None, thresholdsrc=0, thresholdtgt=0, tokenizer=None, tpu=False, trainpref='/gpfsdswork/projects/rech/ncm/ulv12mq/ModFr-Normalisation/data/preprocessed//train/train.bpe_joint_1000', user_dir=None, validpref='/gpfsdswork/projects/rech/ncm/ulv12mq/ModFr-Normalisation/data/preprocessed//dev/dev.bpe_joint_1000', workers=1)
+[src] Dictionary: 1000 types
+[src] /gpfsdswork/projects/rech/ncm/ulv12mq/ModFr-Normalisation/data/preprocessed//train/train.bpe_joint_1000.src: 17930 sents, 468955 tokens, 0.0% replaced by <unk>
+[src] Dictionary: 1000 types
+[src] /gpfsdswork/projects/rech/ncm/ulv12mq/ModFr-Normalisation/data/preprocessed//dev/dev.bpe_joint_1000.src: 2443 sents, 72207 tokens, 0.00138% replaced by <unk>
+[src] Dictionary: 1000 types
+[src] /gpfsdswork/projects/rech/ncm/ulv12mq/ModFr-Normalisation/data/preprocessed//test/test.bpe_joint_1000.src: 5706 sents, 156200 tokens, 0.00384% replaced by <unk>
+[trg] Dictionary: 1000 types
+[trg] /gpfsdswork/projects/rech/ncm/ulv12mq/ModFr-Normalisation/data/preprocessed//train/train.bpe_joint_1000.trg: 17930 sents, 462949 tokens, 0.0% replaced by <unk>
+[trg] Dictionary: 1000 types
+[trg] /gpfsdswork/projects/rech/ncm/ulv12mq/ModFr-Normalisation/data/preprocessed//dev/dev.bpe_joint_1000.trg: 2443 sents, 71406 tokens, 0.0014% replaced by <unk>
+[trg] Dictionary: 1000 types
+[trg] /gpfsdswork/projects/rech/ncm/ulv12mq/ModFr-Normalisation/data/preprocessed//test/test.bpe_joint_1000.trg: 5706 sents, 154166 tokens, 0.00454% replaced by <unk>
+Wrote preprocessed data to /gpfsdswork/projects/rech/ncm/ulv12mq/ModFr-Normalisation/data/bin/bpe_joint_1000
