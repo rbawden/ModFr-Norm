@@ -91,6 +91,18 @@ where `-a ref` means that the reference is used as basis for the alignment, `-a 
 
 To calculate the average of a metric over several outputs (relevant for different random seeds of the MT approaches):
 
+### Evaluation over multiple metrics
+
+```
+bash eval-scripts/eval_all.sh <output_folder> data/raw/dev/dev.finalised.trg
+```
+where `output_folder` is the folder containing prediction files to be included in the evaluation (all files ending in `.trg` will be included for evaluation.
+
+E.g.
+```
+bash eval-scripts/eval_all.sh outputs/lstm/dev data/raw/dev/dev.finalised.trg
+```
+
 TODO
 
 ### Evaluate on all metrics at once (including on data subsets)
