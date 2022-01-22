@@ -67,7 +67,7 @@ E.g.
 N.B. If you want to use this script to translate SMT models that have been trained with other segmentations, make sure to change `segtype` in `smt_translate.sh`.
 
 
-**Neural MT (NMT):**
+**Neural MT (NMT), both LSTM and Transformer**
 
 ```
 >> bash norm-scripts/nmt_translate.sh <model_path>
