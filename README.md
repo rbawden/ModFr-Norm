@@ -116,7 +116,7 @@ E.g.
 ```
 where `r2h` means that the reference is used as basis for the alignment, `h2r` that the hypothesis is used as basis for the alignment and `sym` means that the mean of the two directions is calculated.
 
-#### Retrain a model:
+## Retrain a model:
 
 ### Preprocessing and binarisation
 
