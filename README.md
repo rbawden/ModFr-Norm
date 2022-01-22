@@ -88,7 +88,7 @@ E.g.
 ```
 bash eval-scripts/eval.sh data/raw/dev/dev.finalised.trg outputs/rule-based/dev-1.pred.trg all outputs/.cache.pickle
 ```
-This gives the following results: TODO
+This gives the following results: `all,bleu=74.2593 all,chrf=0.90544 all,lev_char=0.0 all,wordacc_r2h0.896 all,wordacc_h2r=0.894 all,wordacc_sym=0.895`
 
 To evaluate with individual metrics:
 ```
