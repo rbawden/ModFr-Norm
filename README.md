@@ -1,5 +1,6 @@
 # ModFr-Normalisation
 
+[__TOC__]
 
 ## Download and prepare data
 
