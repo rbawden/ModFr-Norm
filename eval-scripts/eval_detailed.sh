@@ -16,7 +16,7 @@ if [ "$#" -lt 4 ]; then
 fi
 
 # evaluate on the whole test set
-scores=`bash $thisdir/eval.sh $ref_file $hyp_file all $cache_file`
+scores=`bash $thisdir/eval_detailed_aux.sh $ref_file $hyp_file all $cache_file`
 hyp_name=`basename $hyp_file`
 
 # divide set into separate files to evaluate separate genres
@@ -33,7 +33,7 @@ for hyp_file_spec in `ls $folder/$hyp_name*`; do
     ref_file_ext=${ref_file_basename##*.}
     ref_file_basename=`echo $ref_file_basename | cut -f1,2 -d"."`
     ref_file_spec=$ref_file_dir/$ref_file_basename.$subcorpus.$ref_file_ext
-    tmp_scores=`bash $thisdir/eval.sh $ref_file_spec $hyp_file_spec $subcorpus $cache_file`
+    tmp_scores=`bash $thisdir/eval_detailed_aux.sh $ref_file_spec $hyp_file_spec $subcorpus $cache_file`
     scores="$scores $tmp_scores"
 done
 
