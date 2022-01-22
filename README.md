@@ -52,10 +52,19 @@ cat data/raw/dev/dev.finalised.src | bash norm-scripts/rule-based.sh > outputs/r
 
 **ABA, alignment-based approach:**
 ```
-cat data/raw/dev/dev.finalised.src | bash norm-scripts/rule-based.sh > outputs/rule-based/dev-1.pred.trg
+TODO
 ```
 
 **Statistical MT (SMT):**
+
+```
+>>> bash norm-scripts/smt_translate.sh <input_file> <model_folder>
+```
+E.g.
+```
+>>> bash norm-scripts/smt_translate.sh data/raw/dev.finalised.src mt-models/smt/1/model
+```
+N.B. If you want to use this script to translate SMT models that have been trained with other segmentations, make sure to change `segtype` in `smt_translate.sh`.
 
 
 **Neural MT (NMT):**
