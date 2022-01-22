@@ -94,7 +94,7 @@ To calculate the average of a metric over several outputs (relevant for differen
 ### Evaluation over multiple metrics
 
 ```
->> bash eval-scripts/eval_all.sh <output_folder> <ref_file> (<cache_file>)
+>> bash eval-scripts/eval_detailed.sh <output_folder> <ref_file> (<cache_file>)
 ```
 where `output_folder` is the folder containing prediction files to be included in the evaluation (all files ending in `.trg` will be included for evaluation. E.g.
 
