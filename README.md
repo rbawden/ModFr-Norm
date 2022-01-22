@@ -62,10 +62,14 @@ This approach can be applied after any of the other approaches.
 ```
 cat outputs/rule-based/dev-1.pred.trg | bash norm-scripts/lex-postproc.sh > cat outputs/rule-based+lex/dev-1.pred.trg
 ```
-or
+or applied directly after the main approach:
 ```
 cat data/raw/dev/dev.finalised.src | bash norm-scripts/rule-based.sh | bash norm-scripts/lex-postproc.sh > outputs/rule-based/dev-1.pred.trg
 ```
+
+## Evaluation
+
+TODO
 
 #### Retrain a model:
 
