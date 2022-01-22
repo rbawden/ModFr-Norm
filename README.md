@@ -82,7 +82,7 @@ cat data/raw/dev/dev.finalised.src | bash norm-scripts/rule-based.sh | bash norm
 Get evaluation scores for all of the following metrics: BLEU, ChrF, Levenshtein (character-based), Word accuracy (ref-to-pred, pred-to-ref and symmetrised):
 
 ```
-bash eval-scripts/eval.sh <ref_file> <pred_file> all <cache_file>
+bash eval-scripts/eval.sh <ref_file> <pred_file> all (<cache_file>)
 ```
 E.g.
 ```
@@ -92,6 +92,21 @@ which gives:
 ```
 all,bleu=74.2593 all,chrf=0.90544 all,lev_char=0.0 all,wordacc_r2h0.896 all,wordacc_h2r=0.894 all,wordacc_sym=0.895
 ```
+where `r2h` means that the reference is used as basis for the alignment, `h2r` that the hypothesis is used as basis for the alignment and `sym` means that the mean of the two directions is calculated.
+
+To calculate all evaluation scores, including on subsets of the data (as specified above and in the meta data):
+```
+bash eval-scripts/eval-all.sh <ref_file> <meta_file> <pred_file> (<cache_file>)
+```
+E.g.
+```
+bash eval-scripts/eval-all.sh data/raw/dev/dev.finalised.trg data/raw/dev/dev.finalised.meta outputs/rule-based/dev-1.pred.trg outputs/.cache.pickle
+```
+which gives:
+```
+
+```
+
 where `r2h` means that the reference is used as basis for the alignment, `h2r` that the hypothesis is used as basis for the alignment and `sym` means that the mean of the two directions is calculated.
 
 To evaluate with individual metrics:
