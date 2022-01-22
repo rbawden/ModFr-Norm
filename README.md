@@ -150,7 +150,7 @@ This involves:
 TODO
 ```
 
-#### Hyper-parameter search
+### Hyper-parameter searches
 
 Create model folders and scripts for different hyper-parameter settings as follows:
 ```
