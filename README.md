@@ -29,17 +29,37 @@ Subsets of dev/test are available in the same subfolders (different data selecti
 - _5-physique_ (physics/mechanics domain): 1 document in dev and the other in test (none in train)
 
 
-## Approaches compared
+## Normalisation approaches
 
-### Identity function
-
-### Rule-based baseline
+### Rule-based
 
 ### Post-processing using the contemporary French lexicon, the Le*fff* (Sagot, 2009)
 
+This approach can be applied after any of the other approaches. It normalises words that match with words in a contemporary French lexicon (the Le*fff*), where certain differences are neutralised (accents, capital letters, etc.).
+
+```
+cat myfile.txt | perl 
+```
+
 ### ABA, alignment-based approach
 
+TODO
+
 ### Machine Translation (MT) approaches
+
+
+### Statistical MT (SMT)
+
+TODO
+
+### Neural MT (NMT)
+
+Normalise with a pretrained model:
+```
+TODO
+```
+
+#### Retrain a model:
 
 ### Preprocessing and binarisation
 
@@ -47,6 +67,7 @@ To preprocess with all segmentations used in our experiments, run the following 
 
 ```
 bash data-scripts/process_for_mt.sh
+```
 
 This involves:
 
@@ -55,20 +76,19 @@ This involves:
   - char, 500, 1k, 2k, 4k, 8k, 16k, 24k
 - binarisation of the data in the fairseq format (for neural models)
 
-### Statistical MT (SMT)
-
-TODO
-
-### Neural MT (NMT)
-
-
-
-
-
-## Neural models
-
-
 ```
+TODO
+```
+
+#### Hyper-parameter search
+
+Create model folders and scripts for different hyper-parameter settings as follows:
+```
+TODO
+```
+N.B. You can change the hyper-parameter values in this file to generate different combinations.
+
+
 
 ### Normalse using pretrained models
 
