@@ -84,42 +84,30 @@ cat data/raw/dev/dev.finalised.src | bash norm-scripts/rule-based.sh | bash norm
 ```
 bash eval-scripts/bleu.sh <ref_file> <pred_file> fr
 bash eval-scripts/chrf.sh <ref_file> <pred_file> fr
-python eval-scripts/levenshtein.py <ref_file> <pred_file> -a {ref,pred}
-python eval-scripts/word_acc.py <ref_file> <pred_file> -a {ref,pred,both}
+python eval-scripts/levenshtein.py <ref_file> <pred_file> -a {ref,pred} (-c <cache_file>)
+python eval-scripts/word_acc.py <ref_file> <pred_file> -a {ref,pred,both} (-c <cache_file>)
 ```
-where `-a ref` means that the reference is used as basis for the alignment, `-a pred` that the prediction is used as basis for the alignment, and `-a both` that the average of the two is calculated.
+where `-a ref` means that the reference is used as basis for the alignment, `-a pred` that the prediction is used as basis for the alignment, and `-a both` that the average of the two is calculated. An optional cache file destination (format .pickle) can be specified to speed up evaluation when running it several times.
 
 To calculate the average of a metric over several outputs (relevant for different random seeds of the MT approaches):
 
 ### Evaluation over multiple metrics
 
 ```
-bash eval-scripts/eval_all.sh <output_folder> data/raw/dev/dev.finalised.trg
+bash eval-scripts/eval_all.sh <output_folder> <ref_file> (<cache_file>)
 ```
 where `output_folder` is the folder containing prediction files to be included in the evaluation (all files ending in `.trg` will be included for evaluation.
 
 E.g.
 ```
-bash eval-scripts/eval_all.sh outputs/lstm/dev data/raw/dev/dev.finalised.trg
-```
-
-TODO
-
-### Evaluate on all metrics at once (including on data subsets)
-Get evaluation scores for all of the following metrics: BLEU, ChrF, Levenshtein (character-based), Word accuracy (ref-to-pred, pred-to-ref and symmetrised) on the entire dataset:
-
-```
-bash eval-scripts/eval.sh <ref_file> <pred_file> all (<cache_file>)
-```
-E.g.
-```
-bash eval-scripts/eval.sh data/raw/dev/dev.finalised.trg outputs/rule-based/dev-1.pred.trg all outputs/.cache.pickle
+bash eval-scripts/eval_all.sh outputs/rule-based/dev data/raw/dev/dev.finalised.trg outputs/.cache.pickle 
 ```
 which gives:
 ```
-all,bleu=74.2593 all,chrf=0.90544 all,lev_char=0.0 all,wordacc_r2h0.896 all,wordacc_h2r=0.894 all,wordacc_sym=0.895
+89.50 & 89.60 & 0.00 & 74.26 & 0.91 \\
 ```
-where `r2h` means that the reference is used as basis for the alignment, `h2r` that the hypothesis is used as basis for the alignment and `sym` means that the mean of the two directions is calculated.
+
+### Detailed evaluation (including on data subsets)
 
 To calculate all evaluation scores, including on subsets of the data (as specified above and in the meta data):
 ```
@@ -135,8 +123,6 @@ all,bleu=74.2593 all,chrf=0.90544 all,lev_char=0.0 all,wordacc_r2h0.896 all,word
 ```
 
 where `r2h` means that the reference is used as basis for the alignment, `h2r` that the hypothesis is used as basis for the alignment and `sym` means that the mean of the two directions is calculated.
-
-
 
 #### Retrain a model:
 
