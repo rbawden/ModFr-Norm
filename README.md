@@ -1,6 +1,6 @@
 # ModFr-Normalisation
 
-Automatic normalisation of Early Modern French. This repository contains the scripts and models to reproduce the results of the preprint [Automatic Normalisation of Early Modern French](https://hal.inria.fr/hal-03540226). See below for citation instructions.
+This repository contains the scripts and models to reproduce the results of the preprint [Automatic Normalisation of Early Modern French](https://hal.inria.fr/hal-03540226). See below for citation instructions.
 
 ## Requirements
 
