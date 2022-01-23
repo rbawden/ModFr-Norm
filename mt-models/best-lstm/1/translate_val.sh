@@ -9,7 +9,7 @@ valid_set=$maindir/data/bin/bpe_joint_1000
 for model in `ls -tr $thisdir/checkpoint*.pt`; do
     # translate the valid set
     if [ ! -f $thisdir/valid_outputs/$model.valid ]; then
-	bash $maindir/mt-scripts/translate.sh $model 'valid' \
+	bash $maindir/mt-training-scripts/translate-generate.sh $model 'valid' \
 	     $valid_set $thisdir/valid_outputs/$model.valid
     fi
 done
