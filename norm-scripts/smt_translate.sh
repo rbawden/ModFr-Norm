@@ -5,7 +5,7 @@ maindir=`realpath $thisdir/../`
 tools=$TOOLDIR # CHANGE THIS PATH AS NECESSARY TO THE DIRECTORY WHERE YOUR TOOLS ARE INSTALLED
 kenlm=$tools/kenlm
 fastalign=$tools/fast_align/build
-moses=$tools/mosesdecoder
+moses=$tools/ubuntu-17.04/moses #mosesdecoder
 mgiza=$tools/mgiza/mgizapp/build
 
 model_folder=$1
@@ -34,7 +34,7 @@ cat $model_folder/moses-tuned-orig.ini | perl -pe "s|path=<main_folder>|path=$ma
 if [ ! -f $model_folder/filtered-tmp.$rand/moses-tuned.ini ]; then
     $moses/scripts/training/filter-model-given-input.pl \
 	$model_folder/filtered-tmp.$rand \
-	$model_folder/moses-tuned.ini $model_folder/tmp.$rand
+	$model_folder/moses-tuned.ini $model_folder/tmp.$rand 1>&2
 fi
 
 # then translate
