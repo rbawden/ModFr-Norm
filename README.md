@@ -62,7 +62,7 @@ TODO
 ```
 E.g.
 ```
->> cat data/raw/dev.finalised.src bash norm-scripts/smt_translate.sh mt-models/smt/1/model > outputs/smt/dev/dev-1.trg
+>> cat data/raw/dev.finalised.src bash norm-scripts/smt_translate.sh mt-models/best-smt/1/model > outputs/smt/dev/dev-1.trg
 ```
 N.B. If you want to use this script to translate SMT models that have been trained with other segmentations, make sure to change `segtype` in `smt_translate.sh`.
 
@@ -74,8 +74,8 @@ N.B. If you want to use this script to translate SMT models that have been train
 ```
 E.g.
 ```
->> cat data/raw/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/lstm/1/checkpointTODO > outputs/lstm/dev/dev-1.trg
->> cat data/raw/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/transformer/1/checkpointTODO > outputs/transformer/dev/dev-1.trg
+>> cat data/raw/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-lstm/1/checkpointTODO > outputs/lstm/dev/dev-1.trg
+>> cat data/raw/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-transformer/1/checkpointTODO > outputs/transformer/dev/dev-1.trg
 ```
 
 **Post-processing using the contemporary French lexicon, the Le*fff* (Sagot, 2009):**
@@ -188,17 +188,17 @@ E.g. `mt-models/transformer_char_2enc_2dec_2heads_128embdim_512ff_0.3drop_0.001l
 
 To run training:
 ```
-cd <MODEL_FOLDER>/<SEED>
+cd <model_folder>/<seed>
 bash train.sh
 ```
 Then translate the validation (dev) set for each of the model checkpoints:
 ```
-cd <MODEL_FOLDER>/<SEED>
+cd <model_folder>/<seed>
 bash translate_val.sh
 ```
 To choose the best checkpoint (using as the criterion symmetrised word accuracy):
 ```
-mt-training-scripts/eval_val.sh <MODEL_FOLDER>/<SEED>
+mt-training-scripts/eval_val.sh <model_folder>/<seed>
 ```
 This will produce a validation file `valid.eval` in the subfolder, which records the scores for each of the checkpoints, finds the best scoring checkpoint and copies it over to `checkpoint_bestwordacc_sym.pt`. The translation of the validation set by this best checkpoint is `checkpoint_bestwordacc_sym.pt.valid.postproc`.
 
