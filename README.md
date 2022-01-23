@@ -146,34 +146,30 @@ This involves:
   - char, 500, 1k, 2k, 4k, 8k, 16k, 24k
 - binarisation of the data in the fairseq format (for neural models)
 
-```
-TODO
-```
-
 ### Hyper-parameter searches
 
 Create model folders and scripts for different hyper-parameter settings as follows:
 ```
-TODO
+bash mt-training-scripts/create_experiments.sh
 ```
-N.B. You can change the hyper-parameter values in this file to generate different combinations.
+N.B. You can change the hyper-parameter values in this file to generate different combinations. The dropout, batch size and learning rate are hard-coded as we only try different combinations for a few experiments.
+
+This script will create a model folder named with the specific parameters. Each folder will have a subfolder indicating the random seed and in each of these folders will be the training script. E.g. `mt-models/transformer_char_2enc_2dec_2heads_128embdim_512ff_0.3drop_0.001lr_3000bsz/{1,2,3}/`
+
+To run training:
+```
+cd MODEL_FOLDER/SEED
+bash train.sh
+```
+Then translate the validation (dev) set for each of the model checkpoints:
+```
+cd MODEL_FOLDER/SEED
+bash translate_val.sh
+```
+To choose the best checkpoint (using as the criterion symmetrised word accuracy):
+```
+mt-training-scripts/eval_val.sh MODEL_FOLDER/SEED
+```
+This will produce a validation file `valid.eval` in the subfolder, which records the scores for each of the checkpoints, finds the best scoring checkpoint and copies it over to `checkpoint_bestwordacc_sym.pt`. The translation of the validation set by this best checkpoint is `checkpoint_bestwordacc_sym.pt.valid.postproc`.
 
 
-
-### Normalse using pretrained models
-
-
-
-
-
-## Evaluation
-
-To do the full evaluation (on the whole test set plus on individual genres of text):
-
-`bash scripts/full_eval.sh`
-
-
-
-## Hyper-parameter searches
-
-TODO
