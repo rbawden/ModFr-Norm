@@ -69,11 +69,11 @@ TODO
 **Statistical MT (SMT):**
 
 ```
->> bash norm-scripts/smt_translate.sh <model_folder>
+bash norm-scripts/smt_translate.sh <model_folder>
 ```
 E.g.
 ```
->> cat data/raw/dev.finalised.src bash norm-scripts/smt_translate.sh mt-models/best-smt/1/model > outputs/smt/dev/dev-1.trg
+cat data/raw/dev.finalised.src bash norm-scripts/smt_translate.sh mt-models/best-smt/1/model > outputs/smt/dev/dev-1.trg
 ```
 N.B. If you want to use this script to translate SMT models that have been trained with other segmentations, make sure to change `segtype` in `smt_translate.sh`.
 
@@ -81,12 +81,12 @@ N.B. If you want to use this script to translate SMT models that have been train
 **Neural MT (NMT), both LSTM and Transformer**
 
 ```
->> bash norm-scripts/nmt_translate.sh <model_path>
+bash norm-scripts/nmt_translate.sh <model_path>
 ```
 E.g.
 ```
->> cat data/raw/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-lstm/1/checkpointTODO > outputs/lstm/dev/dev-1.trg
->> cat data/raw/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-transformer/1/checkpointTODO > outputs/transformer/dev/dev-1.trg
+cat data/raw/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-lstm/1/checkpointTODO > outputs/lstm/dev/dev-1.trg
+cat data/raw/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-transformer/1/checkpointTODO > outputs/transformer/dev/dev-1.trg
 ```
 
 **Post-processing using the contemporary French lexicon, the Le*fff* (Sagot, 2009):**
@@ -106,10 +106,10 @@ cat data/raw/dev/dev.finalised.src | bash norm-scripts/rule-based.sh | bash norm
 ### Evaluate with individual metrics
 
 ```
->> bash eval-scripts/bleu.sh <ref_file> <pred_file> fr
->> bash eval-scripts/chrf.sh <ref_file> <pred_file> fr
->> python eval-scripts/levenshtein.py <ref_file> <pred_file> -a {ref,pred} (-c <cache_file>)
->> python eval-scripts/word_acc.py <ref_file> <pred_file> -a {ref,pred,both} (-c <cache_file>)
+bash eval-scripts/bleu.sh <ref_file> <pred_file> fr
+bash eval-scripts/chrf.sh <ref_file> <pred_file> fr
+python eval-scripts/levenshtein.py <ref_file> <pred_file> -a {ref,pred} (-c <cache_file>)
+python eval-scripts/word_acc.py <ref_file> <pred_file> -a {ref,pred,both} (-c <cache_file>)
 ```
 where `-a ref` means that the reference is used as basis for the alignment, `-a pred` that the prediction is used as basis for the alignment, and `-a both` that the average of the two is calculated. An optional cache file destination (format .pickle) can be specified to speed up evaluation when running it several times.
 
@@ -118,20 +118,21 @@ To calculate the average of a metric over several outputs (relevant for differen
 ### Evaluation over multiple metrics
 
 ```
->> bash eval-scripts/eval_detailed.sh <output_folder> <ref_file> (<cache_file>)
+bash eval-scripts/eval_detailed.sh <output_folder> <ref_file> (<cache_file>)
 ```
 where `output_folder` is the folder containing prediction files to be included in the evaluation (all files ending in `.trg` will be included for evaluation. E.g.
 
 ```
->> bash eval-scripts/eval_all.sh outputs/rule-based/dev data/raw/dev/dev.finalised.trg outputs/.cache.pickle 
->> 89.50 & 89.60 & 0.00 & 74.26 & 0.91 \\
+bash eval-scripts/eval_all.sh outputs/rule-based/dev data/raw/dev/dev.finalised.trg outputs/.cache.pickle 
+
+89.50 & 89.60 & 0.00 & 74.26 & 0.91 \\
 ```
 
 ### Detailed evaluation (including on data subsets)
 
 To calculate all evaluation scores, including on subsets of the data (as specified above and in the meta data):
 ```
->> bash eval-scripts/eval-all.sh <ref_file> <meta_file> <pred_file> (<cache_file>)
+bash eval-scripts/eval-all.sh <ref_file> <meta_file> <pred_file> (<cache_file>)
 ```
 E.g.
 ```
