@@ -2,7 +2,7 @@
 
 thisdir=`dirname $0`
 maindir=$thisdir/..
-kenlm=~/tools/kenlm # change this path as necessary
+kenlm=$TOOLDIR # CHANGE THIS PATH AS NECESSARY TO THE DIRECTORY WHERE YOUR TOOLS ARE INSTALLED
 outputdir=$maindir/lms/kenlm
 [ -d $maindir/lms ] || mkdir $maindir/lms
 [ -d $outputdir ] || mkdir $outputdir
