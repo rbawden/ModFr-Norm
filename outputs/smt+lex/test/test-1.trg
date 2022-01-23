@@ -1,5 +1,3 @@
-To run thé décoder, please call:
-moses -f /scratch/rbawden/ModFr-Norm/mt-models/best-smt/1/model/filtered-tmp.1461/moses.ini -i /scratch/rbawden/ModFr-Norm/mt-models/best-smt/1/model/filtered-tmp.1461/input.184976
 C'est ceux dont il est écrit au commencement de l'Apocalipse:
 La vraie chasteté de l'âme, la vraie pudeur chrétienne est de rougir du péché, de n'avoir d'yeux ni d'amour que pour Jésus-Christ, et de tenir toujours ses sens épurés de la corruption du siècle.
 Sine macula sunt enim ante trônum Deï.
