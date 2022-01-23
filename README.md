@@ -62,9 +62,8 @@ cat data/raw/dev/dev.finalised.src | bash norm-scripts/rule-based.sh > outputs/r
 
 
 **ABA, alignment-based approach:**
-```
-TODO
-```
+
+See the github repository: [https://github.com/johnseazer/aba](https://github.com/johnseazer/aba)
 
 **Statistical MT (SMT):**
 
