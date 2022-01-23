@@ -73,7 +73,7 @@ bash norm-scripts/smt_translate.sh <model_folder>
 ```
 E.g.
 ```
-cat data/raw/dev.finalised.src bash norm-scripts/smt_translate.sh mt-models/best-smt/1/model > outputs/smt/dev/dev-1.trg
+cat data/raw/dev.finalised.src | bash norm-scripts/smt_translate.sh mt-models/best-smt/1/model > outputs/smt/dev/dev-1.trg
 ```
 N.B. If you want to use this script to translate SMT models that have been trained with other segmentations, make sure to change `segtype` in `smt_translate.sh`.
 
