@@ -3,17 +3,19 @@
 thisdir=`dirname "$(realpath $0)"` # define all locations wrt the script folder
 maindir=`realpath $thisdir/..`
 datapath=$maindir/data/raw/
-raw_folder=FreEM-corpora-FreEMnorm-9379caf
+raw_folder=$maindir/data/FreEM-corpora-FreEMnorm-9379caf
 
 # Get dataset splits (train, dev, test)
+[ -d $maindir/data ] || mkdir -p $maindir/data/raw
 # Output to FreEM-corpora-FreEMnorm-9379caf/split/{train,dev,test}/
-if [ ! -d $maindir/$raw_folder ]; then
+if [ ! -d $raw_folder ]; then
     wget https://zenodo.org/record/5865428/files/FreEM-corpora/FreEMnorm-1.0.0.zip
-    unzip $maindir/FreEMnorm-1.0.0.zip -d $maindir/ && rm $maindir/FreEMnorm-1.0.0.zip     
+    mv $maindir/FreEMnorm-1.0.0.zip $maindir/data/ && \
+	unzip $maindir/data/FreEMnorm-1.0.0.zip -d $maindir/data/ && \
+	rm $maindir/data/FreEMnorm-1.0.0.zip
 fi
 
 # Create folders
-[ -d $maindir/data ] || mkdir -p $maindir/data/raw
 for dataset in train dev test; do
     [ -d $datapath/$dataset ] || mkdir $datapath/$dataset
 done
@@ -22,7 +24,7 @@ done
 # Output to data/raw/{train,dev,test}/{train,dev,test}.tsv
 echo ">>> Extracting raw text and meta-information from original files."
 echo "         Outputting to data/raw/{train,dev,test}/{train,dev,test}.tsv"
-python $thisdir/create_dataset_splits.py $maindir/$raw_folder/TableOfContent.tsv $maindir/$raw_folder/split $datapath/
+python $thisdir/create_dataset_splits.py $raw_folder/TableOfContent.tsv $raw_folder/split $datapath/
 
 # Create individual files for src, trg and meta info for each set
 # Output to data/raw/{train,dev,test}/{train,dev,test}.{src,trg,meta}
@@ -56,9 +58,11 @@ cp $datapath/test/test.meta $datapath/test/test.norm.meta
 echo ">>> Pre-normalise certain typograohic variants (quote marks and apostrophes)"
 for lang in src trg; do
     for dataset in train dev; do
-	cat $datapath/$dataset/$dataset.filt.dedup.$lang | bash $thisdir/normalise.sh > $datapath/$dataset/$dataset.filt.dedup.norm.$lang
+	cat $datapath/$dataset/$dataset.filt.dedup.$lang | \
+	    bash $thisdir/../norm-scripts/pre-normalise.sh > \
+		 $datapath/$dataset/$dataset.filt.dedup.norm.$lang
     done
-    cat $datapath/test/test.$lang | bash $thisdir/normalise.sh > $datapath/test/test.norm.$lang
+    cat $datapath/test/test.$lang | bash $thisdir/../norm-scripts/pre-normalise.sh > $datapath/test/test.norm.$lang
 done
 
 echo ">>> Setting links to final versions of the raw datasets. "
