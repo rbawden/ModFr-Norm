@@ -6,12 +6,13 @@ maindir=`realpath $thisdir/..`
 dropout=0.3
 lr=0.001 
 batchsize=3000
-
+hidden=None
 arch=transformer
+
 for seed in 1 2 3; do 
-    for datatype in char bpe_joint_1000 char bpe_joint_500 bpe_joint_1000 bpe_joint_2000 bpe_joint_4000 bpe_joint_8000 bpe_joint_16000 bpe_joint_24000 ; do
+    for datatype in char; do # bpe_joint_1000 char bpe_joint_500 bpe_joint_1000 bpe_joint_2000 bpe_joint_4000 bpe_joint_8000 bpe_joint_16000 bpe_joint_24000 ; do
 	datapath=`realpath $maindir/data/bin/$datatype`
-	for modelsize in medium; do
+	for modelsize in small; do #small medium big; do
 
 	    if [[ $arch == transformer ]]; then
 		case $modelsize in
