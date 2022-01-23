@@ -42,7 +42,7 @@ def read_file(filename):
     return all_data
 
 
-def plot(all_data):
+def plot(all_data, output_path):
     num_rows, num_cols = closest_factors(len(all_data.keys()))
     fig, axes = plt.subplots(num_rows, num_cols, sharex=True, sharey=True, figsize=(8,5))
     for i, datatype in enumerate(all_data):
@@ -57,14 +57,14 @@ def plot(all_data):
 #        else:
 #            axes[row, col].legend(loc='upper right', bbox_to_anchor=(1.25, 0.5), ncol=3)
 
-    plt.savefig("valid_eval_plot.pdf")
+    plt.savefig(output_path)
 
 
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('valid_eval',
-                        help='the validation file containing the scores of each checkpoint')
+    parser.add_argument('valid_eval', help='the validation file containing the scores of each checkpoint')
+    parser.add_argument('output_path', help='output path (pdf)')
     args = parser.parse_args()
     all_data = read_file(args.valid_eval)
-    plot(all_data)
+    plot(all_data, args.output_path)
