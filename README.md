@@ -62,9 +62,8 @@ cat data/raw/dev/dev.finalised.src | bash norm-scripts/rule-based.sh > outputs/r
 
 
 **ABA, alignment-based approach:**
-```
-TODO
-```
+
+See the github repository: [https://github.com/johnseazer/aba](https://github.com/johnseazer/aba)
 
 **Statistical MT (SMT):**
 
@@ -210,7 +209,7 @@ bash translate_val.sh
 ```
 To choose the best checkpoint (using as the criterion symmetrised word accuracy):
 ```
-mt-training-scripts/eval_val.sh <model_folder>/<seed>
+bash mt-training-scripts/eval_val.sh <model_folder>/<seed>
 ```
 This will produce a validation file `valid.eval` in the subfolder, which records the scores for each of the checkpoints, finds the best scoring checkpoint and copies it over to `checkpoint_bestwordacc_sym.pt`. The translation of the validation set by this best checkpoint is `checkpoint_bestwordacc_sym.pt.valid.postproc`.
 
