@@ -84,8 +84,8 @@ bash norm-scripts/nmt_translate.sh <model_path>
 ```
 E.g.
 ```
-cat data/raw/dev/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-lstm/1/checkpointTODO > outputs/lstm/dev/dev-1.trg
-cat data/raw/dev/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-transformer/1/checkpointTODO > outputs/transformer/dev/dev-1.trg
+cat data/raw/dev/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-lstm/1/checkpoint_bestwordacc_sym.pt > outputs/lstm/dev/dev-1.trg
+cat data/raw/dev/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-transformer/1/checkpoint_bestwordacc_sym.pt > outputs/transformer/dev/dev-1.trg
 ```
 
 **Post-processing using the contemporary French lexicon, the Le*fff* (Sagot, 2009):**
