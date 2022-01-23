@@ -2,7 +2,7 @@
 
 thisdir=`dirname $0`
 maindir=`realpath $thisdir/../`
-tools=/gpfswork/rech/ncm/commun/tools # CHANGE PATH AS NECESSARY
+tools=$TOOLDIR # CHANGE THIS PATH AS NECESSARY TO THE DIRECTORY WHERE YOUR TOOLS ARE INSTALLED
 kenlm=$tools/kenlm
 fastalign=$tools/fast_align/build
 moses=$tools/mosesdecoder
