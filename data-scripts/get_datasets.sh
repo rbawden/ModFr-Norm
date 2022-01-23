@@ -17,7 +17,7 @@ fi
 
 # Create folders
 for dataset in train dev test; do
-    [ -d $datapath/$dataset ] || mkdir $datapath/$dataset
+    [ -d $datapath/$dataset ] || mkdir -p $datapath/$dataset
 done
 
 # Extract the raw text and meta-information into single files
