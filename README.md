@@ -146,7 +146,7 @@ This involves:
   - char, 500, 1k, 2k, 4k, 8k, 16k, 24k
 - binarisation of the data in the fairseq format (for neural models)
 
-### Hyper-parameter searches
+### Hyper-parameter searches for LSTM and Transformer models
 
 Create model folders and scripts for different hyper-parameter settings as follows:
 ```
