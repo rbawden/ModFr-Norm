@@ -129,7 +129,7 @@ E.g.
 ```
 where `r2h` means that the reference is used as basis for the alignment, `h2r` that the hypothesis is used as basis for the alignment and `sym` means that the mean of the two directions is calculated.
 
-## Retrain a model:
+## Retrain an MT model:
 
 ### Preprocessing and binarisation
 
@@ -145,6 +145,35 @@ This involves:
 - subword segmentation using sentencepiece for the following (joint) vocab sizes:
   - char, 500, 1k, 2k, 4k, 8k, 16k, 24k
 - binarisation of the data in the fairseq format (for neural models)
+
+### Retraining SMT models
+
+#### Training a language model with KenLM
+
+Train all \textit{n}-gram language model combinations as follows:
+```
+bash mt-training-scripts/train_lms.sh
+```
+Make sure to change the tool paths in this file first to point to your installation of [KenLM](https://github.com/kpu/kenlm).
+
+#### Training an SMT model with Moses
+
+An example of a training script is giving in `mt-models/best-smt/1/`. 
+
+To train a new phrase table:
+- Create a new model folder (e.g. `mt-models/smt-bpe_joint_1000/1`)
+- Copy the train script over: `cp mt-models/best-smt/1/train.sh mt-models/smt-bpe_joint_1000/1/`
+- Modify the location of you tools directory `tools=~tools`
+- Modify `type=bpe_joint_500` to your chosen segmentation type (e.g. type=bpe_joint_1000)
+- Modify the final lines of the two `train-model.perl` commands if you wish to change the type of language model used
+- Go to the directory and run training: `cd mt-models/smt-bpe_joint_1000/1; bash train.sh`
+
+Tune the models:
+- Copy the tuning script over `cp mt-models/best-smt/1/tune.sh mt-models/smt-bpe_joint_1000/1/`
+- As before, modify the tools location and the segmentation type.
+- Go to the directory adn run tuning: `cd mt-models/smt-bpe_joint_1000/1; bash tune.sh`
+
+This does tuning for 1 random seed. To do the other two random seeds create two more subfolders `mt-models/smt-bpe_joint_1000/2` and `mt-models/smt-bpe_joint_1000/3`, copy the tuning script over from `1/` as it is and rerun tuning (i.e. you do not need to retrain phrase tables and language models).
 
 ### Hyper-parameter searches for LSTM and Transformer models
 
