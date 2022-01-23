@@ -3,6 +3,24 @@
 
 ## Citation
 
+If you use or refer to this work, please cite the following paper:
+
+```
+Rachel Bawden, Jonathan Poinhos, Eleni Kogkitsidou, Philippe Gambette, Benoît Sagot, et al. Automatic Normalisation of Early Modern French. 2022. Preprint.
+```
+
+```
+@misc{bawden:hal-03540226,
+  title = {{Automatic Normalisation of Early Modern French}},
+  author = {Bawden, Rachel and Poinhos, Jonathan and Kogkitsidou, Eleni and Gambette, Philippe and Sagot, Beno{\^i}t and Gabay, Simon},
+  url = {https://hal.inria.fr/hal-03540226},
+  note = {working paper or preprint},
+  year = {2022},
+  HAL_ID = {hal-03540226},
+  HAL_VERSION = {v1},
+}
+```
+
 ## Requirements
 
 - Python3 and the requirements specified in `requirements.txt`
