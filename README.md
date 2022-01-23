@@ -9,8 +9,8 @@ Automatic normalisation of Early Modern French. This repository contains the scr
 - [Moses](https://github.com/moses-smt/mosesdecoder) (for training and decoding with SMT models)
 
 ```
-virtualenv -p python3 venv
-source venv/bin/activate
+python3 -m venv modfr_env
+source modfr_env/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -29,8 +29,6 @@ The final raw files are found in `data/raw/{train,dev,test}/{train,dev,test}.fin
 - splitting the files into train/dev/test
 - filtering out sentences from the train and dev sets that also appear in the test set and contain over 4 tokens
 - normalisation of quotes, apostrophes and repeated spaces
-
-
 
 **Subsets of dev and test**
 
