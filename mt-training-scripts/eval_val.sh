@@ -28,15 +28,14 @@ else
 	    num=`echo $model | perl -pe 's/^.*?checkpoint(\d+).pt/\1/'`
 	    cachefile=$modeldir/.cache.pickle
 	    # calculate scores
-	    scores=`bash $evalscriptsdir/eval-all.sh $modeldir \
-	    		  $modeldir/valid_outputs/$modelname.valid.postproc \
-			  $ref $meta $cachefile`
+	    scores=`bash $evalscriptsdir/eval_detailed.sh $modeldir $ref $meta \
+	    		  $modeldir/valid_outputs/$modelname.valid.postproc $cachefile`
 	    echo -e "$model\t$scores" >> $modeldir/valid.eval
 	fi
     done
 fi
 # plot the validation graph
-python $thisdir/plot_val.py $modeldir/valid.eval
+python $thisdir/plot_val.py $modeldir/valid.eval $modeldir/valid_eval_plot.pdf
 
 # get the best checkpoint according to word accuracy
 best_checkpoint_num=`python $thisdir/select_best.py $modeldir/valid.eval wordacc_sym`
