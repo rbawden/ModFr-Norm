@@ -1,14 +1,16 @@
-#fairseq @ git+git://github.com/pytorch/fairseq.git@5a75b079bf8911a327940c28794608e003a9fa52
-fairseq
-sentencepiece==0.1.96
-sacrebleu
 cffi==1.14.5
+click==8.0.3
 cycler==0.10.0
 Cython==0.29.21
+dataclasses==0.6
+fairseq==0.10.2
 hydra-core==0.11.3
+importlib-metadata==4.10.1
+joblib==1.1.0
 kiwisolver==1.3.1
 levenshtein==0.12.0
 matplotlib==3.3.4
+nltk==3.6.7
 numpy==1.19.5
 omegaconf==1.4.1
 pandas==1.1.5
@@ -19,12 +21,13 @@ pyparsing==2.4.7
 python-dateutil==2.8.1
 pytz==2021.1
 PyYAML==5.4.1
-regex==2020.11.13
+regex==2022.1.18
 sacrebleu==1.5.0
 scipy==1.5.4
 seaborn==0.11.1
+sentencepiece==0.1.96
 six==1.15.0
 torch==1.7.1
 tqdm==4.57.0
 typing-extensions==3.7.4.3
-
+zipp==3.7.0
