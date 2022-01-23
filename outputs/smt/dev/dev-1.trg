@@ -1,5 +1,3 @@
-To run the decoder, please call:
-  moses -f /gpfsdswork/projects/rech/ncm/ulv12mq/ModFr-Norm-test/mt-models/best-smt/1/model/filtered-tmp.30122/moses.ini -i /gpfsdswork/projects/rech/ncm/ulv12mq/ModFr-Norm-test/mt-models/best-smt/1/model/filtered-tmp.30122/input.1694630
  1.
  1. QUe cette propostion, qu'un espace est vidé, repugne au sens commun.
  1. QUe tous les corps ont répugnance à se séparer l'un de l'autre, et admettre du vide dans leur intervalle;
