@@ -2,7 +2,7 @@
 
 thisdir=`realpath $(dirname $0)`
 maindir=`realpath $thisdir/../../..`
-tools=~/tools
+tools=$TOOLDIR # UPDATE THIS TO YOUR TOOL DIRECTORY
 kenlm=$tools/kenlm
 fastalign=$tools/fast_align/build
 moses=$tools/mosesdecoder
