@@ -5,10 +5,9 @@
 
 If you use or refer to this work, please cite the following paper:
 
-```
 Rachel Bawden, Jonathan Poinhos, Eleni Kogkitsidou, Philippe Gambette, Benoît Sagot, et al. Automatic Normalisation of Early Modern French. 2022. Preprint.
-```
 
+Bibtex:
 ```
 @misc{bawden:hal-03540226,
   title = {{Automatic Normalisation of Early Modern French}},
