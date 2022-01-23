@@ -73,7 +73,7 @@ bash norm-scripts/smt_translate.sh <model_folder>
 ```
 E.g.
 ```
-cat data/raw/dev.finalised.src | bash norm-scripts/smt_translate.sh mt-models/best-smt/1/model > outputs/smt/dev/dev-1.trg
+cat data/raw/dev/dev.finalised.src | bash norm-scripts/smt_translate.sh mt-models/best-smt/1/model > outputs/smt/dev/dev-1.trg
 ```
 N.B. If you want to use this script to translate SMT models that have been trained with other segmentations, make sure to change `segtype` in `smt_translate.sh`.
 
@@ -85,8 +85,8 @@ bash norm-scripts/nmt_translate.sh <model_path>
 ```
 E.g.
 ```
-cat data/raw/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-lstm/1/checkpointTODO > outputs/lstm/dev/dev-1.trg
-cat data/raw/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-transformer/1/checkpointTODO > outputs/transformer/dev/dev-1.trg
+cat data/raw/dev/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-lstm/1/checkpointTODO > outputs/lstm/dev/dev-1.trg
+cat data/raw/dev/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-transformer/1/checkpointTODO > outputs/transformer/dev/dev-1.trg
 ```
 
 **Post-processing using the contemporary French lexicon, the Le*fff* (Sagot, 2009):**
