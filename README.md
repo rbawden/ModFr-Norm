@@ -154,7 +154,8 @@ bash mt-training-scripts/create_experiments.sh
 ```
 N.B. You can change the hyper-parameter values in this file to generate different combinations. The dropout, batch size and learning rate are hard-coded as we only try different combinations for a few experiments.
 
-This script will create a model folder named with the specific parameters. Each folder will have a subfolder indicating the random seed and in each of these folders will be the training script. E.g. `mt-models/transformer_char_2enc_2dec_2heads_128embdim_512ff_0.3drop_0.001lr_3000bsz/{1,2,3}/`
+This script will create a model folder named with the specific parameters. Each folder will have a subfolder indicating the random seed and in each of these folders will be the training script. 
+E.g. `mt-models/transformer_char_2enc_2dec_2heads_128embdim_512ff_0.3drop_0.001lr_3000bsz/{1,2,3}/`
 
 To run training:
 ```
