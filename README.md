@@ -1,6 +1,6 @@
 # ModFr-Normalisation
 
-Automatic normalisation of Early Modern French. This repository contains the scripts and models to reproduce the results of the preprint 'Automatic Normalisation of Early Modern French'. See below for citation instructions.
+Automatic normalisation of Early Modern French. This repository contains the scripts and models to reproduce the results of the preprint [Automatic Normalisation of Early Modern French](https://hal.inria.fr/hal-03540226). See below for citation instructions.
 
 ## Requirements
 
@@ -16,6 +16,7 @@ pip install -r requirements.txt
 
 ## Download and prepare data
 
+### Parallel training data
 Get dataset splits:
 ```
 bash data-scripts/get_datasets.sh
@@ -40,6 +41,15 @@ Subsets of dev/test are available in the same subfolders (different data selecti
 - _3-test+train_ ("few-shot"): selected texts, distributed across periods and genres (10%/0%/90% train/dev/test)
 - _4-medecine_ (medical domain): 1 document in the dev and the other in the test (two very different documents) (none in train)
 - _5-physique_ (physics/mechanics domain): 1 document in dev and the other in test (none in train)
+
+### Monolingual normalised data (used for some of the language models used for SMT)
+
+Get monolingual normalised data:
+```
+TODO download data
+python data-scripts/get_monolingual_normalised.py <txt_folder> <toc_folder>
+bash data-scripts/process_monolingual.sh # to be updated
+```
 
 
 ## Normalisation approaches
