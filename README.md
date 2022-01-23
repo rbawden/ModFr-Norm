@@ -117,7 +117,7 @@ To calculate the average of a metric over several outputs (relevant for differen
 ### Evaluation over multiple metrics
 
 ```
-bash eval-scripts/eval_detailed.sh <output_folder> <ref_file> (<cache_file>)
+bash eval-scripts/eval_all.sh <output_folder> <ref_file> (<cache_file>)
 ```
 where `output_folder` is the folder containing prediction files to be included in the evaluation (all files ending in `.trg` will be included for evaluation. E.g.
 
@@ -131,7 +131,7 @@ bash eval-scripts/eval_all.sh outputs/rule-based/dev data/raw/dev/dev.finalised.
 
 To calculate all evaluation scores, including on subsets of the data (as specified above and in the meta data):
 ```
-bash eval-scripts/eval-all.sh <ref_file> <meta_file> <pred_file> (<cache_file>)
+bash eval-scripts/eval_detailed.sh <ref_file> <meta_file> <pred_file> (<cache_file>)
 ```
 E.g.
 ```
