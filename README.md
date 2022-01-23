@@ -5,6 +5,10 @@
 
 ## Requirements
 
+- Python3 and the requirements specified in `requirements.txt`
+- [KenLM](https://github.com/kpu/kenlm) (to train language models for SMT)
+- [Moses](https://github.com/moses-smt/mosesdecoder) (for training and decoding with SMT models)
+
 ```
 virtualenv -p python3 venv
 source venv/bin/activate
@@ -129,7 +133,7 @@ E.g.
 ```
 where `r2h` means that the reference is used as basis for the alignment, `h2r` that the hypothesis is used as basis for the alignment and `sym` means that the mean of the two directions is calculated.
 
-## Retrain an MT model:
+## Retrain the MT models:
 
 ### Preprocessing and binarisation
 
