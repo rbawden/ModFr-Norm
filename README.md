@@ -158,17 +158,17 @@ This script will create a model folder named with the specific parameters. Each 
 
 To run training:
 ```
-cd MODEL_FOLDER/SEED
+cd <MODEL_FOLDER>/<SEED>
 bash train.sh
 ```
 Then translate the validation (dev) set for each of the model checkpoints:
 ```
-cd MODEL_FOLDER/SEED
+cd <MODEL_FOLDER>/<SEED>
 bash translate_val.sh
 ```
 To choose the best checkpoint (using as the criterion symmetrised word accuracy):
 ```
-mt-training-scripts/eval_val.sh MODEL_FOLDER/SEED
+mt-training-scripts/eval_val.sh <MODEL_FOLDER>/<SEED>
 ```
 This will produce a validation file `valid.eval` in the subfolder, which records the scores for each of the checkpoints, finds the best scoring checkpoint and copies it over to `checkpoint_bestwordacc_sym.pt`. The translation of the validation set by this best checkpoint is `checkpoint_bestwordacc_sym.pt.valid.postproc`.
 
