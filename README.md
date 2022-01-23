@@ -1,46 +1,6 @@
 # ModFr-Normalisation
 
-
-## Citation
-
-If you use or refer to this work, please cite the following paper:
-
-Rachel Bawden, Jonathan Poinhos, Eleni Kogkitsidou, Philippe Gambette, Benoît Sagot, et al. Automatic Normalisation of Early Modern French. 2022. Preprint.
-
-Bibtex:
-```
-@misc{bawden:hal-03540226,
-  title = {{Automatic Normalisation of Early Modern French}},
-  author = {Bawden, Rachel and Poinhos, Jonathan and Kogkitsidou, Eleni and Gambette, Philippe and Sagot, Beno{\^i}t and Gabay, Simon},
-  url = {https://hal.inria.fr/hal-03540226},
-  note = {working paper or preprint},
-  year = {2022},
-  HAL_ID = {hal-03540226},
-  HAL_VERSION = {v1},
-}
-```
-
-And to reference the FreEM-norm and FreEM-max datasets used in the experiments:
-
-For FreEM-norm (used to train ABA, SMT and neural models)
-Simon Gabay. (2022). FreEM-corpora/FreEMnorm: FreEM norm Parallel corpus (1.0.0). Zenodo. https://doi.org/10.5281/zenodo.5865428
-```
-@software{simon_gabay_2022_5865428,
-  author       = {Simon Gabay},
-  title        = {{FreEM-corpora/FreEMnorm: FreEM norm Parallel 
-                   corpus}},
-  month        = jan,
-  year         = 2022,
-  publisher    = {Zenodo},
-  version      = {1.0.0},
-  doi          = {10.5281/zenodo.5865428},
-  url          = {https://doi.org/10.5281/zenodo.5865428}
-}
-```
-For FreEM-max (used to train the large language models for SMT):
-
-Watch this space!
-
+Automatic normalisation of Early Modern French. This repository contains the scripts and models to reproduce the results of the preprint 'Automatic Normalisation of Early Modern French'. See below for citation instructions.
 
 ## Requirements
 
@@ -246,3 +206,42 @@ mt-training-scripts/eval_val.sh <model_folder>/<seed>
 This will produce a validation file `valid.eval` in the subfolder, which records the scores for each of the checkpoints, finds the best scoring checkpoint and copies it over to `checkpoint_bestwordacc_sym.pt`. The translation of the validation set by this best checkpoint is `checkpoint_bestwordacc_sym.pt.valid.postproc`.
 
 
+## Citation
+
+If you use or refer to this work, please cite the following paper:
+
+Rachel Bawden, Jonathan Poinhos, Eleni Kogkitsidou, Philippe Gambette, Benoît Sagot, et al. Automatic Normalisation of Early Modern French. 2022. Preprint.
+
+Bibtex:
+```
+@misc{bawden:hal-03540226,
+  title = {{Automatic Normalisation of Early Modern French}},
+  author = {Bawden, Rachel and Poinhos, Jonathan and Kogkitsidou, Eleni and Gambette, Philippe and Sagot, Beno{\^i}t and Gabay, Simon},
+  url = {https://hal.inria.fr/hal-03540226},
+  note = {working paper or preprint},
+  year = {2022},
+  HAL_ID = {hal-03540226},
+  HAL_VERSION = {v1},
+}
+```
+
+And to reference the FreEM-norm and FreEM-max datasets used in the experiments:
+
+For FreEM-norm (used to train ABA, SMT and neural models)
+Simon Gabay. (2022). FreEM-corpora/FreEMnorm: FreEM norm Parallel corpus (1.0.0). Zenodo. https://doi.org/10.5281/zenodo.5865428
+```
+@software{simon_gabay_2022_5865428,
+  author       = {Simon Gabay},
+  title        = {{FreEM-corpora/FreEMnorm: FreEM norm Parallel 
+                   corpus}},
+  month        = jan,
+  year         = 2022,
+  publisher    = {Zenodo},
+  version      = {1.0.0},
+  doi          = {10.5281/zenodo.5865428},
+  url          = {https://doi.org/10.5281/zenodo.5865428}
+}
+```
+For FreEM-max (used to train the large language models for SMT):
+
+Watch this space!
