@@ -29,8 +29,11 @@ def levenshtein_score(sents_ref, sents_pred, align_type='ref', cache_file=None):
                 score = edit_distance(homogenise(sent_pred), homogenise(sent_ref))
                 if (sent_pred, sent_ref) not in cache:
                     cache[(sent_pred, sent_ref)] = {}
-                cache[(sent_ref, sent_pred)]['score'] = score
+                cache[(sent_pred, sent_ref)]['score'] = score
             num_chars += len(sent_pred)
+    # dump cache file
+    if cache_file is not None:
+        pickle.dump(cache, open(cache_file, 'wb'))
     return score/num_chars
         
 
