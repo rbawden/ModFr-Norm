@@ -158,19 +158,19 @@ These differ slightly from the original paper due to changes to the tokenisation
 ### Test set
 
 | Method | WordAcc (ref) | WordAcc (sym) | Levenshtein | BLEU | ChrF |
-| --- | --- | --- | --- | --- | --- |
-| Identity
-| Identity+lex
-| Rule-based
-| Rule-based+lex
-| ABA
-| ABA+lex
-| SMT
-| SMT+lex
-| LSTM
-| LSTM+lex
-| Transformer
-| Transformer+lex
+| --- | --- | --- | --- | --- |
+| Identity | 71.82 | 71.09 | 8.15 | 40.25 | 73.77 |
+| identity+lex | 85.82 | 85.85 |  | 66.78 | 87.40 |
+| Rule-based | 88.81 | 88.90 | 3.08 | 72.47 | 89.94 | 
+| Rule-based+lex | 90.58 | 90.66 | 2.56 | 76.90 | 91.70 |
+| ABA | 94.92 | 95.00 | 1.34 | 87.70 | 95.84  |
+| ABA+lex | 95.22 | 95.30 | 1.25 | 88.37 | 96.13  |
+| SMT | 96.93±0.03 | 96.90±0.02 | 0.76±0.01 | 92.59±0.05 | 97.71±0.01 |
+| SMT+lex | 97.07±0.03 | 97.04±0.02 | 0.73±0.01 | 92.97±0.05 | 97.85±0.01 |
+| LSTM | 96.27±0.07 | 95.91±0.08 | 1.66±0.04 | 91.77±0.21 | 96.85±0.08 |
+| LSTM+lex | 96.37±0.09 | 96.01±0.09 | 1.64±0.05 | 92.07±0.25 | 96.95±0.10 |
+| Transformer | 95.98±0.05 | 95.61±0.07 | 1.81±0.01 | 91.30±0.08 | 96.65±0.05 |
+| Transformer+lex | 96.09±0.08 | 95.72±0.09 | 1.78±0.02 | 91.62±0.14 | 96.76±0.08 |
 
 ## Retrain the MT models
 
