@@ -143,7 +143,7 @@ These differ slightly from the original paper due to changes to the tokenisation
 | Method | WordAcc (ref) | WordAcc (sym) | Levenshtein | BLEU | ChrF |
 | --- | --- | --- | --- | --- | --- |
 | Identity | 73.01 | 72.35 | 7.72 | 42.33 | 74.95 |
-| identity+lex | 86.45 | 86.50 | 3.57 | 68.08 | 88.01 |
+| Identity+lex | 86.45 | 86.50 | 3.57 | 68.08 | 88.01 |
 | Rule-based | 89.54 | 89.64 | 2.88 | 74.26 | 90.54 |
 | Rule-based+lex | 91.39 | 91.49 | 2.33 | 78.91 | 92.45 |
 | ABA | 95.48 | 95.60 | 1.18 | 89.19 | 96.38 |
