@@ -68,9 +68,6 @@ cat data/raw/dev/dev.finalised.src | \
   bash norm-scripts/rule-based.sh \
     > outputs/rule-based/dev-1.trg
 
-# ABA, alignment-based approach (See the github repository: [https://github.com/johnseazer/aba](https://github.com/johnseazer/aba))
-# TODO
-
 # SMT: bash norm-scripts/smt_translate.sh <model_folder>
 cat data/raw/dev/dev.finalised.src | \
   bash norm-scripts/smt_translate.sh mt-models/best-smt/1/model \
@@ -88,8 +85,13 @@ cat data/raw/dev/dev.finalised.src | \
     
 # Post-processing using the contemporary French lexicon, the Le*fff* (Sagot, 2009)
 # Can be applied after any of the other approaches
-cat outputs/rule-based/dev-1.pred.trg | bash norm-scripts/lex-postproc.sh > cat outputs/rule-based+lex/dev-1.pred.trg
+cat outputs/rule-based/dev-1.pred.trg | \
+  bash norm-scripts/lex-postproc.sh \
+    > cat outputs/rule-based+lex/dev-1.pred.trg
 ```
+
+For ABA, the alignment-based approach, see the github repository: [https://github.com/johnseazer/aba](https://github.com/johnseazer/aba)).
+
 
 ## Evaluation
 
