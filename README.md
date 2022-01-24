@@ -141,7 +141,7 @@ These differ slightly from the original paper due to changes to the tokenisation
 ### Dev set
 
 | Method | WordAcc (ref) | WordAcc (sym) | Levenshtein | BLEU | ChrF |
-| --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- |
 | Identity | 73.01 | 72.35 | 7.72 | 42.33 | 74.95 |
 | identity+lex | 86.45 | 86.50 | 3.57 | 68.08 | 88.01 |
 | Rule-based | 89.54 | 89.64 | 2.88 | 74.26 | 90.54 |
