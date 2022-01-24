@@ -127,6 +127,44 @@ bash eval-scripts/eval_all.sh outputs/rule-based/dev data/raw/dev/dev.finalised.
 89.50 & 89.60 & 0.00 & 74.26 & 0.91 \\
 ```
 
+### Results
+
+These differ slightly from the original paper due to changes to the tokenisation strategy used to calculate word accuracy and to the models being re-trained.
+
+Dev set
+
+| Method | WordAcc (ref) | WordAcc (sym) | Levenshtein | BLEU | ChrF |
+| --- | --- | --- | --- | --- |
+| Identity | 73.00 | 72.40 | 0.00 | 42.33 | 0.75 | 
+| Identity+lex
+| Rule-based | 89.50 | 89.60 | 0.00 | 74.26 | 0.91 |
+| Rule-based+lex | 91.40 | 91.50 | 0.00 | 78.91 | 0.92
+| ABA | 95.50 | 95.60 | 0.00 | 89.19 | 0.96 |
+| ABA+lex | 95.80 | 95.90 | 0.00 | 89.89 | 0.97 |
+| SMT | 97.37±0.06 | 97.37±0.06 | 0.00±0.00 | 93.67±0.10 | 0.98±0.00 |
+| SMT+lex | 97.57±0.06 | 97.53±0.06 | 0.00±0.00 | 94.11±0.10 | 0.98±0.00 |
+| LSTM | 96.93±0.06 | 96.77±0.06 | 0.00±0.00 | 92.98±0.33 | 0.98±0.00 |
+| LSTM+lex | 97.07±0.12 | 96.90±0.10 | 0.00±0.00 | 93.36±0.40 | 0.98±0.00 |
+| Transformer | 96.47±0.12 | 96.23±0.15 | 0.00±0.00 | 92.17±0.06 | 0.97±0.00 |
+| Transformer+lex | 96.57±0.12 | 96.37±0.12 | 0.00±0.00 | 92.51±0.17 | 0.97±0.00 |
+
+Test set
+
+| Method | WordAcc (ref) | WordAcc (sym) | Levenshtein | BLEU & ChrF |
+| --- | --- | --- | --- | --- |
+| Identity
+| Identity+lex
+| Rule-based
+| Rule-based+lex
+| ABA
+| ABA+lex
+| SMT
+| SMT+lex
+| LSTM
+| LSTM+lex
+| Transformer
+| Transformer+lex
+
 ### Detailed evaluation (including on data subsets)
 
 To calculate all evaluation scores, including on subsets of the data (as specified above and in the meta data):
