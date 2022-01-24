@@ -17,20 +17,20 @@ def levenshtein_score(sents_ref, sents_pred, align_type='ref', cache_file=None):
             if (sent_ref, sent_pred) in cache and 'score' in cache[(sent_ref, sent_pred)]:
                 score += cache[(sent_ref, sent_pred)]['score']
             else:
-                score += edit_distance(homogenise(sent_ref), homogenise(sent_pred))
+                score += edit_distance(sent_ref, sent_pred)
                 if (sent_ref, sent_pred) not in cache:
                     cache[(sent_ref, sent_pred)] = {}
                 cache[(sent_ref, sent_pred)]['score'] = score
-            num_chars += len(sent_ref)
+            num_chars += max(len(sent_pred, len(sent_ref)))
         else:
             if (sent_pred, sent_ref) in cache and 'score' in cache[(sent_pred, sent_ref)]:
-                score +=	cache[(sent_pred, sent_ref)]['score']
+                score += cache[(sent_pred, sent_ref)]['score']
             else:
-                score += edit_distance(homogenise(sent_pred), homogenise(sent_ref))
+                score += edit_distance(sent_pred, sent_ref)
                 if (sent_pred, sent_ref) not in cache:
                     cache[(sent_pred, sent_ref)] = {}
                 cache[(sent_pred, sent_ref)]['score'] = score
-            num_chars += len(sent_pred)
+            num_chars += max(len(sent_pred), len(sent_ref))
     # dump cache file
     if cache_file is not None:
         pickle.dump(cache, open(cache_file, 'wb'))
