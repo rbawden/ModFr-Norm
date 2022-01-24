@@ -158,7 +158,7 @@ These differ slightly from the original paper due to changes to the tokenisation
 ### Test set
 
 | Method | WordAcc (ref) | WordAcc (sym) | Levenshtein | BLEU | ChrF |
-| --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- |
 | Identity | 71.82 | 71.09 | 8.15 | 40.25 | 73.77 |
 | identity+lex | 85.82 | 85.85 |  | 66.78 | 87.40 |
 | Rule-based | 88.81 | 88.90 | 3.08 | 72.47 | 89.94 | 
