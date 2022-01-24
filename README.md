@@ -4,7 +4,7 @@ This repository contains the scripts and models to reproduce the results of the 
 
 ## Requirements
 
-- Python3 and the requirements specified in `requirements.txt`
+- Python3.7 and the requirements specified in `requirements.txt`
 - [KenLM](https://github.com/kpu/kenlm) (to train language models for SMT)
 - [Moses](https://github.com/moses-smt/mosesdecoder) (for training and decoding with SMT models)
 
@@ -134,7 +134,7 @@ These differ slightly from the original paper due to changes to the tokenisation
 Dev set
 
 | Method | WordAcc (ref) | WordAcc (sym) | Levenshtein | BLEU | ChrF |
-| --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- |
 | Identity | 73.00 | 72.40 | 0.00 | 42.33 | 0.75 | 
 | Identity+lex
 | Rule-based | 89.50 | 89.60 | 0.00 | 74.26 | 0.91 |
@@ -151,7 +151,7 @@ Dev set
 Test set
 
 | Method | WordAcc (ref) | WordAcc (sym) | Levenshtein | BLEU & ChrF |
-| --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- |
 | Identity
 | Identity+lex
 | Rule-based
