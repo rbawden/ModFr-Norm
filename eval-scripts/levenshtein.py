@@ -21,7 +21,7 @@ def levenshtein_score(sents_ref, sents_pred, align_type='ref', cache_file=None):
                 if (sent_ref, sent_pred) not in cache:
                     cache[(sent_ref, sent_pred)] = {}
                 cache[(sent_ref, sent_pred)]['score'] = score
-            num_chars += max(len(sent_pred, len(sent_ref)))
+            num_chars += max(len(sent_pred), len(sent_ref))
         else:
             if (sent_pred, sent_ref) in cache and 'score' in cache[(sent_pred, sent_ref)]:
                 score += cache[(sent_pred, sent_ref)]['score']
