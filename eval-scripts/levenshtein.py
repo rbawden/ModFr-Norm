@@ -34,7 +34,7 @@ def levenshtein_score(sents_ref, sents_pred, align_type='ref', cache_file=None):
     # dump cache file
     if cache_file is not None:
         pickle.dump(cache, open(cache_file, 'wb'))
-    return score/num_chars
+    return (score/num_chars) * 100
         
 
     
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     sents_ref, sents_pred = read_file(args.ref), read_file(args.pred)
     score = levenshtein_score(sents_ref, sents_pred, cache_file=args.cache)
-    print(round(score, 3))
+    print(score)
 
 
                       

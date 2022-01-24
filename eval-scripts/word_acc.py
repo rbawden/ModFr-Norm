@@ -31,7 +31,7 @@ def word_acc(alignments):
             if word[0] == word[1]:
                 correct += 1
             total += 1
-    return correct / total
+    return (correct / total) * 100
 
     
 if __name__ == '__main__':
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     scores = word_acc_final(args.ref, args.pred, align_types, cache_file=args.cache)
-    print(' '.join([str(round(scores[x], 3)) for x in align_types]))
+    print(' '.join([str(scores[x]) for x in align_types]))
 
 
                       

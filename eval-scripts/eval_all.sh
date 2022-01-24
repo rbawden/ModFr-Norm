@@ -23,7 +23,6 @@ lev=""
 ref_wordacc=""
 sym_wordacc=""
 for pred_file in `ls $output_folder/*trg 2>/dev/null`; do
-    echo $pred_file
     new_bleu=`bash $thisdir/bleu.sh $ref_file $pred_file fr`
     bleu="$bleu $new_bleu"
     new_chrf=`bash $thisdir/chrf.sh $ref_file $pred_file fr`
@@ -37,14 +36,14 @@ for pred_file in `ls $output_folder/*trg 2>/dev/null`; do
     sym_wordacc="$new_sym_wordacc $sym_wordacc"
 done
 
-echo '-----'
-echo $ref_file
+
 echo -e "WordAcc (ref) & WordAcc (sym) & Levenshtein & BLEU & ChrF \\"
+echo '-----'
 
 avg_bleu=`python eval-scripts/avg.py "$bleu"`
 avg_chrf=`python eval-scripts/avg.py "$chrf"`
-avg_ref_wordacc=`python eval-scripts/avg.py "$ref_wordacc" -p`
-avg_sym_wordacc=`python eval-scripts/avg.py "$sym_wordacc" -p`
-avg_lev=`python eval-scripts/avg.py "$lev" -p`
+avg_ref_wordacc=`python eval-scripts/avg.py "$ref_wordacc"`
+avg_sym_wordacc=`python eval-scripts/avg.py "$sym_wordacc"`
+avg_lev=`python eval-scripts/avg.py "$lev"`
 echo -e "$avg_ref_wordacc & $avg_sym_wordacc & $avg_lev & $avg_bleu & $avg_chrf \\\\\\"
 
