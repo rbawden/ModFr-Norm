@@ -136,7 +136,7 @@ Dev set
 | Method | WordAcc (ref) | WordAcc (sym) | Levenshtein | BLEU | ChrF |
 | --- | --- | --- | --- | --- | --- |
 | Identity | 73.00 | 72.40 | 0.00 | 42.33 | 74.95 | 
-| Identity+lex
+| Identity+lex | 86.40 | 86.50 | 0.00 | 68.08 | 88.01 |
 | Rule-based | 89.50 | 89.60 | 0.00 | 74.26 | 0.91 |
 | Rule-based+lex | 91.40 | 91.50 | 0.00 | 78.91 | 0.92
 | ABA | 95.50 | 95.60 | 0.00 | 89.19 | 0.96 |
