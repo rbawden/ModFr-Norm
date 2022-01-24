@@ -54,50 +54,41 @@ bash data-scripts/process_monolingual.sh # to be updated
 
 Below you can find normalisation commands for each of the methods compared. All methods take a text from standard input and output normalised text to standard output. Here, the dev (`data/raw/dev/dev.finalised.src`) is used as an example.
 
-**Rule-based:**
-
+To use MT approaches, you must first download the models to the main directory:
 ```
-cat data/raw/dev/dev.finalised.src | bash norm-scripts/rule-based.sh > outputs/rule-based/dev-1.trg
-```
-
-
-**ABA, alignment-based approach:**
-
-See the github repository: [https://github.com/johnseazer/aba](https://github.com/johnseazer/aba)
-
-**Statistical MT (SMT):**
-
-```
-bash norm-scripts/smt_translate.sh <model_folder>
-```
-E.g.
-```
-cat data/raw/dev/dev.finalised.src | bash norm-scripts/smt_translate.sh mt-models/best-smt/1/model > outputs/smt/dev/dev-1.trg
-```
-N.B. If you want to use this script to translate SMT models that have been trained with other segmentations, make sure to change `segtype` in `smt_translate.sh`.
-
-
-**Neural MT (NMT), both LSTM and Transformer**
-
-```
-bash norm-scripts/nmt_translate.sh <model_path>
-```
-E.g.
-```
-cat data/raw/dev/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-lstm/1/checkpoint_bestwordacc_sym.pt > outputs/lstm/dev/dev-1.trg
-cat data/raw/dev/dev.finalised.src | bash norm-scripts/nmt_translate.sh mt-models/best-transformer/1/checkpoint_bestwordacc_sym.pt > outputs/transformer/dev/dev-1.trg
+cd ModFr-Norm
+wget http://almanach.inria.fr/files/modfr_norm/mt-models.tar.gz
+tar -xzvf mt-models.tar.gz
 ```
 
-**Post-processing using the contemporary French lexicon, the Le*fff* (Sagot, 2009):**
-
-This approach can be applied after any of the other approaches.
-
+Find below the different commands used for each of the approaches:
 ```
+# Rule-based
+cat data/raw/dev/dev.finalised.src | \
+  bash norm-scripts/rule-based.sh \
+    > outputs/rule-based/dev-1.trg
+
+# ABA, alignment-based approach (See the github repository: [https://github.com/johnseazer/aba](https://github.com/johnseazer/aba))
+# TODO
+
+# SMT: bash norm-scripts/smt_translate.sh <model_folder>
+cat data/raw/dev/dev.finalised.src | \
+  bash norm-scripts/smt_translate.sh mt-models/best-smt/1/model \
+    > outputs/smt/dev/dev-1.trg
+
+# NMT (LSTM): bash norm-scripts/nmt_translate.sh <model_path>
+cat data/raw/dev/dev.finalised.src | \
+  bash norm-scripts/nmt_translate.sh mt-models/best-lstm/1/checkpoint_bestwordacc_sym.pt \
+  > outputs/lstm/dev/dev-1.trg
+
+# NMT (Transformer): bash norm-scripts/nmt_translate.sh <model_path>
+cat data/raw/dev/dev.finalised.src | \
+  bash norm-scripts/nmt_translate.sh mt-models/best-transformer/1/checkpoint_bestwordacc_sym.pt \
+    > outputs/transformer/dev/dev-1.trg
+    
+# Post-processing using the contemporary French lexicon, the Le*fff* (Sagot, 2009)
+# Can be applied after any of the other approaches
 cat outputs/rule-based/dev-1.pred.trg | bash norm-scripts/lex-postproc.sh > cat outputs/rule-based+lex/dev-1.pred.trg
-```
-or applied directly after the main approach:
-```
-cat data/raw/dev/dev.finalised.src | bash norm-scripts/rule-based.sh | bash norm-scripts/lex-postproc.sh > outputs/rule-based+lex/dev-1.pred.trg
 ```
 
 ## Evaluation
@@ -127,15 +118,29 @@ bash eval-scripts/eval_all.sh outputs/rule-based/dev data/raw/dev/dev.finalised.
 89.50 & 89.60 & 0.00 & 74.26 & 0.91 \\
 ```
 
-### Results
+### Detailed evaluation (including on data subsets)
+
+To calculate all evaluation scores, including on subsets of the data (as specified above and in the meta data):
+```
+bash eval-scripts/eval_detailed.sh <ref_file> <meta_file> <pred_file> (<cache_file>)
+```
+E.g.
+```
+>> bash eval-scripts/eval-all.sh data/raw/dev/dev.finalised.trg data/raw/dev/dev.finalised.meta outputs/rule-based/dev-1.pred.trg outputs/.cache.pickle
+>> all,bleu=74.2593 all,chrf=0.90544 all,lev_char=0.0 all,wordacc_r2h0.896 all,wordacc_h2r=0.894 all,wordacc_sym=0.895 1-standard,bleu=73.3256 1-standard,chrf=0.90136 1-standard,lev_char=0.0 1-standard,wordacc_r2h0.892 1-standard,wordacc_h2r=0.891 1-standard,wordacc_sym=0.892 4-medecine-dev,bleu=83.9066 4-medecine-dev,chrf=0.94225 4-medecine-dev,lev_char=0.0 4-medecine-dev,wordacc_r2h0.933 4-medecine-dev,wordacc_h2r=0.929 4-medecine-dev,wordacc_sym=0.931 5-physique-dev,bleu=73.8570 5-physique-dev,chrf=0.90849 5-physique-dev,lev_char=0.0 5-physique-dev,wordacc_r2h0.901 5-physique-dev,wordacc_h2r=0.895 5-physique-dev,wordacc_sym=0.898
+```
+where `r2h` means that the reference is used as basis for the alignment, `h2r` that the hypothesis is used as basis for the alignment and `sym` means that the mean of the two directions is calculated.
+
+
+## Results
 
 These differ slightly from the original paper due to changes to the tokenisation strategy used to calculate word accuracy and to the models being re-trained.
 
-Dev set
+### Dev set
 
 | Method | WordAcc (ref) | WordAcc (sym) | Levenshtein | BLEU | ChrF |
 | --- | --- | --- | --- | --- | --- |
-| Identity | 73.00 | 72.40 | 0.00 | 42.33 | 74.95 | 
+| Identity | 73.00 | 72.40 | 3.85 | 42.33 | 74.95 | 
 | Identity+lex | 86.40 | 86.50 | 0.00 | 68.08 | 88.01 |
 | Rule-based | 89.50 | 89.60 | 0.00 | 74.26 | 0.91 |
 | Rule-based+lex | 91.40 | 91.50 | 0.00 | 78.91 | 0.92
@@ -148,7 +153,7 @@ Dev set
 | Transformer | 96.47±0.12 | 96.23±0.15 | 0.00±0.00 | 92.17±0.06 | 0.97±0.00 |
 | Transformer+lex | 96.57±0.12 | 96.37±0.12 | 0.00±0.00 | 92.51±0.17 | 0.97±0.00 |
 
-Test set
+### Test set
 
 | Method | WordAcc (ref) | WordAcc (sym) | Levenshtein | BLEU | ChrF |
 | --- | --- | --- | --- | --- | --- |
@@ -165,20 +170,7 @@ Test set
 | Transformer
 | Transformer+lex
 
-### Detailed evaluation (including on data subsets)
-
-To calculate all evaluation scores, including on subsets of the data (as specified above and in the meta data):
-```
-bash eval-scripts/eval_detailed.sh <ref_file> <meta_file> <pred_file> (<cache_file>)
-```
-E.g.
-```
->> bash eval-scripts/eval-all.sh data/raw/dev/dev.finalised.trg data/raw/dev/dev.finalised.meta outputs/rule-based/dev-1.pred.trg outputs/.cache.pickle
->> all,bleu=74.2593 all,chrf=0.90544 all,lev_char=0.0 all,wordacc_r2h0.896 all,wordacc_h2r=0.894 all,wordacc_sym=0.895 1-standard,bleu=73.3256 1-standard,chrf=0.90136 1-standard,lev_char=0.0 1-standard,wordacc_r2h0.892 1-standard,wordacc_h2r=0.891 1-standard,wordacc_sym=0.892 4-medecine-dev,bleu=83.9066 4-medecine-dev,chrf=0.94225 4-medecine-dev,lev_char=0.0 4-medecine-dev,wordacc_r2h0.933 4-medecine-dev,wordacc_h2r=0.929 4-medecine-dev,wordacc_sym=0.931 5-physique-dev,bleu=73.8570 5-physique-dev,chrf=0.90849 5-physique-dev,lev_char=0.0 5-physique-dev,wordacc_r2h0.901 5-physique-dev,wordacc_h2r=0.895 5-physique-dev,wordacc_sym=0.898
-```
-where `r2h` means that the reference is used as basis for the alignment, `h2r` that the hypothesis is used as basis for the alignment and `sym` means that the mean of the two directions is calculated.
-
-## Retrain the MT models:
+## Retrain the MT models
 
 ### Preprocessing and binarisation
 
@@ -194,6 +186,7 @@ This involves:
 - subword segmentation using sentencepiece for the following (joint) vocab sizes:
   - char, 500, 1k, 2k, 4k, 8k, 16k, 24k
 - binarisation of the data in the fairseq format (for neural models)
+
 
 ### Retraining SMT models
 
