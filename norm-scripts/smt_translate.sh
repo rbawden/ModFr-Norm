@@ -15,7 +15,7 @@ rand=$RANDOM
 
 # check args
 if [ "$#" -ne 1 ]; then
-    echo "Error: expected 2 arguments: model_folder"
+    echo "Error: expected 1 arguments: model_folder"
     echo "Usage: $0 <model_folder>"
     exit
 fi

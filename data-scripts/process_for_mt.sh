@@ -6,6 +6,8 @@ maindir=`realpath $thisdir/..`
 preproc_dir=$maindir/data/preprocessed/
 bin_dir=$maindir/data/bin
 inv_bin_dir=$maindir/data/bin-opposite
+camembert=/home/rbawden/scratch/lms/camembert/camembert-base
+dalembert_path=/home/rbawden/scratch/lms/dalembert/epoch_41/
 
 # 1. Prepare basic data (text only)
 echo ">>> Training BPE models"
@@ -33,6 +35,14 @@ if [ ! -f $preproc_dir/char.model ]; then
                --character_coverage=1.0
 fi
 
+# dalembert
+for dataset in train dev test; do
+    for lang in src trg; do
+	cat $maindir/data/raw/$dataset/$dataset.finalised.$lang | \
+	    python $thisdir/hf_tokenise.py $dalembert_path/tokenizer.json \
+	    > $preproc_dir/$dataset/$dataset.dalembert.$lang
+    done
+done
 
 # create preprocessing files
 for dataset in train dev test; do
@@ -44,7 +54,7 @@ echo ">>> Applying BPE + char models"
 # apply the models
 for model_prefix in bpe_joint_500 bpe_joint_1000 bpe_joint_2000 \
 				  bpe_joint_4000 bpe_joint_8000 \
-				  bpe_joint_16000 bpe_joint_24000 char; do
+				  bpe_joint_16000 bpe_joint_24000 char camembert dalembert; do
     for dataset in train dev test; do
 	for lang in src trg; do
 	    if [ ! -f $preproc_dir/$dataset/$dataset.$model_prefix.$lang ]; then
@@ -58,13 +68,19 @@ for model_prefix in bpe_joint_500 bpe_joint_1000 bpe_joint_2000 \
 	done
     done
     echo ">> Binarising"
+    ditionary="--joined-dictionary"
+    if [ $model_prefix == camembert ]; then
+	dictionary="--srcdict $camembert/dict.txt --tgtdict $camembert/dict.txt"
+    elif [ $model_prefix == dalembert ]; then
+	dictionary="--srcdict $dalembert_path/dict-without-symbols.txt --tgtdict $dalembert_path/dict-without-symbols.txt"
+    fi
     # binarise data in fairseq format
     if [ ! -d $bin_dir/$model_prefix ]; then
 	fairseq-preprocess --destdir $bin_dir/$model_prefix -s src -t trg \
 			   --trainpref $preproc_dir/train/train.$model_prefix \
 			   --validpref $preproc_dir/dev/dev.$model_prefix \
 			   --testpref $preproc_dir/test/test.$model_prefix \
-			   --joined-dictionary
+			   $dictionary
     fi
 done
 

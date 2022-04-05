@@ -14,7 +14,7 @@ fi
 
 if [ ! -f $output.output ]; then
     echo "fairseq-generate $data --gen-subset $dataset --path $model_path > $output.output"
-    fairseq-generate $data --gen-subset $dataset --path $model_path > $output.output
+    fairseq-generate $data --gen-subset $dataset --path $model_path --max-tokens 1024 > $output.output 
 fi
 
 if [ ! -f $output.postproc ]; then
