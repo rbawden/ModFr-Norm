@@ -18,4 +18,4 @@ if [[ $lang == 'zh' ]]; then
 fi
 
 # print with score only (option -b)
-cat $pred | sacrebleu -b $ref $tok  --metrics chrf --width 4
+cat $pred | sacrebleu -b $ref $tok  --metrics chrf --width 2

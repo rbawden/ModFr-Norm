@@ -3,15 +3,15 @@
 thisdir=`dirname $0`
 
 modeldir=$1
-ref_file=$1
-meta_file=$2
-hyp_file=$3
+ref_file=$2
+meta_file=$3
+hyp_file=$4
 cache_file=$5
 
 # check args
 if [ "$#" -lt 4 ]; then
-    echo "Error: expected 4 (or 5) arguments: modeldir hyp_file ref_file meta_file (cache_file)"
-    echo "Usage: $0 <modeldir> <hyp_file> <ref_file> <meta_file> (<cache_file>)"
+    echo "Error: expected 4 (or 5) arguments: modeldir ref_file meta_file hyp_file (cache_file)"
+    echo "Usage: $0 <modeldir> <ref_file> <meta_file> <hyp_file> (<cache_file>)"
     exit
 fi
 

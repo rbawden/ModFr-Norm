@@ -40,6 +40,8 @@ python $thisdir/plot_val.py $modeldir/valid.eval $modeldir/valid_eval_plot.pdf
 # get the best checkpoint according to word accuracy
 best_checkpoint_num=`python $thisdir/select_best.py $modeldir/valid.eval wordacc_sym`
 best_model=$modeldir/checkpoint$best_checkpoint_num.pt
+echo $best_checkpoint_num
+echo $best_model
 cp $best_model $modeldir/checkpoint_bestwordacc_sym.pt
 cp $modeldir/valid_outputs/checkpoint$best_checkpoint_num.pt.valid.postproc \
    $modeldir/checkpoint_bestwordacc_sym.pt.valid.postproc
