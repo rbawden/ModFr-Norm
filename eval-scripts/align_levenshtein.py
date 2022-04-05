@@ -101,7 +101,7 @@ if __name__ == '__main__':
                         help='Which file\'s tokenisation to use as reference for alignment.')
     parser.add_argument('-c', '--cache', help='pickle cache file containing alignments', default=None)
     args = parser.parse_args()
-    sents_ref, sents_pref = read_file(args.ref), read_file(args.pred)
+    sents_ref, sents_pred = read_file(args.ref), read_file(args.pred)
     alignment = align(sents_ref, sents_pred, args.cache)
     print(prepare_for_print(alignment))
 
