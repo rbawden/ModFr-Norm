@@ -13,6 +13,9 @@ def levenshtein_score(sents_ref, sents_pred, align_type='ref', cache_file=None):
     if cache_file is not None and os.path.exists(cache_file):
         cache = pickle.load(open(cache_file, 'rb'))
     for sent_ref, sent_pred in zip(sents_ref, sents_pred):
+        sent_ref = sent_ref.replace('  ', ' ')
+        sent_pred = sent_pred.replace('  ', ' ')
+        #print(sent_ref, sent_pred)
         if align_type == 'ref':
             if (sent_ref, sent_pred) in cache and 'score' in cache[(sent_ref, sent_pred)]:
                 score += cache[(sent_ref, sent_pred)]['lev_score']
