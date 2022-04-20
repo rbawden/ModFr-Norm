@@ -28,6 +28,10 @@ def word_acc(alignments):
     correct, total = 0, 0
     for sent in alignments:
         for word in sent:
+            # skip spaces
+            if word[0] == '':
+                continue
+
             if word[0] == word[1]:
                 correct += 1
             total += 1
