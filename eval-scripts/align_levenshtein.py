@@ -33,6 +33,7 @@ def align(sents_ref, sents_pred, cache_file=None):
             alignments.append(alignment)
         else:
             backpointers = wedit_distance_align(homogenise(sent_ref), homogenise(sent_pred))
+
             alignment, current_word, seen1, seen2, last_weight = [], ['', ''], [], [], 0
             for i_ref, i_pred, weight in backpointers:
                 if i_ref == 0 and i_pred == 0:
@@ -47,12 +48,14 @@ def align(sents_ref, sents_pred, cache_file=None):
                 else:
                     end_space = '░'
                     if i_ref <= len(sent_ref) and i_ref not in seen1:
-                        current_word[0] += sent_ref[i_ref-1]
-                        seen1.append(i_ref)
+                        if i_ref > 0:
+                            current_word[0] += sent_ref[i_ref-1]
+                            seen1.append(i_ref)
                     if i_pred <= len(sent_pred) and i_pred not in seen2:
-                        current_word[1] += sent_pred[i_pred-1] if sent_pred[i_pred-1] != ' ' else '▁'
-                        end_space = '' if space_after(i_pred, sent_pred) else '░'
-                        seen2.append(i_pred)
+                        if i_pred > 0:
+                            current_word[1] += sent_pred[i_pred-1] if sent_pred[i_pred-1] != ' ' else '▁'
+                            end_space = '' if space_after(i_pred, sent_pred) else '░'
+                            seen2.append(i_pred)
                     if i_ref <= len(sent_ref) and sent_ref[i_ref-1] == ' ':
                         if current_word[0].strip() == '' and current_word[1].strip() == '':
                             end_space = ''
@@ -65,7 +68,8 @@ def align(sents_ref, sents_pred, cache_file=None):
             recovered1 = re.sub(' +', ' ', ' '.join([x[0] for x in alignment]))
             recovered2 = re.sub(' +', ' ', ' '.join([x[1] for x in alignment]))
 
-            assert recovered1 == re.sub(' +', ' ', sent_ref), recovered1+" / "+sent_ref
+            assert recovered1 == re.sub(' +', ' ', sent_ref), \
+                '\n' + re.sub(' +', ' ', recovered1) + "\n" + re.sub(' +', ' ', sent_ref)
             assert re.sub('[░▁ ]+', '', recovered2) == re.sub('[▁ ]+', '', sent_pred), recovered2+" / "+sent_pred
             alignments.append(alignment)
             if cache is not None:

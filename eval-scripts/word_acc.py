@@ -43,7 +43,7 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--cache', help='pickle file containing cached alignments', default=None)
     args = parser.parse_args()
     align_types = args.align_types.split(',')
-    assert all([x in ['both', 'ref', 'pred'] for x in align_types]), 'Align types must belong to "both", "ref", "file"'
+    assert all([x in ['both', 'ref', 'pred'] for x in align_types]), 'Align types must belong to "both", "ref", "pred"'
     
     args = parser.parse_args()
     scores = word_acc_final(args.ref, args.pred, align_types, cache_file=args.cache)
