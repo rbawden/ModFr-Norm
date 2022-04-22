@@ -2,12 +2,13 @@
 
 output_folder=$1 # e.g. final_outputs/best_lstm
 ref_file=$2
-cache_file=$3
+train_file=$3
+cache_file=$4
 
 # check args
-if [ "$#" -lt 2 ]; then
-    echo "Error: expected 2 or 3 arguments: output_folder ref_file (cache_file)"
-    echo "Usage: $0 <output_folder> <ref_file> (<cache>)"
+if [ "$#" -lt 3 ]; then
+    echo "Error: expected 3 or 4 arguments: output_folder ref_file train_trg_file (cache_file)"
+    echo "Usage: $0 <output_folder> <ref_file> <train_trg_file> (<cache>)"
     exit
 fi
 
@@ -22,6 +23,7 @@ chrf=""
 lev=""
 ref_wordacc=""
 sym_wordacc=""
+ref_word_acc_oov=""
 for pred_file in `ls $output_folder/*trg 2>/dev/null`; do
     new_bleu=`bash $thisdir/bleu.sh $ref_file $pred_file fr`
     bleu="$bleu $new_bleu"
@@ -34,16 +36,20 @@ for pred_file in `ls $output_folder/*trg 2>/dev/null`; do
     new_ref_wordacc=`echo $new_wordacc | cut -d" " -f2`
     ref_wordacc="$new_ref_wordacc $ref_wordacc"
     sym_wordacc="$new_sym_wordacc $sym_wordacc"
+    new_ref_wordacc_oov=`python $thisdir/word_acc_oov.py $ref_file $pred_file $train_file -a "ref" $cache_file`
+    ref_wordacc_oov="$new_ref_wordacc_oov $ref_wordacc_oov"
 done
 
 
-echo -e "WordAcc (ref) & WordAcc (sym) & Levenshtein & BLEU & ChrF \\"
+echo -e "WordAcc (ref) & WordAcc (sym) & Levenshtein & BLEU & ChrF & WordAcc OOV (ref) \\"
 echo '-----'
 
 avg_bleu=`python eval-scripts/avg.py "$bleu"`
 avg_chrf=`python eval-scripts/avg.py "$chrf"`
 avg_ref_wordacc=`python eval-scripts/avg.py "$ref_wordacc"`
 avg_sym_wordacc=`python eval-scripts/avg.py "$sym_wordacc"`
+avg_ref_wordacc_oov=`python eval-scripts/avg.py "$ref_wordacc_oov"`
 avg_lev=`python eval-scripts/avg.py "$lev"`
-echo -e "$avg_ref_wordacc & $avg_sym_wordacc & $avg_lev & $avg_bleu & $avg_chrf \\\\\\"
+
+echo -e "$avg_ref_wordacc & $avg_sym_wordacc & $avg_lev & $avg_bleu & $avg_chrf & $avg_ref_wordacc_oov \\\\\\"
 
