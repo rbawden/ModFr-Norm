@@ -102,6 +102,7 @@ bash eval-scripts/bleu.sh <ref_file> <pred_file> fr
 bash eval-scripts/chrf.sh <ref_file> <pred_file> fr
 python eval-scripts/levenshtein.py <ref_file> <pred_file> -a {ref,pred} (-c <cache_file>)
 python eval-scripts/word_acc.py <ref_file> <pred_file> -a {ref,pred,both} (-c <cache_file>)
+python eval-scripts/word_acc_oov.py <ref_file> <pred_file> <trg_train_file> -a ref (-c <cache_file>)
 ```
 where `-a ref` means that the reference is used as basis for the alignment, `-a pred` that the prediction is used as basis for the alignment, and `-a both` that the average of the two is calculated. An optional cache file destination (format .pickle) can be specified to speed up evaluation when running it several times.
 
@@ -117,7 +118,9 @@ where `output_folder` is the folder containing prediction files to be included i
 ```
 bash eval-scripts/eval_all.sh outputs/rule-based/dev data/raw/dev/dev.finalised.trg outputs/.cache.pickle 
 
-89.50 & 89.60 & 0.00 & 74.26 & 0.91 \\
+WordAcc (ref) & WordAcc (sym) & Levenshtein & BLEU & ChrF & WordAcc OOV (ref) \
+-----
+90.00 & 89.94 & 2.88 & 74.26 & 90.54 & 65.60 \\
 ```
 
 ### Detailed evaluation (including on data subsets)
@@ -135,8 +138,6 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 
 
 ## Results
-
-These differ slightly from the original paper due to changes to the tokenisation strategy used to calculate word accuracy and to the models being re-trained.
 
 ### Dev set
 
@@ -171,6 +172,21 @@ These differ slightly from the original paper due to changes to the tokenisation
 | LSTM+lex | 96.85±0.08 | 96.43±0.10 | 78.85±0.81 | 1.64±0.05 | 92.07±0.25 | 96.95±0.10 |
 | Transformer | 96.50±0.04 | 96.09±0.08 | 76.25±0.36 | 1.81±0.01 | 91.30±0.08 | 96.65±0.05 |
 | Transformer+lex | 96.61±0.07 | 96.21±0.10 | 78.03±0.99 | 1.78±0.02 | 91.62±0.14 | 96.76±0.08 |
+
+## Alignment
+
+It can be useful to obtain an alignment between either the source file or the reference file. To do this, we can use a command very similar to the evalution scripts:
+
+```
+python eval-scripts/align_levenshtein.py <ref_or_src_file> <pred_file> -a {ref,pred} (-c <cache_file>)
+python eval-scripts/align_levenshtein.py  data/raw/dev/dev.finalised.trg outputs/smt+lex/dev/dev-1.trg -a ref -c outputs/.cache.pickle
+```
+The output will be as follows:
+
+```
+1 .  QUe  cette  proposition||||propostion ,  qu' un  espace  est  vidé ,  répugne||||repugne  au  sens  commun .
+```
+where each normalised token that differs from the reference token is marked using "||||" as a delimiter, with the reference token to the left and the normalised token to the right. Tokens are separated by two spaces when both the reference and tokenised tokens are white-spaced separated and by a single space when they are not. This means that the initial text is preserved, despite the tokenisation applied. The chosen tokenisation can be modified (in `eval-scripts/utils.py`). By default, we apply a very simple tokenisation, separating on whitespace and certain punctuation marks.
 
 ## Retrain the MT models
 
