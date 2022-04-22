@@ -142,7 +142,7 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 ### Dev set
 
 | Method | WordAcc (ref) | WordAcc (sym) | WordAcc (ref) OOV | Levenshtein | BLEU | ChrF |
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- | --- |
 | Identity | 74.09 | 74.03 | 47.97 | 7.72 | 42.33 | 74.95 |
 | Identity+lex | 86.95 | 86.88 | 70.44 | 3.57 | 68.08 | 88.01 |
 | Rule-based | 90.00 | 89.94 | 65.60 | 2.88 | 74.26 | 90.54 |
@@ -159,7 +159,7 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 ### Test set
 
 | Method | WordAcc (ref) | WordAcc (sym) | WordAcc (ref) OOV | Levenshtein | BLEU | ChrF |
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- | --- |
 | Identity | 72.91 | 72.85 | 43.43 | 8.15 | 40.25 | 73.77 |
 | identity+lex | 86.33 | 86.27 | 65.30 | 3.78 | 66.78 | 87.40 |
 | Rule-based | 89.28 | 89.20 | 60.64 | 3.08 | 72.47 | 89.94 | 
