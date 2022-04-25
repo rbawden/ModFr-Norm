@@ -347,6 +347,7 @@ Simon Gabay. (2022). FreEM-corpora/FreEMnorm: FreEM norm Parallel corpus (1.0.0)
 ```
 For FreEM-max (used to train the large language models for SMT):
 
+```
 @software{gabay_simon_2022_6481135,
   author       = {Gabay, Simon and
                   Bartz, Alexandre and
@@ -363,4 +364,4 @@ For FreEM-max (used to train the large language models for SMT):
   doi          = {10.5281/zenodo.6481135},
   url          = {https://doi.org/10.5281/zenodo.6481135}
 }
-
+```
