@@ -51,7 +51,9 @@ bash data-scripts/process_monolingual.sh # to be updated
 
 ## Download the models
 
-
+```
+bash data-scripts/download_models.sh
+```
 
 ## Normalisation approaches
 
@@ -73,17 +75,17 @@ cat data/raw/dev/dev.finalised.src | \
 
 # SMT: bash norm-scripts/smt_translate.sh <model_folder>
 cat data/raw/dev/dev.finalised.src | \
-  bash norm-scripts/smt_translate.sh mt-models/best-smt/1/model \
+  bash norm-scripts/smt_translate.sh final-mt-models/smt/1/model \
     > outputs/smt/dev/dev-1.trg
 
 # NMT (LSTM): bash norm-scripts/nmt_translate.sh <model_path>
 cat data/raw/dev/dev.finalised.src | \
-  bash norm-scripts/nmt_translate.sh mt-models/best-lstm/1/checkpoint_bestwordacc_sym.pt \
+  bash norm-scripts/nmt_translate.sh final-mt-models/lstm/1/checkpoint_bestwordacc_sym.pt \
   > outputs/lstm/dev/dev-1.trg
 
 # NMT (Transformer): bash norm-scripts/nmt_translate.sh <model_path>
 cat data/raw/dev/dev.finalised.src | \
-  bash norm-scripts/nmt_translate.sh mt-models/best-transformer/1/checkpoint_bestwordacc_sym.pt \
+  bash norm-scripts/nmt_translate.sh final-mt-models/transformer/1/checkpoint_bestwordacc_sym.pt \
     > outputs/transformer/dev/dev-1.trg
     
 # Post-processing using the contemporary French lexicon, the Le*fff* (Sagot, 2009)
