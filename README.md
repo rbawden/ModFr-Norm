@@ -49,6 +49,9 @@ python data-scripts/get_monolingual_normalised.py <txt_folder> <toc_folder>
 bash data-scripts/process_monolingual.sh # to be updated
 ```
 
+## Download the models
+
+
 
 ## Normalisation approaches
 
