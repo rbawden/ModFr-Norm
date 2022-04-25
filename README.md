@@ -287,6 +287,47 @@ Bibtex:
 }
 ```
 
+The models can be found on Zenodo:
+
+```
+@software{rachel_bawden_2022_6482368,
+  author       = {Rachel Bawden},
+  title        = {{FreEM-corpora/FreEM-norm-model-smt: SMT 
+                   normalisation model for Early Modern French}},
+  month        = apr,
+  year         = 2022,
+  publisher    = {Zenodo},
+  version      = {1.0.0},
+  doi          = {10.5281/zenodo.6482368},
+  url          = {https://doi.org/10.5281/zenodo.6482368}
+}
+
+@software{rachel_bawden_2022_6481539,
+  author       = {Rachel Bawden},
+  title        = {{FreEM-corpora/FreEM-norm-model-LSTM: LSTM 
+                   normalisation model for Early Modern French}},
+  month        = apr,
+  year         = 2022,
+  publisher    = {Zenodo},
+  version      = {1.0.0},
+  doi          = {10.5281/zenodo.6481539},
+  url          = {https://doi.org/10.5281/zenodo.6481539}
+}
+
+@software{rachel_bawden_2022_6482342,
+  author       = {Rachel Bawden},
+  title        = {{FreEM-corpora/FreEM-norm-model-transformer: 
+                   Transformer normalisation model for Early Modern
+                   French}},
+  month        = apr,
+  year         = 2022,
+  publisher    = {Zenodo},
+  version      = {1.0.0},
+  doi          = {10.5281/zenodo.6482342},
+  url          = {https://doi.org/10.5281/zenodo.6482342}
+}
+```
+
 And to reference the FreEM-norm and FreEM-max datasets used in the experiments:
 
 For FreEM-norm (used to train ABA, SMT and neural models)
@@ -306,4 +347,20 @@ Simon Gabay. (2022). FreEM-corpora/FreEMnorm: FreEM norm Parallel corpus (1.0.0)
 ```
 For FreEM-max (used to train the large language models for SMT):
 
-Watch our for news [here](https://freem-corpora.github.io/corpora/max/)
+@software{gabay_simon_2022_6481135,
+  author       = {Gabay, Simon and
+                  Bartz, Alexandre and
+                  Gambette, Philippe and
+                  Chagué, Alix},
+  title        = {{FreEM-corpora/FreEMmax\_OA: FreEM max OA: A Large 
+                   Corpus for Early modern French - Open access
+                   version}},
+  month        = apr,
+  year         = 2022,
+  note         = {If you use this software, please cite it as below.},
+  publisher    = {Zenodo},
+  version      = {1.0.0},
+  doi          = {10.5281/zenodo.6481135},
+  url          = {https://doi.org/10.5281/zenodo.6481135}
+}
+
