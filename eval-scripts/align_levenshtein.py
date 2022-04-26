@@ -56,9 +56,7 @@ def align(sents_ref, sents_pred, cache_file=None):
                             current_word[1] += sent_pred[i_pred-1] if sent_pred[i_pred-1] != ' ' else '▁'
                             end_space = '' if space_after(i_pred, sent_pred) else '░'
                             seen2.append(i_pred)
-                    if i_ref <= len(sent_ref) and sent_ref[i_ref-1] == ' ':
-                        if current_word[0].strip() == '' and current_word[1].strip() == '':
-                            end_space = ''
+                    if i_ref <= len(sent_ref) and sent_ref[i_ref-1] == ' ' and current_word[0].strip() != '':
                         alignment.append((current_word[0].strip(), current_word[1].strip() + end_space, weight-last_weight))
                         last_weight = weight
                         current_word = ['', '']

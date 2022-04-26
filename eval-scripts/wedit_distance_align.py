@@ -124,7 +124,5 @@ def wedit_distance_align(s1, s2):
 
     # backtrace to find alignment
     alignment = _wedit_dist_backtrace(lev)
-#    for i_ref, i_pred, weight in alignment:
-#        print(i_ref,":",s1[i_ref-1]," / ",i_pred,":",s2[i_pred-1]," / ",weight)
 
     return alignment
