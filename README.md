@@ -49,6 +49,11 @@ python data-scripts/get_monolingual_normalised.py <txt_folder> <toc_folder>
 bash data-scripts/process_monolingual.sh # to be updated
 ```
 
+## Download the models
+
+```
+bash data-scripts/download_models.sh
+```
 
 ## Normalisation approaches
 
@@ -70,17 +75,17 @@ cat data/raw/dev/dev.finalised.src | \
 
 # SMT: bash norm-scripts/smt_translate.sh <model_folder>
 cat data/raw/dev/dev.finalised.src | \
-  bash norm-scripts/smt_translate.sh mt-models/best-smt/1/model \
+  bash norm-scripts/smt_translate.sh final-mt-models/smt/1/model \
     > outputs/smt/dev/dev-1.trg
 
 # NMT (LSTM): bash norm-scripts/nmt_translate.sh <model_path>
 cat data/raw/dev/dev.finalised.src | \
-  bash norm-scripts/nmt_translate.sh mt-models/best-lstm/1/checkpoint_bestwordacc_sym.pt \
+  bash norm-scripts/nmt_translate.sh final-mt-models/lstm/1/checkpoint_bestwordacc_sym.pt \
   > outputs/lstm/dev/dev-1.trg
 
 # NMT (Transformer): bash norm-scripts/nmt_translate.sh <model_path>
 cat data/raw/dev/dev.finalised.src | \
-  bash norm-scripts/nmt_translate.sh mt-models/best-transformer/1/checkpoint_bestwordacc_sym.pt \
+  bash norm-scripts/nmt_translate.sh final-mt-models/transformer/1/checkpoint_bestwordacc_sym.pt \
     > outputs/transformer/dev/dev-1.trg
     
 # Post-processing using the contemporary French lexicon, the Le*fff* (Sagot, 2009)
@@ -282,6 +287,47 @@ Bibtex:
 }
 ```
 
+The models can be found on Zenodo:
+
+```
+@software{rachel_bawden_2022_6482368,
+  author       = {Rachel Bawden},
+  title        = {{FreEM-corpora/FreEM-norm-model-smt: SMT 
+                   normalisation model for Early Modern French}},
+  month        = apr,
+  year         = 2022,
+  publisher    = {Zenodo},
+  version      = {1.0.0},
+  doi          = {10.5281/zenodo.6482368},
+  url          = {https://doi.org/10.5281/zenodo.6482368}
+}
+
+@software{rachel_bawden_2022_6481539,
+  author       = {Rachel Bawden},
+  title        = {{FreEM-corpora/FreEM-norm-model-LSTM: LSTM 
+                   normalisation model for Early Modern French}},
+  month        = apr,
+  year         = 2022,
+  publisher    = {Zenodo},
+  version      = {1.0.0},
+  doi          = {10.5281/zenodo.6481539},
+  url          = {https://doi.org/10.5281/zenodo.6481539}
+}
+
+@software{rachel_bawden_2022_6482342,
+  author       = {Rachel Bawden},
+  title        = {{FreEM-corpora/FreEM-norm-model-transformer: 
+                   Transformer normalisation model for Early Modern
+                   French}},
+  month        = apr,
+  year         = 2022,
+  publisher    = {Zenodo},
+  version      = {1.0.0},
+  doi          = {10.5281/zenodo.6482342},
+  url          = {https://doi.org/10.5281/zenodo.6482342}
+}
+```
+
 And to reference the FreEM-norm and FreEM-max datasets used in the experiments:
 
 For FreEM-norm (used to train ABA, SMT and neural models)
@@ -301,4 +347,21 @@ Simon Gabay. (2022). FreEM-corpora/FreEMnorm: FreEM norm Parallel corpus (1.0.0)
 ```
 For FreEM-max (used to train the large language models for SMT):
 
-Watch our for news [here](https://freem-corpora.github.io/corpora/max/)
+```
+@software{gabay_simon_2022_6481135,
+  author       = {Gabay, Simon and
+                  Bartz, Alexandre and
+                  Gambette, Philippe and
+                  Chagué, Alix},
+  title        = {{FreEM-corpora/FreEMmax\_OA: FreEM max OA: A Large 
+                   Corpus for Early modern French - Open access
+                   version}},
+  month        = apr,
+  year         = 2022,
+  note         = {If you use this software, please cite it as below.},
+  publisher    = {Zenodo},
+  version      = {1.0.0},
+  doi          = {10.5281/zenodo.6481135},
+  url          = {https://doi.org/10.5281/zenodo.6481135}
+}
+```
