@@ -41,15 +41,23 @@ for pred_file in `ls $output_folder/*trg 2>/dev/null`; do
 done
 
 
-echo -e "WordAcc (ref) & WordAcc (sym) & Levenshtein & BLEU & ChrF & WordAcc OOV (ref) \\"
+
+
+output_type="wiki" # or latex
+sep="&"
+if [[ $output_type == "wiki" ]]; then
+    sep="|" # or &
+    plain_text='--plain_text'
+fi
+avg_bleu=`python eval-scripts/avg.py "$bleu" $plain_text`
+avg_chrf=`python eval-scripts/avg.py "$chrf" $plain_text`
+avg_ref_wordacc=`python eval-scripts/avg.py "$ref_wordacc" $plain_text`
+avg_sym_wordacc=`python eval-scripts/avg.py "$sym_wordacc" $plain_text`
+avg_ref_wordacc_oov=`python eval-scripts/avg.py "$ref_wordacc_oov" $plain_text`
+avg_lev=`python eval-scripts/avg.py "$lev" $plain_text`
+
+echo -e "WordAcc (ref) $set WordAcc (sym) $set  WordAcc OOV (ref) $sep Levenshtein $sep BLEU $sep ChrF"
 echo '-----'
 
-avg_bleu=`python eval-scripts/avg.py "$bleu"`
-avg_chrf=`python eval-scripts/avg.py "$chrf"`
-avg_ref_wordacc=`python eval-scripts/avg.py "$ref_wordacc"`
-avg_sym_wordacc=`python eval-scripts/avg.py "$sym_wordacc"`
-avg_ref_wordacc_oov=`python eval-scripts/avg.py "$ref_wordacc_oov"`
-avg_lev=`python eval-scripts/avg.py "$lev"`
-
-echo -e "$avg_ref_wordacc & $avg_sym_wordacc & $avg_lev & $avg_bleu & $avg_chrf & $avg_ref_wordacc_oov \\\\\\"
+echo -e "$avg_ref_wordacc $sep $avg_sym_wordacc $sep $avg_ref_wordacc_oov $sep $avg_lev $sep $avg_bleu $sep $avg_chrf"
 

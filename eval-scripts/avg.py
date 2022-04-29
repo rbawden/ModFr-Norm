@@ -4,6 +4,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('scores', help='space-separated scores')
 parser.add_argument('-p', action='store_true', default=False, help='turn into a percentage by multiplying by 100')
+parser.add_argument('--plain_text', action='store_true', default=False, help='return plain text rather than latex-escaped')
 args = parser.parse_args()
 
 roundnum=2
@@ -16,4 +17,7 @@ if len(scores) == 1:
 else:
     avg = "{:.2f}".format(round(statistics.mean(scores), roundnum))
     stddev = "{:.2f}".format(round(statistics.stdev(scores), roundnum))
-    print(avg + r'\\textpm' + stddev)
+    if args.plain_text:
+        print(avg + r'±' + stddev)
+    else:
+        print(avg + r'\\textpm' + stddev)
