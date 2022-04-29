@@ -187,7 +187,9 @@ python eval-scripts/align_levenshtein.py <ref_or_src_file> <pred_file> -a {ref,p
 python eval-scripts/align_levenshtein.py  data/raw/dev/dev.finalised.trg outputs/smt+lex/dev/dev-1.trg -a ref -c outputs/.cache.pickle
 ```
 
-The alignment script relies on a non destructive tokenisation convention whereby a token boundary is marked by two spaces when the tokens are white-spaced separated in the raw input and by a single space when they are not. This means that the initial text is preserved, despite the tokenisation applied. The chosen tokenisation can be modified (in `eval-scripts/utils.py`). By default, we apply a very simple tokenisation, separating on whitespace and certain punctuation marks.
+The alignment script relies on a non-destructive tokenisation convention whereby a token boundary is marked by two spaces when the tokens are white-spaced separated in the raw input and by a single space when they are not. This means that the initial text is preserved, despite the tokenisation applied. The chosen tokenisation can be modified (in `eval-scripts/utils.py`). By default, we apply a very simple tokenisation, separating on whitespace and certain punctuation marks.
+
+Here is an example:
 
 If the reference file contains the following (made-up) example sentence:
 ```
@@ -201,16 +203,16 @@ the alignment script will output:
 ```
 surtout||||sur▁▁tout  j'||||j░ ai||||i  choisi  davantage||||d'▁avantage  ses  écrits||||escrits
 ```
-In this output:
-- whenever a token is identical in both sentences, it is written as such (e.g. ```choisi```);
-- in other cases, the reference token is written first, followed by the separator ```||||``` and the corresponding predicted (sub)token(s); tokenisation mismatches between the reference and prediction are marked on the predicted side as follows:
-  - when there is a token boundary on the predicted side that does not correspond to a reference token boundary (oversplitting), it is marked using one or two consecutive symbols ```▁```, depending on whether the predicted tokens are white-space separated or not (e.g. (1) ```surtout||||sur▁▁tout```, where the two-token predicted sequence ```sur tout``` is aligned with the reference token ```surtout```; and (2) ```davantage||||d'▁avantage```, where the two-token predicted sequence ```d'avantage```, which is tokenised as ```d' avantage```, is aligned with the reference token ```davantage```);
-  - when there is no token boundary on the predicted side at a place where there is one on the reference side (undersplitting), the subtoken aligned with the first reference token is appended with the symbol ```░``` (e.g. ```j'||||j░ ai||||i``` means that the predicted token ```ji``` is aligned to both reference tokens ```j'``` and ```ai```, the ```░``` allowing for the correct reconstruction of the single predicted token ```ji``` from the alignment script output).
+In this output, different cases arise:
+- aligned token is identical: the token is writte as it is (e.g. `choisi`);
+- aligned token is different: the reference token is written first, followed by the separator `||||` and the corresponding predicted (sub)token(s). Tokenisation mismatches between the reference and prediction are marked on the predicted side as follows:
+  - oversplitting: when there is a token boundary on the predicted side that does not correspond to a reference token boundary, it is marked using one or two consecutive symbols `▁`, depending on whether the predicted tokens are white-space separated or not (e.g. (1) `surtout||||sur▁▁tout`, where the two-token predicted sequence ```sur tout``` is aligned with the reference token `surtout`; and (2) `davantage||||d'▁avantage`, where the two-token predicted sequence ```d'avantage```, which is tokenised as `d' avantage`, is aligned with the reference token `davantage`);
+  - undersplitting: when there is no token boundary on the predicted side at a place where there is one on the reference side, the subtoken aligned with the first reference token is appended with the symbol `░` (e.g. `j'||||j░ ai||||i` means that the predicted token `ji` is aligned to both reference tokens `j'` and `ai`, the `░` allowing for the correct reconstruction of the single predicted token `ji` from the alignment script output).
 
-This token-level alignment is produced based on a character-level alignment obtained using a dedicated variant of the weighted Levenshtein algorithm, aimed at avoiding tokenisation and punctuation mismatches unless they are really necessary for a successful alignment:
+This token-level alignment is produced based on a character-level alignment obtained using a dedicated variant of the weighted Levenshtein algorithm, designed to avoid tokenisation and punctuation mismatches unless they are really necessary for a successful alignment:
 - by default, the cost of a substitution is 1, whereas the cost of an insertion or a deletion is 0.8;
 - the cost of a substitution involving a white-space character is 30;
-- the cost of a substitution involving a punctuation mark (within ```,.;-!?'```) is 20;
+- the cost of a substitution involving a punctuation mark (within `,.;-!?'`) is 20;
 - the cost of the insertion or deletion of a white-space character is 2.
 
 
