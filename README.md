@@ -123,9 +123,9 @@ where `output_folder` is the folder containing prediction files to be included i
 ```
 bash eval-scripts/eval_all.sh outputs/rule-based/dev data/raw/dev/dev.finalised.trg outputs/.cache.pickle 
 
-WordAcc (ref) & WordAcc (sym) & Levenshtein & BLEU & ChrF & WordAcc OOV (ref) \
+WordAcc (ref) | WordAcc (sym) | WordAcc OOV (ref) | Levenshtein | BLEU | ChrF
 -----
-90.00 & 89.94 & 2.88 & 74.26 & 90.54 & 65.60 \\
+89.87 | 89.90 | 65.54 | 2.88 | 74.26 | 90.54
 ```
 
 ### Detailed evaluation (including on data subsets)
@@ -136,8 +136,8 @@ bash eval-scripts/eval_detailed.sh <ref_file> <meta_file> <pred_file> (<cache_fi
 ```
 E.g.
 ```
->> bash eval-scripts/eval-all.sh data/raw/dev/dev.finalised.trg data/raw/dev/dev.finalised.meta outputs/rule-based/dev-1.pred.trg outputs/.cache.pickle
->> all,bleu=74.2593 all,chrf=0.90544 all,lev_char=0.0 all,wordacc_r2h0.896 all,wordacc_h2r=0.894 all,wordacc_sym=0.895 1-standard,bleu=73.3256 1-standard,chrf=0.90136 1-standard,lev_char=0.0 1-standard,wordacc_r2h0.892 1-standard,wordacc_h2r=0.891 1-standard,wordacc_sym=0.892 4-medecine-dev,bleu=83.9066 4-medecine-dev,chrf=0.94225 4-medecine-dev,lev_char=0.0 4-medecine-dev,wordacc_r2h0.933 4-medecine-dev,wordacc_h2r=0.929 4-medecine-dev,wordacc_sym=0.931 5-physique-dev,bleu=73.8570 5-physique-dev,chrf=0.90849 5-physique-dev,lev_char=0.0 5-physique-dev,wordacc_r2h0.901 5-physique-dev,wordacc_h2r=0.895 5-physique-dev,wordacc_sym=0.898
+>> bash eval-scripts/eval_detailed.sh data/raw/dev/dev.finalised.trg data/raw/dev/dev.finalised.meta outputs/rule-based/dev-1.pred.trg outputs/.cache.pickle
+>> all,bleu=74.2593 all,chrf=90.54 all,lev_char=2.88061409315046 all,wordacc_r2h=89.9023442304381 all,wordacc_h2r=89.83188121241871 all,wordacc_sym=89.86711272142841 1-standard,bleu=73.3256 1-standard,chrf=90.14 1-standard,lev_char=3.003617425214223 1-standard,wordacc_r2h=89.5300125370761 1-standard,wordacc_h2r=89.45232646834478 1-standard,wordacc_sym=89.49116950271045 4-medecine-dev,bleu=83.9066 4-medecine-dev,chrf=94.22 4-medecine-dev,lev_char=1.6903731189445474 4-medecine-dev,wordacc_r2h=93.50119088125213 4-medecine-dev,wordacc_h2r=93.41479972844536 4-medecine-dev,wordacc_sym=93.45799530484874 5-physique-dev,bleu=73.8570 5-physique-dev,chrf=90.85 5-physique-dev,lev_char=2.8046184081231575 5-physique-dev,wordacc_r2h=90.22151267212134 5-physique-dev,wordacc_h2r=90.20700636942675 5-physique-dev,wordacc_sym=90.21425952077405
 ```
 where `r2h` means that the reference is used as basis for the alignment, `h2r` that the hypothesis is used as basis for the alignment and `sym` means that the mean of the two directions is calculated.
 
@@ -148,35 +148,35 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 
 | Method | WordAcc (ref) | WordAcc (sym) | WordAcc (ref) OOV | Levenshtein | BLEU | ChrF |
 | --- | --- | --- | --- | --- | --- | --- |
-| Identity | 74.09 | 74.03 | 47.97 | 7.72 | 42.33 | 74.95 |
-| Identity+lex | 86.95 | 86.88 | 70.44 | 3.57 | 68.08 | 88.01 |
-| Rule-based | 90.00 | 89.94 | 65.60 | 2.88 | 74.26 | 90.54 |
-| Rule-based+lex | 91.89 | 91.83 | 72.38 | 2.33 | 78.91 | 92.45 |
-| ABA | 95.94 | 95.89 | 75.35 | 1.21 | 89.19 | 96.38 |
-| ABA+lex | 96.30 | 96.24 | 79.10 | 1.06 | 89.89 | 96.73 |
-| SMT | **97.79±0.04** | **97.74±0.04** | **77.79±0.13** | **0.63±0.01** | **93.67±0.10** | **98.08±0.03** |
-| SMT+lex | **97.59±0.04** | **97.90±0.04** | **81.39±0.15** | **0.59±0.01** | **94.11±0.10** | **98.23±0.03** |
-| LSTM | 97.35±0.10 | 97.10±0.08 | 78.42±0.81 | 1.13±0.09 | 92.98±0.33 | 97.60±0.06 |
-| LSTM+lex | 97.49±0.13 | 97.24±0.11 | 81.20±0.09 | 1.10±0.09 | 93.36±0.40 | 97.73±0.08 |
-| Transformer | 97.00±0.04 | 96.74±0.08 | 76.96±0.76 | 1.26±0.04 | 92.17±0.06 | 97.27±0.05 |
-| Transformer+lex | 97.12±0.08 | 96.86±0.12 | 79.29±0.90 | 1.23±0.05 | 92.51±0.17 | 97.40±0.09 |
+| Identity | 73.98 | 74.01 | 47.97 | 7.72 | 42.33 | 74.95 |
+| Identity+lex | 86.82 | 86.85 | 70.38 | 3.57 | 68.08 | 88.01 |
+| Rule-based | 89.87 | 89.90 | 65.54 | 2.88 | 74.26 | 90.54 |
+| Rule-based+lex | 91.76 | 91.78 | 72.32 | 2.33 | 78.91 | 92.45 |
+| ABA | 95.81 | 95.85 | 75.29 | 1.21 | 89.19 | 96.38 |
+| ABA+lex | 96.17 | 96.20 | 79.04 | 1.06 | 89.89 | 96.73 |
+| SMT | **97.70±0.04** | **97.69±0.04** | 77.73±0.13 | **0.63±0.01** | **93.67±0.10** | **98.08±0.03** |
+| SMT+lex | **97.86±0.04** | **97.85±0.03** | **81.32±0.15** | **0.59±0.01** | **94.11±0.10** | **98.23±0.03** |
+| LSTM | 97.25±0.10 | 97.06±0.08 | **78.40±0.80** | 1.13±0.09 | 92.98±0.33 | 97.60±0.06 |
+| LSTM+lex | 97.39±0.14 | 97.20±0.11 | 81.18±0.09 | 1.10±0.09 | 93.36±0.40 | 97.73±0.08 |
+| Transformer | 96.90±0.04 | 96.68±0.06 | 76.94±0.72 | 1.26±0.04 | 92.17±0.06 | 97.27±0.05 |
+| Transformer+lex | 97.02±0.08 | 96.81±0.10 | 79.27±0.88 | 1.23±0.05 | 92.51±0.17 | 97.40±0.09 |
 
 ### Test set
 
 | Method | WordAcc (ref) | WordAcc (sym) | WordAcc (ref) OOV | Levenshtein | BLEU | ChrF |
 | --- | --- | --- | --- | --- | --- | --- |
-| Identity | 72.91 | 72.85 | 43.43 | 8.15 | 40.25 | 73.77 |
-| identity+lex | 86.33 | 86.27 | 65.30 | 3.78 | 66.78 | 87.40 |
-| Rule-based | 89.28 | 89.20 | 60.64 | 3.08 | 72.47 | 89.94 | 
-| Rule-based+lex | 91.07 | 91.00 | 66.97 | 2.56 | 76.90 | 91.70 |
-| ABA | 95.37 | 95.30 |  69.92 | 1.35 | 87.70 | 95.84  |
-| ABA+lex | 95.67 | 95.61 | 74.00 | 1.25 | 88.37 | 96.13  |
-| SMT | 97.34±0.02 | 97.31±0.02 | 76.19±0.16 | 0.76±0.01 | 92.59±0.05 | 97.71±0.01 |
-| SMT+lex | 97.48±0.02 | 97.44±0.02 | 78.91±0.18 | 0.73±0.01 | 92.97±0.05 | 97.85±0.01 |
-| LSTM | 96.74±0.06 | 96.32±0.08 | 77.20±0.71 | 1.66±0.04 | 91.77±0.21 | 96.85±0.08 |
-| LSTM+lex | 96.85±0.08 | 96.43±0.10 | 78.85±0.81 | 1.64±0.05 | 92.07±0.25 | 96.95±0.10 |
-| Transformer | 96.50±0.04 | 96.09±0.08 | 76.25±0.36 | 1.81±0.01 | 91.30±0.08 | 96.65±0.05 |
-| Transformer+lex | 96.61±0.07 | 96.21±0.10 | 78.03±0.99 | 1.78±0.02 | 91.62±0.14 | 96.76±0.08 |
+| Identity | 72.81 | 72.81 | 43.43 | 8.15 | 40.25 | 73.77 |
+| identity+lex | 86.22 | 86.22 | 65.30 | 3.78 | 66.78 | 87.40 |
+| Rule-based | 89.16 | 89.15 | 60.64 | 3.08 | 72.47 | 89.94 | 
+| Rule-based+lex | 90.95 | 90.95 | 66.97 | 2.56 | 76.90 | 91.70 |
+| ABA | 95.25 | 95.25 | 69.92 | 1.35 | 87.70 | 95.84 |
+| ABA+lex | 95.56 | 95.56 | 74.00 | 1.25 | 88.37 | 96.13 |
+| SMT | **97.25±0.02** | **97.23±0.02** | 76.19±0.16 | **0.76±0.01** | **92.59±0.05** | **97.71±0.01** |
+| SMT+lex | **97.39±0.02** | **97.37±0.02** | **78.91±0.18** | **0.73±0.01** | **92.97±0.05** | **97.85±0.01** |
+| LSTM | 96.65±0.07 | 96.27±0.09 | **77.20±0.71** | 1.66±0.04 | 91.77±0.21 | 96.85±0.08 |
+| LSTM+lex | 96.75±0.09 | 96.37±0.11 | 78.85±0.81 | 1.64±0.05 | 92.07±0.25 | 96.95±0.10 |
+| Transformer | 96.41±0.04 | 96.03±0.06 | 76.25±0.36 | 1.81±0.01 | 91.30±0.08 | 96.65±0.05 |
+| Transformer+lex | 96.53±0.07 | 96.14±0.09 | 78.03±0.99 | 1.78±0.02 | 91.62±0.14 | 96.76±0.08 |
 
 ## Alignment
 
@@ -187,7 +187,9 @@ python eval-scripts/align_levenshtein.py <ref_or_src_file> <pred_file> -a {ref,p
 python eval-scripts/align_levenshtein.py  data/raw/dev/dev.finalised.trg outputs/smt+lex/dev/dev-1.trg -a ref -c outputs/.cache.pickle
 ```
 
-The alignment script relies on a non destructive tokenisation convention whereby a token boundary is marked by two spaces when the tokens are white-spaced separated in the raw input and by a single space when they are not. This means that the initial text is preserved, despite the tokenisation applied. The chosen tokenisation can be modified (in `eval-scripts/utils.py`). By default, we apply a very simple tokenisation, separating on whitespace and certain punctuation marks.
+The alignment script relies on a non-destructive tokenisation convention whereby a token boundary is marked by two spaces when the tokens are white-spaced separated in the raw input and by a single space when they are not. This means that the initial text is preserved, despite the tokenisation applied. The chosen tokenisation can be modified (in `eval-scripts/utils.py`). By default, we apply a very simple tokenisation, separating on whitespace and certain punctuation marks.
+
+Here is an example:
 
 If the reference file contains the following (made-up) example sentence:
 ```
@@ -201,16 +203,16 @@ the alignment script will output:
 ```
 surtout||||sur▁▁tout  j'||||j░ ai||||i  choisi  davantage||||d'▁avantage  ses  écrits||||escrits
 ```
-In this output:
-- whenever a token is identical in both sentences, it is written as such (e.g. ```choisi```);
-- in other cases, the reference token is written first, followed by the separator ```||||``` and the corresponding predicted (sub)token(s); tokenisation mismatches between the reference and prediction are marked on the predicted side as follows:
-  - when there is a token boundary on the predicted side that does not correspond to a reference token boundary (oversplitting), it is marked using one or two consecutive symbols ```▁```, depending on whether the predicted tokens are white-space separated or not (e.g. (1) ```surtout||||sur▁▁tout```, where the two-token predicted sequence ```sur tout``` is aligned with the reference token ```surtout```; and (2) ```davantage||||d'▁avantage```, where the two-token predicted sequence ```d'avantage```, which is tokenised as ```d' avantage```, is aligned with the reference token ```davantage```);
-  - when there is no token boundary on the predicted side at a place where there is one on the reference side (undersplitting), the subtoken aligned with the first reference token is appended with the symbol ```░``` (e.g. ```j'||||j░ ai||||i``` means that the predicted token ```ji``` is aligned to both reference tokens ```j'``` and ```ai```, the ```░``` allowing for the correct reconstruction of the single predicted token ```ji``` from the alignment script output).
+In this output, different cases arise:
+- aligned token is identical: the token is writte as it is (e.g. `choisi`);
+- aligned token is different: the reference token is written first, followed by the separator `||||` and the corresponding predicted (sub)token(s). Tokenisation mismatches between the reference and prediction are marked on the predicted side as follows:
+  - oversplitting: when there is a token boundary on the predicted side that does not correspond to a reference token boundary, it is marked using one or two consecutive symbols `▁`, depending on whether the predicted tokens are white-space separated or not (e.g. (1) `surtout||||sur▁▁tout`, where the two-token predicted sequence ```sur tout``` is aligned with the reference token `surtout`; and (2) `davantage||||d'▁avantage`, where the two-token predicted sequence ```d'avantage```, which is tokenised as `d' avantage`, is aligned with the reference token `davantage`);
+  - undersplitting: when there is no token boundary on the predicted side at a place where there is one on the reference side, the subtoken aligned with the first reference token is appended with the symbol `░` (e.g. `j'||||j░ ai||||i` means that the predicted token `ji` is aligned to both reference tokens `j'` and `ai`, the `░` allowing for the correct reconstruction of the single predicted token `ji` from the alignment script output).
 
-This token-level alignment is produced based on a character-level alignment obtained using a dedicated variant of the weighted Levenshtein algorithm, aimed at avoiding tokenisation and punctuation mismatches unless they are really necessary for a successful alignment:
+This token-level alignment is produced based on a character-level alignment obtained using a dedicated variant of the weighted Levenshtein algorithm, designed to avoid tokenisation and punctuation mismatches unless they are really necessary for a successful alignment:
 - by default, the cost of a substitution is 1, whereas the cost of an insertion or a deletion is 0.8;
 - the cost of a substitution involving a white-space character is 30;
-- the cost of a substitution involving a punctuation mark (within ```,.;-!?'```) is 20;
+- the cost of a substitution involving a punctuation mark (within `,.;-!?'`) is 20;
 - the cost of the insertion or deletion of a white-space character is 2.
 
 
