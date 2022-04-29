@@ -123,9 +123,9 @@ where `output_folder` is the folder containing prediction files to be included i
 ```
 bash eval-scripts/eval_all.sh outputs/rule-based/dev data/raw/dev/dev.finalised.trg outputs/.cache.pickle 
 
-WordAcc (ref) & WordAcc (sym) & Levenshtein & BLEU & ChrF & WordAcc OOV (ref) \
+WordAcc (ref) | WordAcc (sym) | WordAcc OOV (ref) | Levenshtein | BLEU | ChrF
 -----
-90.00 & 89.94 & 2.88 & 74.26 & 90.54 & 65.60 \\
+89.87 | 89.90 | 65.54 | 2.88 | 74.26 | 90.54
 ```
 
 ### Detailed evaluation (including on data subsets)
@@ -136,8 +136,8 @@ bash eval-scripts/eval_detailed.sh <ref_file> <meta_file> <pred_file> (<cache_fi
 ```
 E.g.
 ```
->> bash eval-scripts/eval-all.sh data/raw/dev/dev.finalised.trg data/raw/dev/dev.finalised.meta outputs/rule-based/dev-1.pred.trg outputs/.cache.pickle
->> all,bleu=74.2593 all,chrf=0.90544 all,lev_char=0.0 all,wordacc_r2h0.896 all,wordacc_h2r=0.894 all,wordacc_sym=0.895 1-standard,bleu=73.3256 1-standard,chrf=0.90136 1-standard,lev_char=0.0 1-standard,wordacc_r2h0.892 1-standard,wordacc_h2r=0.891 1-standard,wordacc_sym=0.892 4-medecine-dev,bleu=83.9066 4-medecine-dev,chrf=0.94225 4-medecine-dev,lev_char=0.0 4-medecine-dev,wordacc_r2h0.933 4-medecine-dev,wordacc_h2r=0.929 4-medecine-dev,wordacc_sym=0.931 5-physique-dev,bleu=73.8570 5-physique-dev,chrf=0.90849 5-physique-dev,lev_char=0.0 5-physique-dev,wordacc_r2h0.901 5-physique-dev,wordacc_h2r=0.895 5-physique-dev,wordacc_sym=0.898
+>> bash eval-scripts/eval_detailed.sh data/raw/dev/dev.finalised.trg data/raw/dev/dev.finalised.meta outputs/rule-based/dev-1.pred.trg outputs/.cache.pickle
+>> all,bleu=74.2593 all,chrf=90.54 all,lev_char=2.88061409315046 all,wordacc_r2h=89.9023442304381 all,wordacc_h2r=89.83188121241871 all,wordacc_sym=89.86711272142841 1-standard,bleu=73.3256 1-standard,chrf=90.14 1-standard,lev_char=3.003617425214223 1-standard,wordacc_r2h=89.5300125370761 1-standard,wordacc_h2r=89.45232646834478 1-standard,wordacc_sym=89.49116950271045 4-medecine-dev,bleu=83.9066 4-medecine-dev,chrf=94.22 4-medecine-dev,lev_char=1.6903731189445474 4-medecine-dev,wordacc_r2h=93.50119088125213 4-medecine-dev,wordacc_h2r=93.41479972844536 4-medecine-dev,wordacc_sym=93.45799530484874 5-physique-dev,bleu=73.8570 5-physique-dev,chrf=90.85 5-physique-dev,lev_char=2.8046184081231575 5-physique-dev,wordacc_r2h=90.22151267212134 5-physique-dev,wordacc_h2r=90.20700636942675 5-physique-dev,wordacc_sym=90.21425952077405
 ```
 where `r2h` means that the reference is used as basis for the alignment, `h2r` that the hypothesis is used as basis for the alignment and `sym` means that the mean of the two directions is calculated.
 
