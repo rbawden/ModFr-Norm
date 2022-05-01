@@ -26,12 +26,12 @@ def _wedit_dist_step(
     c = lev[i - 1][j - 1] + (_wedit_dist_substitution_cost(c1, c2) if c1 != c2 else 0)
 
     # transposition
-    d = c + 1  # never picked by default
-    if transpositions and last_left > 0 and last_right > 0:
-        d = lev[last_left - 1][last_right - 1] + i - last_left + j - last_right - 1
+#    d = c + 1  # never picked by default
+#    if transpositions and last_left > 0 and last_right > 0:
+#        d = lev[last_left - 1][last_right - 1] + i - last_left + j - last_right - 1
 
     # pick the cheapest
-    lev[i][j] = min(a, b, c, d)
+    lev[i][j] = min(a, b, c)#, d)
 
 def _wedit_dist_backtrace(lev):
     i, j = len(lev) - 1, len(lev[0]) - 1
@@ -55,7 +55,7 @@ def _wedit_dist_backtrace(lev):
 
 def _wedit_dist_substitution_cost(c1, c2):
     if c1 == ' ' and c2 != ' ':
-        return 30
+        return 1000000
     if c2 == ' ' and c1 != ' ':
         return 30
     for c in ",.;-!?'":
@@ -66,12 +66,16 @@ def _wedit_dist_substitution_cost(c1, c2):
     return 1
 
 def _wedit_dist_deletion_cost(c1, c2):
-    if c1 == ' ' or c2 == ' ':
+    if c1 == ' ':
         return 2
+    if c2 == ' ':
+        return 1000000
     return 0.8
 
 def _wedit_dist_insertion_cost(c1, c2):
-    if c1 == ' ' or c2 == ' ':
+    if c1 == ' ':
+        return 1000000
+    if c2 == ' ':
         return 2
     return 0.8
 
@@ -124,5 +128,6 @@ def wedit_distance_align(s1, s2):
 
     # backtrace to find alignment
     alignment = _wedit_dist_backtrace(lev)
-
+#    for (i,j,w) in alignment:
+#        print (s1[i - 1], s2[j - 1], w)
     return alignment
