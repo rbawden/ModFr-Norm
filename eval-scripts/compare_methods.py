@@ -44,18 +44,21 @@ def compare(sys1, sys2):
     total, same = 0, 0
     with open(sys1) as s1fp, open(sys2) as s2fp:
         for s1line, s2line in zip(s1fp, s2fp):
-            print(s1line)
-            print(s2line)
+            #print(s1line)
+            #print(s2line)
             s1_toks = re.split(' +', s1line.strip())
             s2_toks = re.split(' +', s2line.strip())
             #s1_toks = re.sub(' (?! )', '', s1line.strip().split('\t')[-1]).split(' ')
             #s2_toks = re.sub(' (?! )', '', s2line.strip().split('\t')[-1]).split(' ')
             
-            print(s1_toks)
-            print(s2_toks)
-            print(len(s1_toks))
-            print(len(s2_toks))
-            assert len(s1_toks) == len(s2_toks)
+
+            if len(s1_toks) != len(s2_toks):
+                print(sys1, sys2)
+                print(s1_toks)
+                print(s2_toks)
+                print(len(s1_toks))
+                print(len(s2_toks))
+                input()
 
             for s1_tok, s2_tok in zip(s1_toks, s2_toks):
                 if s1_tok == s2_tok:
