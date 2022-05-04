@@ -121,11 +121,11 @@ bash eval-scripts/eval_all.sh <output_folder> <ref_file> (<cache_file>)
 where `output_folder` is the folder containing prediction files to be included in the evaluation (all files ending in `.trg` will be included for evaluation. E.g.
 
 ```
-bash eval-scripts/eval_all.sh outputs/rule-based/dev data/raw/dev/dev.finalised.trg outputs/.cache.pickle 
+bash eval-scripts/eval_all.sh outputs/rule-based/dev data/raw/dev/dev.finalised.trg outputs/.cache-dev.pickle 
 
 WordAcc (ref) | WordAcc (sym) | WordAcc OOV (ref) | Levenshtein | BLEU | ChrF
 -----
-89.87 | 89.90 | 65.54 | 2.88 | 74.26 | 90.54
+89.80 | 89.83 | 65.48 | 2.88 | 74.26 | 90.54
 ```
 
 ### Detailed evaluation (including on data subsets)
@@ -155,8 +155,8 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 | ABA | 95.72 | 95.76 | 75.17 | 1.21 | 89.19 | 96.38 |
 | ABA+lex | 96.07 | 96.11 | 78.92 | 1.06 | 89.89 | 96.73 |
 | SMT | **97.61±0.04** | **97.59±0.04** | 77.65±0.16 | **0.63±0.01** | **93.67±0.10** | **98.08±0.03** |
-| SMT+lex | **97.76±0.04** | **97.75±0.04** | **81.24±0.19* | **0.59±0.01** | **94.11±0.10** | **98.23±0.03** |
-| LSTM | 97.16±0.10 | 96.97±0.08 | 78.30±0.81 | 1.13±0.09 | 92.98±0.33 | 97.60±0.06 |
+| SMT+lex | **97.76±0.04** | **97.75±0.04** | **81.24±0.19** | **0.59±0.01** | **94.11±0.10** | **98.23±0.03** |
+| LSTM | 97.16±0.10 | 96.97±0.08 | **78.30±0.81** | 1.13±0.09 | 92.98±0.33 | 97.60±0.06 |
 | LSTM+lex | 97.30±0.14 | 97.11±0.11 | 81.08±0.09 | 1.10±0.09 | 93.36±0.40 | 97.73±0.08 |
 | Transformer | 96.79±0.05 | 96.58±0.07 | 76.78±0.71 | 1.26±0.04 | 92.17±0.06 | 97.27±0.05 |
 | Transformer+lex | 96.92±0.09 | 96.70±0.10 | 79.10±0.85 | 1.23±0.05 | 92.51±0.17 | 97.40±0.09 |
