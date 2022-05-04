@@ -121,11 +121,11 @@ bash eval-scripts/eval_all.sh <output_folder> <ref_file> (<cache_file>)
 where `output_folder` is the folder containing prediction files to be included in the evaluation (all files ending in `.trg` will be included for evaluation. E.g.
 
 ```
-bash eval-scripts/eval_all.sh outputs/rule-based/dev data/raw/dev/dev.finalised.trg outputs/.cache.pickle 
+bash eval-scripts/eval_all.sh outputs/rule-based/dev data/raw/dev/dev.finalised.trg outputs/.cache-dev.pickle 
 
 WordAcc (ref) | WordAcc (sym) | WordAcc OOV (ref) | Levenshtein | BLEU | ChrF
 -----
-89.87 | 89.90 | 65.54 | 2.88 | 74.26 | 90.54
+89.80 | 89.83 | 65.48 | 2.88 | 74.26 | 90.54
 ```
 
 ### Detailed evaluation (including on data subsets)
@@ -136,8 +136,8 @@ bash eval-scripts/eval_detailed.sh <ref_file> <meta_file> <pred_file> (<cache_fi
 ```
 E.g.
 ```
->> bash eval-scripts/eval_detailed.sh data/raw/dev/dev.finalised.trg data/raw/dev/dev.finalised.meta outputs/rule-based/dev-1.pred.trg outputs/.cache.pickle
->> all,bleu=74.2593 all,chrf=90.54 all,lev_char=2.88061409315046 all,wordacc_r2h=89.9023442304381 all,wordacc_h2r=89.83188121241871 all,wordacc_sym=89.86711272142841 1-standard,bleu=73.3256 1-standard,chrf=90.14 1-standard,lev_char=3.003617425214223 1-standard,wordacc_r2h=89.5300125370761 1-standard,wordacc_h2r=89.45232646834478 1-standard,wordacc_sym=89.49116950271045 4-medecine-dev,bleu=83.9066 4-medecine-dev,chrf=94.22 4-medecine-dev,lev_char=1.6903731189445474 4-medecine-dev,wordacc_r2h=93.50119088125213 4-medecine-dev,wordacc_h2r=93.41479972844536 4-medecine-dev,wordacc_sym=93.45799530484874 5-physique-dev,bleu=73.8570 5-physique-dev,chrf=90.85 5-physique-dev,lev_char=2.8046184081231575 5-physique-dev,wordacc_r2h=90.22151267212134 5-physique-dev,wordacc_h2r=90.20700636942675 5-physique-dev,wordacc_sym=90.21425952077405
+>> bash eval-scripts/eval_detailed.sh data/raw/dev/dev.finalised.trg data/raw/dev/dev.finalised.meta outputs/rule-based/dev/dev-1.trg outputs/.cache-dev.pickle
+>> all,bleu=74.2593 all,chrf=90.54 all,lev_char=2.88061409315046 all,wordacc_r2h=89.83100878163974 all,wordacc_h2r=89.76316112406431 all,wordacc_sym=89.79708495285203 1-standard,bleu=73.3256 1-standard,chrf=90.14 1-standard,lev_char=3.003617425214223 1-standard,wordacc_r2h=89.44745130416169 1-standard,wordacc_h2r=89.36994660564454 1-standard,wordacc_sym=89.40869895490312 4-medecine-dev,bleu=83.9066 4-medecine-dev,chrf=94.22 4-medecine-dev,lev_char=1.6903731189445474 4-medecine-dev,wordacc_r2h=93.50119088125213 4-medecine-dev,wordacc_h2r=93.41479972844536 4-medecine-dev,wordacc_sym=93.45799530484874 5-physique-dev,bleu=73.8570 5-physique-dev,chrf=90.85 5-physique-dev,lev_char=2.8046184081231575 5-physique-dev,wordacc_r2h=90.18160047894632 5-physique-dev,wordacc_h2r=90.18710191082803 5-physique-dev,wordacc_sym=90.18435119488717
 ```
 where `r2h` means that the reference is used as basis for the alignment, `h2r` that the hypothesis is used as basis for the alignment and `sym` means that the mean of the two directions is calculated.
 
@@ -148,35 +148,35 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 
 | Method | WordAcc (ref) | WordAcc (sym) | WordAcc (ref) OOV | Levenshtein | BLEU | ChrF |
 | --- | --- | --- | --- | --- | --- | --- |
-| Identity | 73.98 | 74.01 | 47.97 | 7.72 | 42.33 | 74.95 |
-| Identity+lex | 86.82 | 86.85 | 70.38 | 3.57 | 68.08 | 88.01 |
-| Rule-based | 89.87 | 89.90 | 65.54 | 2.88 | 74.26 | 90.54 |
-| Rule-based+lex | 91.76 | 91.78 | 72.32 | 2.33 | 78.91 | 92.45 |
-| ABA | 95.81 | 95.85 | 75.29 | 1.21 | 89.19 | 96.38 |
-| ABA+lex | 96.17 | 96.20 | 79.04 | 1.06 | 89.89 | 96.73 |
-| SMT | **97.70±0.04** | **97.69±0.04** | 77.73±0.13 | **0.63±0.01** | **93.67±0.10** | **98.08±0.03** |
-| SMT+lex | **97.86±0.04** | **97.85±0.03** | **81.32±0.15** | **0.59±0.01** | **94.11±0.10** | **98.23±0.03** |
-| LSTM | 97.25±0.10 | 97.06±0.08 | **78.40±0.80** | 1.13±0.09 | 92.98±0.33 | 97.60±0.06 |
-| LSTM+lex | 97.39±0.14 | 97.20±0.11 | 81.18±0.09 | 1.10±0.09 | 93.36±0.40 | 97.73±0.08 |
-| Transformer | 96.90±0.04 | 96.68±0.06 | 76.94±0.72 | 1.26±0.04 | 92.17±0.06 | 97.27±0.05 |
-| Transformer+lex | 97.02±0.08 | 96.81±0.10 | 79.27±0.88 | 1.23±0.05 | 92.51±0.17 | 97.40±0.09 |
+| Identity | 73.92 | 73.95 | 47.91 | 7.72 | 42.33 | 74.95|
+| Identity+lex | 86.75 | 86.78 | 70.32 | 3.57 | 68.08 | 88.01 |
+| Rule-based | 89.80 | 89.83 | 65.48 | 2.88 | 74.26 | 90.54 |
+| Rule-based+lex | 91.69 | 91.71 | 72.26 | 2.33 | 78.91 | 92.45 |
+| ABA | 95.72 | 95.76 | 75.17 | 1.21 | 89.19 | 96.38 |
+| ABA+lex | 96.07 | 96.11 | 78.92 | 1.06 | 89.89 | 96.73 |
+| SMT | **97.61±0.04** | **97.59±0.04** | 77.65±0.16 | **0.63±0.01** | **93.67±0.10** | **98.08±0.03** |
+| SMT+lex | **97.76±0.04** | **97.75±0.04** | **81.24±0.19** | **0.59±0.01** | **94.11±0.10** | **98.23±0.03** |
+| LSTM | 97.16±0.10 | 96.97±0.08 | **78.30±0.81** | 1.13±0.09 | 92.98±0.33 | 97.60±0.06 |
+| LSTM+lex | 97.30±0.14 | 97.11±0.11 | 81.08±0.09 | 1.10±0.09 | 93.36±0.40 | 97.73±0.08 |
+| Transformer | 96.79±0.05 | 96.58±0.07 | 76.78±0.71 | 1.26±0.04 | 92.17±0.06 | 97.27±0.05 |
+| Transformer+lex | 96.92±0.09 | 96.70±0.10 | 79.10±0.85 | 1.23±0.05 | 92.51±0.17 | 97.40±0.09 |
 
 ### Test set
 
 | Method | WordAcc (ref) | WordAcc (sym) | WordAcc (ref) OOV | Levenshtein | BLEU | ChrF |
 | --- | --- | --- | --- | --- | --- | --- |
-| Identity | 72.81 | 72.81 | 43.43 | 8.15 | 40.25 | 73.77 |
-| identity+lex | 86.22 | 86.22 | 65.30 | 3.78 | 66.78 | 87.40 |
-| Rule-based | 89.16 | 89.15 | 60.64 | 3.08 | 72.47 | 89.94 | 
-| Rule-based+lex | 90.95 | 90.95 | 66.97 | 2.56 | 76.90 | 91.70 |
-| ABA | 95.25 | 95.25 | 69.92 | 1.35 | 87.70 | 95.84 |
-| ABA+lex | 95.56 | 95.56 | 74.00 | 1.25 | 88.37 | 96.13 |
-| SMT | **97.25±0.02** | **97.23±0.02** | 76.19±0.16 | **0.76±0.01** | **92.59±0.05** | **97.71±0.01** |
-| SMT+lex | **97.39±0.02** | **97.37±0.02** | **78.91±0.18** | **0.73±0.01** | **92.97±0.05** | **97.85±0.01** |
-| LSTM | 96.65±0.07 | 96.27±0.09 | **77.20±0.71** | 1.66±0.04 | 91.77±0.21 | 96.85±0.08 |
-| LSTM+lex | 96.75±0.09 | 96.37±0.11 | 78.85±0.81 | 1.64±0.05 | 92.07±0.25 | 96.95±0.10 |
-| Transformer | 96.41±0.04 | 96.03±0.06 | 76.25±0.36 | 1.81±0.01 | 91.30±0.08 | 96.65±0.05 |
-| Transformer+lex | 96.53±0.07 | 96.14±0.09 | 78.03±0.99 | 1.78±0.02 | 91.62±0.14 | 96.76±0.08 |
+| Identity | 72.72 | 72.73 | 43.00 | 8.15 | 40.25 | 73.77 |
+| identity+lex | 86.12 | 86.12 | 64.84 | 3.78 | 66.78 | 87.40 |
+| Rule-based | 89.06 | 89.05 | 60.22 | 3.08 | 72.47 | 89.94 | 
+| Rule-based+lex | 90.85 | 90.85 | 66.51 | 2.56 | 76.90 | 91.70 |
+| ABA | 95.13 | 95.14 | 69.50 | 1.35 | 87.70 | 95.84 |
+| ABA+lex | 95.44 | 95.44 | 73.54 | 1.25 | 88.37 | 96.13 |
+| SMT | **97.12±0.02** | **97.10±0.02** | 75.64±0.18 | **0.76±0.01** | **92.59±0.05** | **97.71±0.01** |
+| SMT+lex | 97.26±0.02 | 97.24±0.02 | **78.37±0.20** | 0.73±0.01 | 92.97±0.05 | 97.85±0.01 |
+| LSTM | 96.52±0.07 | 96.14±0.08 | 76.69±0.70 | 1.66±0.04 | 91.77±0.21 | 96.85±0.08 |
+| LSTM+lex | 96.63±0.08 | 96.25±0.10 | **78.35±0.79** | 1.64±0.05 | 92.07±0.25 | 96.95±0.10 |
+| Transformer | 96.27±0.05 | 95.89±0.07 | 75.73±0.38 | 1.81±0.01 | 91.30±0.08 | 96.65±0.05 |
+| Transformer+lex | 96.39±0.07 | 96.01±0.09 | **77.51±1.00** | 1.78±0.02 | 91.62±0.14 | 96.76±0.08 |
 
 ## Alignment
 
