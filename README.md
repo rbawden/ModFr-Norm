@@ -211,9 +211,11 @@ In this output, different cases arise:
 
 This token-level alignment is produced based on a character-level alignment obtained using a dedicated variant of the weighted Levenshtein algorithm, designed to avoid tokenisation and punctuation mismatches unless they are really necessary for a successful alignment:
 - by default, the cost of a substitution is 1, whereas the cost of an insertion or a deletion is 0.8;
-- the cost of a substitution involving a white-space character is 30;
+- the cost of a substitution of a reference white-space character with a non-white-space is prohibitive (1,000,000);
+- the cost of a substitution of a reference non-white-space character with a white-space is 30;
 - the cost of a substitution involving a punctuation mark (within `,.;-!?'`) is 20;
-- the cost of the insertion or deletion of a white-space character is 2.
+- the cost of the insertion or deletion of a white-space character is prohibitive;
+- the cost of the insertion of a white-space character is 2.
 
 
 ## Retrain the MT models
