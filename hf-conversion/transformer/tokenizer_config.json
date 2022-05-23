@@ -1,0 +1,1 @@
+{"unk_token": "<unk>", "eos_token": "</s>", "bos_token": "<s>", "pad_token": "<pad>", "tokenizer_class": "PreTrainedTokenizerFast"}
