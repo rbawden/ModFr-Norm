@@ -22,7 +22,7 @@ norm_pipeline = NormalisationPipeline(model=model,
                                       batch_size=batch_size,
                                       beam_size=beam_size)
                                               
-list_inputs = ["1. QVe cette propoſtion, qu'vn eſpace eſt vuidé, repugne au ſens commun.", Adieu, i'iray chez vous tantoſt vous rendre grace.]
+list_inputs = ["1. QVe cette propoſtion, qu'vn eſpace eſt vuidé, repugne au ſens commun.", "Adieu, i'iray chez vous tantoſt vous rendre grace."]
 list_outputs = norm_pipeline(list_inputs)
 print(list_outputs)
 
@@ -331,14 +331,15 @@ Rachel Bawden, Jonathan Poinhos, Eleni Kogkitsidou, Philippe Gambette, Benoît S
 
 Bibtex:
 ```
-@misc{bawden:hal-03540226,
+@inproceedings{bawden-etal-2022-automatic,
   title = {{Automatic Normalisation of Early Modern French}},
   author = {Bawden, Rachel and Poinhos, Jonathan and Kogkitsidou, Eleni and Gambette, Philippe and Sagot, Beno{\^i}t and Gabay, Simon},
   url = {https://hal.inria.fr/hal-03540226},
-  note = {working paper or preprint},
+  booktitle = {Proceedings of the 13th Language Resources and Evaluation Conference},
+  publisher = {European Language Resources Association},
   year = {2022},
-  HAL_ID = {hal-03540226},
-  HAL_VERSION = {v1},
+  address = {Marseille, France},
+  note = {To appear}
 }
 ```
 
