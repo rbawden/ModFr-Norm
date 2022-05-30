@@ -14,9 +14,11 @@ source modfr_env/bin/activate
 pip install -r requirements.txt
 ```
 
-## Download and prepare data
+## Reproducing the results of the paper and using the normalisation models
 
-### Parallel training data
+### Download and prepare data
+
+#### Parallel training data
 Get dataset splits:
 ```
 bash data-scripts/get_datasets.sh
@@ -40,7 +42,7 @@ Subsets of dev/test are available in the same subfolders (different data selecti
 - _4-medecine_ (medical domain): 1 document in the dev and the other in the test (two very different documents) (none in train)
 - _5-physique_ (physics/mechanics domain): 1 document in dev and the other in test (none in train)
 
-### Monolingual normalised data (used for some of the language models used for SMT)
+#### Monolingual normalised data (used for some of the language models used for SMT)
 
 Get monolingual normalised data:
 ```
@@ -49,13 +51,13 @@ python data-scripts/get_monolingual_normalised.py <txt_folder> <toc_folder>
 bash data-scripts/process_monolingual.sh # to be updated
 ```
 
-## Download the models
+### Download the models
 
 ```
 bash data-scripts/download_models.sh
 ```
 
-## Normalisation approaches
+### Normalisation approaches
 
 Below you can find normalisation commands for each of the methods compared. All methods take a text from standard input and output normalised text to standard output. Here, the dev (`data/raw/dev/dev.finalised.src`) is used as an example.
 
@@ -98,9 +100,9 @@ cat outputs/rule-based/dev-1.pred.trg | \
 For ABA, the alignment-based approach, see the github repository: [https://github.com/johnseazer/aba](https://github.com/johnseazer/aba)).
 
 
-## Evaluation
+### Evaluation
 
-### Evaluate with individual metrics
+#### Evaluate with individual metrics
 
 ```
 bash eval-scripts/bleu.sh <ref_file> <pred_file> fr
@@ -113,7 +115,7 @@ where `-a ref` means that the reference is used as basis for the alignment, `-a 
 
 To calculate the average of a metric over several outputs (relevant for different random seeds of the MT approaches):
 
-### Evaluation over multiple metrics
+#### Evaluation over multiple metrics
 
 ```
 bash eval-scripts/eval_all.sh <output_folder> <ref_file> (<cache_file>)
@@ -128,7 +130,7 @@ WordAcc (ref) | WordAcc (sym) | WordAcc OOV (ref) | Levenshtein | BLEU | ChrF
 89.80 | 89.83 | 65.48 | 2.88 | 74.26 | 90.54
 ```
 
-### Detailed evaluation (including on data subsets)
+#### Detailed evaluation (including on data subsets)
 
 To calculate all evaluation scores, including on subsets of the data (as specified above and in the meta data):
 ```
@@ -142,9 +144,9 @@ E.g.
 where `r2h` means that the reference is used as basis for the alignment, `h2r` that the hypothesis is used as basis for the alignment and `sym` means that the mean of the two directions is calculated.
 
 
-## Results
+### Results
 
-### Dev set
+#### Dev set
 
 | Method | WordAcc (ref) | WordAcc (sym) | WordAcc (ref) OOV | Levenshtein | BLEU | ChrF |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -161,7 +163,7 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 | Transformer | 96.79±0.05 | 96.58±0.07 | 76.78±0.71 | 1.26±0.04 | 92.17±0.06 | 97.27±0.05 |
 | Transformer+lex | 96.92±0.09 | 96.70±0.10 | 79.10±0.85 | 1.23±0.05 | 92.51±0.17 | 97.40±0.09 |
 
-### Test set
+#### Test set
 
 | Method | WordAcc (ref) | WordAcc (sym) | WordAcc (ref) OOV | Levenshtein | BLEU | ChrF |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -178,7 +180,7 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 | Transformer | 96.27±0.05 | 95.89±0.07 | 75.73±0.38 | 1.81±0.01 | 91.30±0.08 | 96.65±0.05 |
 | Transformer+lex | 96.39±0.07 | 96.01±0.09 | **77.51±1.00** | 1.78±0.02 | 91.62±0.14 | 96.76±0.08 |
 
-## Alignment
+### Alignment
 
 It can be useful to obtain an alignment between either the source file or the reference file. To do this, we can use a command very similar to the evalution scripts:
 
@@ -218,9 +220,9 @@ This token-level alignment is produced based on a character-level alignment obta
 - the cost of the insertion of a white-space character is 2.
 
 
-## Retrain the MT models
+### Retrain the MT models
 
-### Preprocessing and binarisation
+#### Preprocessing and binarisation
 
 To preprocess with all segmentations used in our experiments, run the following script:
 
@@ -236,9 +238,9 @@ This involves:
 - binarisation of the data in the fairseq format (for neural models)
 
 
-### Retraining SMT models
+#### Retraining SMT models
 
-#### Training a language model with KenLM
+##### Training a language model with KenLM
 
 Train all \textit{n}-gram language model combinations as follows:
 ```
@@ -246,7 +248,7 @@ bash mt-training-scripts/train_lms.sh
 ```
 Make sure to change the tool paths in this file first to point to your installation of [KenLM](https://github.com/kpu/kenlm).
 
-#### Training an SMT model with Moses
+##### Training an SMT model with Moses
 
 An example of a training script is giving in `mt-models/best-smt/1/`. 
 
@@ -265,7 +267,7 @@ Tune the models:
 
 This does tuning for 1 random seed. To do the other two random seeds create two more subfolders `mt-models/smt-bpe_joint_1000/2` and `mt-models/smt-bpe_joint_1000/3`, copy the tuning script over from `1/` as it is and rerun tuning (i.e. you do not need to retrain phrase tables and language models).
 
-### Hyper-parameter searches for LSTM and Transformer models
+#### Hyper-parameter searches for LSTM and Transformer models
 
 Create model folders and scripts for different hyper-parameter settings as follows:
 ```
@@ -293,7 +295,7 @@ bash mt-training-scripts/eval_val.sh <model_folder>/<seed>
 This will produce a validation file `valid.eval` in the subfolder, which records the scores for each of the checkpoints, finds the best scoring checkpoint and copies it over to `checkpoint_bestwordacc_sym.pt`. The translation of the validation set by this best checkpoint is `checkpoint_bestwordacc_sym.pt.valid.postproc`.
 
 
-## Citation
+### Citation
 
 If you use or refer to this work, please cite the following paper:
 
