@@ -18,9 +18,9 @@ You can also use the pipeline class python-internally as follows (you need to ha
 tokeniser = AutoTokenizer.from_pretrained("rbawden/modern_french_normalisation")
 model = AutoModelForSeq2SeqLM.from_pretrained("rbawden/modern_french_normalisation")
 norm_pipeline = NormalisationPipeline(model=model,
-                                              tokenizer=tokeniser,
-                                              batch_size=batch_size,
-                                              beam_size=beam_size)
+                                      tokenizer=tokeniser,
+                                      batch_size=batch_size,
+                                      beam_size=beam_size)
                                               
 list_inputs = ["1. QVe cette propoſtion, qu'vn eſpace eſt vuidé, repugne au ſens commun.", Adieu, i'iray chez vous tantoſt vous rendre grace.]
 list_outputs = norm_pipeline(list_inputs)
