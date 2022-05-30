@@ -22,11 +22,11 @@ norm_pipeline = NormalisationPipeline(model=model,
                                       batch_size=batch_size,
                                       beam_size=beam_size)
                                               
-list_inputs = ["1. QVe cette propoſtion, qu'vn eſpace eſt vuidé, repugne au ſens commun.", "Adieu, i'iray chez vous tantoſt vous rendre grace."]
+list_inputs = ["Elle haïſſoit particulierement le Cardinal de Lorraine;", "Adieu, i'iray chez vous tantoſt vous rendre grace."]
 list_outputs = norm_pipeline(list_inputs)
 print(list_outputs)
 
->> ["1. QUe cette propôtion, qu'un espace est vidé, répugne au sens commun.", "Adieu, j'irai chez vous tantôt vous rendre grâce."]
+>> ["Elle haïssait particulièrement le Cardinal de Lorraine;", "Adieu, j'irai chez vous tantôt vous rendre grâce."]
 ```
 
 ## Reproducing the results of the paper and using the normalisation models
