@@ -1,24 +1,10 @@
 #!/usr/bin/python
 from transformers import Pipeline, pipeline, AutoModelForSeq2SeqLM, AutoTokenizer
 from transformers.tokenization_utils_base import TruncationStrategy
-from datasets import Dataset
 from torch import Tensor
 import html.parser
 import unicodedata
-import sys, os
-import re
-from tqdm.auto import tqdm
-
-class ListDataset(Dataset):
-     def __init__(self, original_list):
-          self.original_list = original_list
-          
-     def __len__(self):
-          return len(self.original_list)
-          
-     def __getitem__(self, i):
-          return self.original_list[i]
-
+import sys, os, re
      
 class ReaccentPipeline(Pipeline):
 
@@ -64,7 +50,6 @@ class ReaccentPipeline(Pipeline):
                               ('^ *', ''),
                               (' *$', '')]:
             line = re.sub(before, after, line)
-        #return line.strip() + ' <unk>'
         return line.strip() + ' </s>'
     
     def _parse_and_tokenise(self, *args, truncation):
@@ -87,7 +72,6 @@ class ReaccentPipeline(Pipeline):
         toks = []
         for tok_ids in inputs.input_ids:
             toks.append(" ".join(self.tokenizer.convert_ids_to_tokens(tok_ids)))
-        #os.sys.stderr.write('\n'.join(toks)+'\n')
         # This is produced by tokenisers but is an invalid generate kwargs
         if "token_type_ids" in inputs:
             del inputs["token_type_ids"]
@@ -95,9 +79,6 @@ class ReaccentPipeline(Pipeline):
     
     def preprocess(self, inputs, truncation=TruncationStrategy.DO_NOT_TRUNCATE, **kwargs):
         inputs = self._parse_and_tokenise(inputs, truncation=truncation, **kwargs)
-        #os.sys.stderr.write(str(inputs) + '\n')
-
-
         return inputs
 
     def _forward(self, model_inputs, **generate_kwargs):
@@ -110,7 +91,6 @@ class ReaccentPipeline(Pipeline):
         output_ids = self.model.generate(**model_inputs, **generate_kwargs)
         out_b = output_ids.shape[0]
         output_ids = output_ids.reshape(in_b, out_b // in_b, *output_ids.shape[1:])
-        #os.sys.stderr.write('output ids = ' + str(output_ids) + '\n')
         return {"output_ids": output_ids}
 
     def postprocess(self, model_outputs, clean_up_tokenisation_spaces=False):
@@ -177,30 +157,20 @@ def normalise_text(list_sents, batch_size=32, beam_size=5):
                                               tokenizer=tokeniser,
                                               batch_size=batch_size,
                                               beam_size=beam_size)
-    normalised_outputs = tqdm(normalisation_pipeline(list_sents), total=len(list_sents))
+    normalised_outputs = normalisation_pipeline(list_sents)
     return normalised_outputs
 
 def normalise_from_stdin(batch_size=32, beam_size=5):
     tokeniser = AutoTokenizer.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
-
-    #os.sys.stderr.write('length tokeniser = ' + str(len(tokeniser)) + '\n')
-    #input()
     model = AutoModelForSeq2SeqLM.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
-
-
-    
     normalisation_pipeline = ReaccentPipeline(model=model,
                                               tokenizer=tokeniser,
                                               batch_size=batch_size,
                                               beam_size=beam_size)
-
-    os.sys.stderr.write(str(len(tokeniser)) + '\n\n\n')
-    #os.sys.stderr.write(str(model) + '\n\n\n')
-
     list_sents = []
     for sent in sys.stdin:
         list_sents.append(sent)
-    normalised_outputs = tqdm(normalisation_pipeline(list_sents), total=len(list_sents))
+    normalised_outputs = normalisation_pipeline(list_sents)
     for sent in normalised_outputs:
         print(sent['text'].strip())
     return normalised_outputs
@@ -212,6 +182,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-k', '--batch_size', type=int, default=32, help='Set the batch size for decoding')
     parser.add_argument('-b', '--beam_size', type=int, default=5, help='Set the beam size for decoding')
+    parser.add_argument('-i', '--input_file', type=str, default=None, help='Input file. If None, read from STDIN')
     args = parser.parse_args()
 
-    normalise_from_stdin(batch_size=args.batch_size, beam_size=args.beam_size)
+    if args.input_file is None:
+         normalise_from_stdin(batch_size=args.batch_size, beam_size=args.beam_size)
+    else:
+         list_sents = []
+         with open(args.input_file) as fp:
+              for line in fp:
+                   list_sents.append(line.strip())
+         output_sents = normalise_text(list_sents, batch_size=args.batch_size, beam_size=args.beam_size)
+         for output_sent in output_sents:
+              print(output_sent)
