@@ -163,7 +163,7 @@ def normalise_text(list_sents, batch_size=32, beam_size=5):
 def normalise_from_stdin(batch_size=32, beam_size=5):
     tokeniser = AutoTokenizer.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
     model = AutoModelForSeq2SeqLM.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
-    normalisation_pipeline = ReaccentPipeline(model=model,
+    normalisation_pipeline = NormalisationPipeline(model=model,
                                               tokenizer=tokeniser,
                                               batch_size=batch_size,
                                               beam_size=beam_size)
