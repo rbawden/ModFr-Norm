@@ -1,6 +1,6 @@
 # ModFr-Normalisation
 
-This repository contains the scripts and models to reproduce the results of the preprint [Automatic Normalisation of Early Modern French](https://hal.inria.fr/hal-03540226). See below for citation instructions.
+This repository contains the scripts and models to reproduce the results of the LREC 2022 paper [Automatic Normalisation of Early Modern French](https://hal.inria.fr/hal-03540226). See below for citation instructions.
 
 
 ## Normalisation model on HuggingFace: Recommended model for easy use
