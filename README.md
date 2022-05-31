@@ -345,42 +345,24 @@ Bibtex:
 
 The models can be found on Zenodo:
 
+Bawden, Rachel, Poinhos, Jonathan, Kogkitsidou, Eleni, Gambette, Philippe, Sagot, Benoît, & Gabay, Simon. (2022). FreEM-corpora/FreEM-automatic-normalisation: normalisation models for Early Modern French (1.0). Zenodo. https://doi.org/10.5281/zenodo.6594765
+
 ```
-@software{rachel_bawden_2022_6482368,
-  author       = {Rachel Bawden},
-  title        = {{FreEM-corpora/FreEM-norm-model-smt: SMT 
-                   normalisation model for Early Modern French}},
-  month        = apr,
+@software{bawden_rachel_2022_6594765,
+  author       = {Bawden, Rachel and
+                  Poinhos, Jonathan and
+                  Kogkitsidou, Eleni and
+                  Gambette, Philippe and
+                  Sagot, Benoît and
+                  Gabay, Simon},
+  title        = {{FreEM-corpora/FreEM-automatic-normalisation: 
+                   normalisation models for Early Modern French}},
+  month        = may,
   year         = 2022,
   publisher    = {Zenodo},
-  version      = {1.0.0},
-  doi          = {10.5281/zenodo.6482368},
-  url          = {https://doi.org/10.5281/zenodo.6482368}
-}
-
-@software{rachel_bawden_2022_6481539,
-  author       = {Rachel Bawden},
-  title        = {{FreEM-corpora/FreEM-norm-model-LSTM: LSTM 
-                   normalisation model for Early Modern French}},
-  month        = apr,
-  year         = 2022,
-  publisher    = {Zenodo},
-  version      = {1.0.0},
-  doi          = {10.5281/zenodo.6481539},
-  url          = {https://doi.org/10.5281/zenodo.6481539}
-}
-
-@software{rachel_bawden_2022_6482342,
-  author       = {Rachel Bawden},
-  title        = {{FreEM-corpora/FreEM-norm-model-transformer: 
-                   Transformer normalisation model for Early Modern
-                   French}},
-  month        = apr,
-  year         = 2022,
-  publisher    = {Zenodo},
-  version      = {1.0.0},
-  doi          = {10.5281/zenodo.6482342},
-  url          = {https://doi.org/10.5281/zenodo.6482342}
+  version      = {1.0},
+  doi          = {10.5281/zenodo.6594765},
+  url          = {https://doi.org/10.5281/zenodo.6594765}
 }
 ```
 
