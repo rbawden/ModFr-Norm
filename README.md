@@ -15,6 +15,9 @@ cat INPUT_FILE | python hf-conversion/pipeline.py -k BATCH_SIZE -b BEAM_SIZE > O
 You can also use the pipeline class python-internally as follows (you need to have the pipeline.py file locally to do this):
 
 ```
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from pipeline import NormalisationPipeline # N.B. local file
+
 tokeniser = AutoTokenizer.from_pretrained("rbawden/modern_french_normalisation")
 model = AutoModelForSeq2SeqLM.from_pretrained("rbawden/modern_french_normalisation")
 norm_pipeline = NormalisationPipeline(model=model,
