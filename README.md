@@ -327,7 +327,7 @@ This will produce a validation file `valid.eval` in the subfolder, which records
 
 If you use or refer to this work, please cite the following paper:
 
-Rachel Bawden, Jonathan Poinhos, Eleni Kogkitsidou, Philippe Gambette, Benoît Sagot, et al. Automatic Normalisation of Early Modern French. 2022. Preprint.
+Rachel Bawden, Jonathan Poinhos, Eleni Kogkitsidou, Philippe Gambette, Benoît Sagot, et al. 2022. Automatic Normalisation of Early Modern French. In Proceedings of the 13th Language Resources and Evaluation Conference. European Language Resources Association. Marseille, France.
 
 Bibtex:
 ```
