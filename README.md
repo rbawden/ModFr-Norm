@@ -3,7 +3,7 @@
 This repository contains the scripts and models to reproduce the results of the preprint [Automatic Normalisation of Early Modern French](https://hal.inria.fr/hal-03540226). See below for citation instructions.
 
 
-## Recommended model for easy use
+## Normalisation model on HuggingFace: Recommended model for easy use
 
 As well as the models trained in the paper (see below for instructions on how to use and retrain them), we distribute one of our models in an easily useable format, distributed by HuggingFace [here](https://huggingface.co/rbawden/modern_french_normalisation). It is a transformer model (equivalent to the one trained in the paper), ported to HuggingFace, fine-tuned, and also includes more rigorous post-processing (which can be disabled for faster normalisation).
 
