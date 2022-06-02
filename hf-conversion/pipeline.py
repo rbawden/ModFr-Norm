@@ -10,7 +10,6 @@ from tqdm.auto import tqdm
 import operator
 
 ######## Edit distance functions #######
-
 def _wedit_dist_init(len1, len2):
     lev = []
     for i in range(len1):
@@ -132,7 +131,6 @@ def wedit_distance_align(s1, s2):
 
 
 ######## Normaliation pipeline #########
-     
 class NormalisationPipeline(Pipeline):
 
     def __init__(self, beam_size=5, batch_size=32, **kwargs):
@@ -274,10 +272,51 @@ class NormalisationPipeline(Pipeline):
             and all(len(res) == 1 for res in result)
         ):
             return [res[0] for res in result]
-        return result
+        if type(args) is List:
+            alignments = [cls.align(args[i], result[i]) for x in range(len(*args))]}
+        else:
+            alignments = cls.align(args)
+        return {'predictions': result, 'alignments': alignments}
 
+    def align(cls, src, pred):
+        backpointers = wedit_distance_align(homogenise(sent_ref), homogenise(sent_pred))
+        alignment, current_word, seen1, seen2, last_weight = [], ['', ''], [], [], 0
+        for i_ref, i_pred, weight in backpointers:
+            if i_ref == 0 and i_pred == 0:
+                continue
+            # spaces in both, add straight away
+            if i_ref <= len(sent_ref) and sent_ref[i_ref-1] == ' ' and \
+               i_pred <= len(sent_pred) and sent_pred[i_pred-1] == ' ':
+                alignment.append((current_word[0].strip(), current_word[1].strip(), weight-last_weight))
+                last_weight = weight
+                current_word = ['', '']
+                seen1.append(i_ref)
+                seen2.append(i_pred)
+            else:
+                end_space = '░'
+                if i_ref <= len(sent_ref) and i_ref not in seen1:
+                    if i_ref > 0:
+                        current_word[0] += sent_ref[i_ref-1]
+                        seen1.append(i_ref)
+                if i_pred <= len(sent_pred) and i_pred not in seen2:
+                    if i_pred > 0:
+                        current_word[1] += sent_pred[i_pred-1] if sent_pred[i_pred-1] != ' ' else '▁'
+                        end_space = '' if space_after(i_pred, sent_pred) else '░'
+                        seen2.append(i_pred)
+                if i_ref <= len(sent_ref) and sent_ref[i_ref-1] == ' ' and current_word[0].strip() != '':
+                    alignment.append((current_word[0].strip(), current_word[1].strip() + end_space, weight-last_weight))
+                    last_weight = weight
+                    current_word = ['', '']
+        # final word
+        alignment.append((current_word[0].strip(), current_word[1].strip(), weight-last_weight))
+        # check that both strings are entirely covered
+        recovered1 = re.sub(' +', ' ', ' '.join([x[0] for x in alignment]))
+        recovered2 = re.sub(' +', ' ', ' '.join([x[1] for x in alignment]))
 
-
+        assert recovered1 == re.sub(' +', ' ', sent_ref), \
+            '\n' + re.sub(' +', ' ', recovered1) + "\n" + re.sub(' +', ' ', sent_ref)
+        assert re.sub('[░▁ ]+', '', recovered2) == re.sub('[▁ ]+', '', sent_pred), recovered2+" / "+sent_pred
+    return alignment
 
    
 def normalise_text(list_sents, batch_size=32, beam_size=5):
