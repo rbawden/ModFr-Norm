@@ -9,6 +9,23 @@ import re
 from tqdm.auto import tqdm
 import operator
 
+
+def basic_tokenise(string):
+    # separate punctuation
+    for char in r',.;?!:)("…-':
+        string = re.sub('(?<! )' + re.escape(char) + '+', ' ' + char, string)
+    for char in '\'"’':
+        string = re.sub(char + '(?! )' , char + ' ', string)
+    return string.strip()
+
+def homogenise(sent):
+    sent = sent.lower()
+#    sent = sent.replace("oe", "œ").replace("OE", "Œ")
+    replace_from = "ǽǣáàâäąãăåćčçďéèêëęěğìíîĩĭıïĺľłńñňòóôõöøŕřśšşťţùúûũüǔỳýŷÿźẑżžÁÀÂÄĄÃĂÅĆČÇĎÉÈÊËĘĚĞÌÍÎĨĬİÏĹĽŁŃÑŇÒÓÔÕÖØŔŘŚŠŞŤŢÙÚÛŨÜǓỲÝŶŸŹẐŻŽſ"
+    replace_into = "ææaaaaaaaacccdeeeeeegiiiiiiilllnnnoooooorrsssttuuuuuuyyyyzzzzAAAAAAAACCCDEEEEEEGIIIIIIILLLNNNOOOOOORRSSSTTUUUUUUYYYYZZZZs"
+    table = sent.maketrans(replace_from, replace_into)
+    return sent.translate(table)
+
 ######## Edit distance functions #######
 def _wedit_dist_init(len1, len2):
     lev = []
@@ -129,12 +146,26 @@ def wedit_distance_align(s1, s2):
     alignment = _wedit_dist_backtrace(lev)
     return alignment
 
+def space_after(idx, sent):
+    if idx < len(sent) -1 and sent[idx + 1] == ' ':
+        return True
+    return False
+
+def space_before(idx, sent):
+    if idx > 0 and sent[idx - 1] == ' ':
+        return True
+    return False
 
 ######## Normaliation pipeline #########
 class NormalisationPipeline(Pipeline):
 
-    def __init__(self, beam_size=5, batch_size=32, **kwargs):
+    def __init__(self, beam_size=5, batch_size=32, tokenise_func=None, **kwargs):
         self.beam_size = beam_size
+        # classic tokeniser function (used for alignments)
+        if tokenise_func is not None:
+            self.classic_tokenise = tokenise_func
+        else:
+            self.classic_tokenise = basic_tokenise
         super().__init__(**kwargs)
 
     
@@ -266,21 +297,26 @@ class NormalisationPipeline(Pipeline):
         """
 
         result = super().__call__(*args, **kwargs)
-        if (
-            isinstance(args[0], list)
+        if (isinstance(args[0], list)
             and all(isinstance(el, str) for el in args[0])
-            and all(len(res) == 1 for res in result)
-        ):
-            return [res[0] for res in result]
-        if type(args) is List:
-            alignments = [cls.align(args[i], result[i]) for x in range(len(*args))]}
+            and all(len(res) == 1 for res in result)):
+            output = []
+            for i in range(len(result)):
+                input_sent, pred_sent = args[0][i].strip(), result[i][0]['text'].strip()
+                alignment = self.align(input_sent, pred_sent)
+                char_spans = self.get_char_idx_align(input_sent, pred_sent, alignment)
+                output.append({'text': result[i][0]['text'], 'alignment': char_spans})
+            return output
+                    
         else:
-            alignments = cls.align(args)
-        return {'predictions': result, 'alignments': alignments}
+            return [{'text': result, 'alignment': self.align(args, result[0]['text'].strip())}]
 
-    def align(cls, src, pred):
-        backpointers = wedit_distance_align(homogenise(sent_ref), homogenise(sent_pred))
+    def align(self, sent_ref, sent_pred):
+        backpointers = wedit_distance_align(homogenise(self.classic_tokenise(re.sub('[  ]', '  ', sent_ref))),
+                                            homogenise(self.classic_tokenise(re.sub('[  ]', '  ', sent_pred))))
         alignment, current_word, seen1, seen2, last_weight = [], ['', ''], [], [], 0
+
+        print(homogenise(sent_ref), homogenise(sent_pred))
         for i_ref, i_pred, weight in backpointers:
             if i_ref == 0 and i_pred == 0:
                 continue
@@ -314,10 +350,27 @@ class NormalisationPipeline(Pipeline):
         recovered2 = re.sub(' +', ' ', ' '.join([x[1] for x in alignment]))
 
         assert recovered1 == re.sub(' +', ' ', sent_ref), \
-            '\n' + re.sub(' +', ' ', recovered1) + "\n" + re.sub(' +', ' ', sent_ref)
-        assert re.sub('[░▁ ]+', '', recovered2) == re.sub('[▁ ]+', '', sent_pred), recovered2+" / "+sent_pred
-    return alignment
+            '\n1: ' + re.sub(' +', ' ', recovered1) + "\n1: " + re.sub(' +', ' ', sent_ref)
+        assert re.sub('[░▁ ]+', '', recovered2) == re.sub('[▁ ]+', '', sent_pred), \
+            '\n2: ' + re.sub(' +', ' ', recovered2) + "\n2: " + re.sub(' +', ' ', sent_pred)
+        return alignment
 
+    
+    def get_char_idx_align(self, sent_ref, sent_pred, alignment):
+        covered_ref, covered_pred = 0, 0
+        ref_chars = [i for i, character in enumerate(sent_ref) if character not in [' ']]
+        pred_chars = [i for i, character in enumerate(sent_pred) if character not in [' ']]
+        align_idx = []
+        for a_ref, a_pred, _ in alignment:
+            if a_ref == '' and a_pred == '':
+                continue
+            a_pred = re.sub('[░▁ ]+', '', a_pred).strip()
+            span_ref = [ref_chars[covered_ref], ref_chars[covered_ref + len(a_ref) - 1]]
+            covered_ref += len(a_ref)
+            span_pred = [pred_chars[covered_pred], pred_chars[covered_pred + max(0, len(a_pred) - 1)]]
+            covered_pred += max(0, len(a_pred))
+            align_idx.append((span_ref, span_pred))
+        return align_idx
    
 def normalise_text(list_sents, batch_size=32, beam_size=5):
     tokeniser = AutoTokenizer.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
@@ -338,10 +391,17 @@ def normalise_from_stdin(batch_size=32, beam_size=5):
                                               beam_size=beam_size)
     list_sents = []
     for sent in sys.stdin:
-        list_sents.append(sent)
+        list_sents.append(sent.strip())
     normalised_outputs = normalisation_pipeline(list_sents)
-    for sent in normalised_outputs:
-        print(sent['text'].strip())
+    for s, sent in enumerate(normalised_outputs):
+        alignment=sent['alignment']
+        print(list_sents[s], len(list_sents[s]))
+        print(sent['text'], len(sent['text']))
+        print(sent['alignment'])
+        #for b, a in alignment:
+        #    print('input: [' + ''.join([list_sents[s][x] for x in range(b[0], b[1]+1)]) + ']')
+        #    print('pred: [' + ''.join([sent['text'][x] for x in range(a[0], a[1]+1)]) + ']')
+
     return normalised_outputs
 
     
