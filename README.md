@@ -330,7 +330,7 @@ This will produce a validation file `valid.eval` in the subfolder, which records
 
 If you use or refer to this work, please cite the following paper:
 
-[Rachel Bawden, Jonathan Poinhos, Eleni Kogkitsidou, Philippe Gambette, Benoît Sagot and Simon Gabay. 2022. Automatic Normalisation of Early Modern French. In Proceedings of the 13th Language Resources and Evaluation Conference. European Language Resources Association. Marseille, France.](http://www.lrec-conf.org/proceedings/lrec2022/pdf/2022.lrec-1.358.pdf)
+Rachel Bawden, Jonathan Poinhos, Eleni Kogkitsidou, Philippe Gambette, Benoît Sagot and Simon Gabay. 2022. [Automatic Normalisation of Early Modern French](http://www.lrec-conf.org/proceedings/lrec2022/pdf/2022.lrec-1.358.pdf). In Proceedings of the 13th Language Resources and Evaluation Conference. European Language Resources Association. Marseille, France.]
 
 Bibtex:
 ```
