@@ -17,19 +17,15 @@ You can also use the pipeline class python-internally as follows (you need to ha
 ```
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from pipeline import NormalisationPipeline # N.B. local file
-
+cache_lexicon_path="~/.normalisation_lex.pickle" # optionally set a path to store the processed lexicon (speeds up loading)
 tokeniser = AutoTokenizer.from_pretrained("rbawden/modern_french_normalisation")
 model = AutoModelForSeq2SeqLM.from_pretrained("rbawden/modern_french_normalisation")
-norm_pipeline = NormalisationPipeline(model=model,
-                                      tokenizer=tokeniser,
-                                      batch_size=batch_size,
-                                      beam_size=beam_size)
+norm_pipeline = NormalisationPipeline(model=model, tokenizer=tokeniser, batch_size=32, beam_size=5, cache_file=cache_lexicon_path)
                                               
 list_inputs = ["Elle haïſſoit particulierement le Cardinal de Lorraine;", "Adieu, i'iray chez vous tantoſt vous rendre grace."]
 list_outputs = norm_pipeline(list_inputs)
 print(list_outputs)
-
->> ["Elle haïssait particulièrement le Cardinal de Lorraine;", "Adieu, j'irai chez vous tantôt vous rendre grâce."]
+>> [{'text': 'Elle haïssait particulièrement le Cardinal de Lorraine; ', 'alignment': [([0, 3], [0, 3]), ([5, 12], [5, 12]), ([14, 29], [14, 29]), ([31, 32], [31, 32]), ([34, 41], [34, 41]), ([43, 44], [43, 44]), ([46, 53], [46, 53]), ([54, 54], [54, 54])]}, {'text': "Adieu, j'irai chez vous tantôt vous rendre grâce. ", 'alignment': [([0, 4], [0, 4]), ([5, 5], [5, 5]), ([7, 8], [7, 8]), ([9, 12], [9, 12]), ([14, 17], [14, 17]), ([19, 22], [19, 22]), ([24, 30], [24, 29]), ([32, 35], [31, 34]), ([37, 42], [36, 41]), ([44, 48], [43, 47]), ([49, 49], [48, 48])]}]
 ```
 
 ## Reproducing the results of the paper and using the normalisation models
