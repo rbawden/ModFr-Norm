@@ -6,6 +6,7 @@ import html.parser
 import unicodedata
 import sys, os
 import re
+import pickle
 from tqdm.auto import tqdm
 import operator
 from datasets import load_dataset
@@ -160,7 +161,7 @@ def space_before(idx, sent):
 ######## Normaliation pipeline #########
 class NormalisationPipeline(Pipeline):
 
-    def __init__(self, beam_size=5, batch_size=32, tokenise_func=None, **kwargs):
+    def __init__(self, beam_size=5, batch_size=32, tokenise_func=None, cache_file=None, **kwargs):
         self.beam_size = beam_size
         # classic tokeniser function (used for alignments)
         if tokenise_func is not None:
@@ -169,15 +170,18 @@ class NormalisationPipeline(Pipeline):
             self.classic_tokenise = basic_tokenise
 
         # load lexicon
-        self.lexicon_orig, self.lexicon_homog = self.load_lexicon()
+        self.lexicon_orig, self.lexicon_homog = self.load_lexicon(cache_file=cache_file)
         super().__init__(**kwargs)
 
 
-    def load_lexicon(self):
-        #local_file = '../data/lexicons/lefff-3.4.mlex'
+    def load_lexicon(self, cache_file=None):
         orig_words = []
         homog_words = {}
         remove = set([])
+
+        # load pickled version if there
+        if cache_file is not None and os.path.exists(cache_file):
+            return pickle.load(open(cache_file, 'rb'))
         dataset = load_dataset("sagot/lefff_morpho")
 
         for entry_dict in dataset['test']:
@@ -190,6 +194,9 @@ class NormalisationPipeline(Pipeline):
             
         for entry in remove:
             del homog_words[entry]
+
+        if cache_file is not None:
+            pickle.dump((orig_words, homog_words), open(cache_file, 'wb'))
         return orig_words, homog_words
     
     def _sanitize_parameters(self, clean_up_tokenisation_spaces=None, truncation=None, **generate_kwargs):
@@ -405,18 +412,8 @@ class NormalisationPipeline(Pipeline):
             output = []
             for i in range(len(result)):
                 input_sent, pred_sent = args[0][i].strip(), result[i][0]['text'].strip()
-                # correct pred sent
-                print('prediction = ', pred_sent)
-                print('source = ', input_sent)
-
-
-
                 alignment, pred_sent_tok = self.align(input_sent, pred_sent)
-                pred_sent, alignment = self.postprocess_correct_sents(alignment, pred_sent_tok)
-                print('alignment = ', alignment)
-                print('corrected pred = ', pred_sent)
-                print([x[1] for x in alignment])
-                print('******')
+                #pred_sent, alignment = self.postprocess_correct_sents(alignment, pred_sent_tok)
                 char_spans = self.get_char_idx_align(input_sent, pred_sent, alignment)
 
                 output.append({'text': result[i][0]['text'], 'alignment': char_spans})
@@ -426,13 +423,10 @@ class NormalisationPipeline(Pipeline):
             return [{'text': result, 'alignment': self.align(args, result[0]['text'].strip())}]
 
     def align(self, sent_ref, sent_pred):
-        print("*", sent_pred)
         sent_ref_tok = self.classic_tokenise(re.sub('[  ]', '  ', sent_ref))
         sent_pred_tok = self.classic_tokenise(re.sub('[  ]', '  ', sent_pred))
         backpointers = wedit_distance_align(homogenise(sent_ref_tok), homogenise(sent_pred_tok))
         alignment, current_word, seen1, seen2, last_weight = [], ['', ''], [], [], 0
-
-        print('before align = ', homogenise(sent_ref_tok), homogenise(sent_pred_tok))
         for i_ref, i_pred, weight in backpointers:
             if i_ref == 0 and i_pred == 0:
                 continue
@@ -445,7 +439,7 @@ class NormalisationPipeline(Pipeline):
                 seen1.append(i_ref)
                 seen2.append(i_pred)
             else:
-                end_space = '' #'░'
+                end_space = '░'
                 if i_ref <= len(sent_ref_tok) and i_ref not in seen1:
                     if i_ref > 0:
                         current_word[0] += sent_ref_tok[i_ref-1]
@@ -473,38 +467,34 @@ class NormalisationPipeline(Pipeline):
 
     
     def get_char_idx_align(self, sent_ref, sent_pred, alignment):
-        sent_ref = self.classic_tokenise(re.sub('[  ]', '  ', sent_ref))
-        sent_pred = self.classic_tokenise(re.sub('[  ]', '  ', sent_pred))
+        #sent_ref = self.classic_tokenise(re.sub('[  ]', '  ', sent_ref))
+        #sent_pred = self.classic_tokenise(re.sub('[  ]', '  ', sent_pred))
         
         covered_ref, covered_pred = 0, 0
         ref_chars = [i for i, character in enumerate(sent_ref) if character not in [' ']]
         pred_chars = [i for i, character in enumerate(sent_pred) if character not in [' ']]
         align_idx = []
-        #print(ref_chars)
-        #print(pred_chars)
+
         for a_ref, a_pred, _ in alignment:
             if a_ref == '' and a_pred == '':
                 continue
-            #print('ref: ', sent_ref)
-            #print('pred: ', sent_pred)
-            #print('align: ', a_ref, a_pred)
             a_pred = re.sub(' +', '', a_pred).strip()
             span_ref = [ref_chars[covered_ref], ref_chars[covered_ref + len(a_ref) - 1]]
             covered_ref += len(a_ref)
             span_pred = [pred_chars[covered_pred], pred_chars[covered_pred + max(0, len(a_pred) - 1)]]
             covered_pred += max(0, len(a_pred))
             align_idx.append((span_ref, span_pred))
-            #print(span_ref, span_pred)
-            #print('---')
+
         return align_idx
    
 def normalise_text(list_sents, batch_size=32, beam_size=5):
     tokeniser = AutoTokenizer.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
     model = AutoModelForSeq2SeqLM.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
     normalisation_pipeline = NormalisationPipeline(model=model,
-                                              tokenizer=tokeniser,
-                                              batch_size=batch_size,
-                                              beam_size=beam_size)
+                                                   tokenizer=tokeniser,
+                                                   batch_size=batch_size,
+                                                   beam_size=beam_size,
+                                                   cache_file="/home/rbawden/scratch/.normalisation_lefff.pickle")
     normalised_outputs = normalisation_pipeline(list_sents)
     return normalised_outputs
 
@@ -513,24 +503,21 @@ def normalise_from_stdin(batch_size=32, beam_size=5):
     model = AutoModelForSeq2SeqLM.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
     normalisation_pipeline = NormalisationPipeline(model=model,
                                               tokenizer=tokeniser,
-                                              batch_size=batch_size,
-                                              beam_size=beam_size)
+                                                   batch_size=batch_size,
+                                                   beam_size=beam_size,
+                                                   cache_file="/home/rbawden/scratch/.normalisation_lefff.pickle")
     list_sents = []
     for sent in sys.stdin:
         list_sents.append(sent.strip())
     normalised_outputs = normalisation_pipeline(list_sents)
-    print('norm outputs = ', normalised_outputs)
     for s, sent in enumerate(normalised_outputs):
         alignment=sent['alignment']
-        #print(list_sents[s], len(list_sents[s]))
-        #print(sent['text'], len(sent['text']))
-        print(sent['alignment'])
+
+        # printing in order to debug
         print('src = ', list_sents[s])
         print('norm = ', sent)
+        # checking that the alignment makes sense
         for b, a in alignment:
-            #print(b, a)
-            #print(list_sents[s])
-            #print(sent['text'])
             print('input: ' + ''.join([list_sents[s][x] for x in range(b[0], max(len(b), b[1]+1))]) + '')
             print('pred: ' + ''.join([sent['text'][x] for x in range(a[0], max(len(a), a[1]+1))]) + '')
 
