@@ -292,33 +292,12 @@ class NormalisationPipeline(Pipeline):
             records.append(record)
         return records
 
-    def postprocess_correct_sents(self, alignment, pred_sent_tok):
-        #return [pred_sent]
-        print(alignment)
+    def postprocess_correct_sents(self, alignment):
         output = []
-        # align the two
-        #alignments = self.align(orig_sent, pred_sent)
-        # correct word by word
-        len_diff_orig, len_diff_pred = 0, 0
-        pred_idxs = []
-        start = 0
-        for i, char in enumerate(re.sub(' +', ' ', pred_sent_tok) + " "):
-            if char == " ":
-                pred_idxs.append((start, i-1))
-                start = i+1
-        print(pred_idxs)
-        print('°°°°°°°°°°°°°°')
-        suffix_pred_sent = pred_sent
         for i, (orig_word, pred_word, _) in enumerate(alignment):
-            #print(orig_word, pred_word)
-            start_idx, end_idx = 1, 1
             postproc_word, alignment = self.postprocess_correct_word(orig_word, pred_word, alignment)
-            #print(postproc_word)
-            # replace word in tokenised sentence
-            
-            
-            output.append(postproc_word)
-        return re.sub(' +', ' ', ' '.join(output)), alignment
+            alignment[i] = (orig_word, pred_word, _) # replace prediction in the alignment
+        return alignment
 
     def postprocess_correct_word(self, orig_word, pred_word, alignment):
         # pred_word exists in lexicon, take it
@@ -413,7 +392,8 @@ class NormalisationPipeline(Pipeline):
             for i in range(len(result)):
                 input_sent, pred_sent = args[0][i].strip(), result[i][0]['text'].strip()
                 alignment, pred_sent_tok = self.align(input_sent, pred_sent)
-                #pred_sent, alignment = self.postprocess_correct_sents(alignment, pred_sent_tok)
+                alignment = self.postprocess_correct_sents(alignment)
+                pred_sent = ''.join([x[1] if x[1] != '' else '\n' for x in alignment]).replace('\n', ' ') # reconstruct pred from alignmentx
                 char_spans = self.get_char_idx_align(input_sent, pred_sent, alignment)
 
                 output.append({'text': result[i][0]['text'], 'alignment': char_spans})
@@ -439,7 +419,7 @@ class NormalisationPipeline(Pipeline):
                 seen1.append(i_ref)
                 seen2.append(i_pred)
             else:
-                end_space = '░'
+                end_space = '' #'░'
                 if i_ref <= len(sent_ref_tok) and i_ref not in seen1:
                     if i_ref > 0:
                         current_word[0] += sent_ref_tok[i_ref-1]
@@ -447,7 +427,7 @@ class NormalisationPipeline(Pipeline):
                 if i_pred <= len(sent_pred_tok) and i_pred not in seen2:
                     if i_pred > 0:
                         current_word[1] += sent_pred_tok[i_pred-1] if sent_pred_tok[i_pred-1] != ' ' else '▁'
-                        end_space = '' if space_after(i_pred, sent_pred_tok) else '░'
+                        end_space = '' if space_after(i_pred, sent_pred_tok) else ''# '░'
                         seen2.append(i_pred)
                 if i_ref <= len(sent_ref_tok) and sent_ref_tok[i_ref-1] == ' ' and current_word[0].strip() != '':
                     alignment.append((current_word[0].strip(), current_word[1].strip() + end_space, weight-last_weight))
@@ -467,9 +447,6 @@ class NormalisationPipeline(Pipeline):
 
     
     def get_char_idx_align(self, sent_ref, sent_pred, alignment):
-        #sent_ref = self.classic_tokenise(re.sub('[  ]', '  ', sent_ref))
-        #sent_pred = self.classic_tokenise(re.sub('[  ]', '  ', sent_pred))
-        
         covered_ref, covered_pred = 0, 0
         ref_chars = [i for i, character in enumerate(sent_ref) if character not in [' ']]
         pred_chars = [i for i, character in enumerate(sent_pred) if character not in [' ']]
