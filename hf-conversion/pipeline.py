@@ -471,7 +471,7 @@ def normalise_text(list_sents, batch_size=32, beam_size=5):
                                                    tokenizer=tokeniser,
                                                    batch_size=batch_size,
                                                    beam_size=beam_size,
-                                                   cache_file="/home/rbawden/scratch/.normalisation_lefff.pickle")
+                                                   cache_file=".normalisation_lefff.pickle")
     normalised_outputs = normalisation_pipeline(list_sents)
     return normalised_outputs
 
@@ -482,7 +482,7 @@ def normalise_from_stdin(batch_size=32, beam_size=5):
                                               tokenizer=tokeniser,
                                                    batch_size=batch_size,
                                                    beam_size=beam_size,
-                                                   cache_file="/home/rbawden/scratch/.normalisation_lefff.pickle")
+                                                   cache_file=".normalisation_lefff.pickle")
     list_sents = []
     for sent in sys.stdin:
         list_sents.append(sent.strip())
