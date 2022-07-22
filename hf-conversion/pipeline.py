@@ -20,9 +20,20 @@ def basic_tokenise(string):
         string = re.sub(char + '(?! )' , char + ' ', string)
     return string.strip()
 
-def homogenise(sent):
+def homogenise(sent, allow_alter_length=False):
+    '''
+    Homogenise an input sentence by lowercasing, removing diacritics, etc.
+    If allow_alter_length is False, then only applies changes that do not alter
+    the length of the original sentence (i.e. one-to-one modifications). If True,
+    then also apply n-m replacements.
+    '''
     sent = sent.lower()
-#    sent = sent.replace("oe", "œ").replace("OE", "Œ")
+    # n-m replacemenets
+    if allow_alter_length:
+        for before, after in [('ã', 'an'), ('xoe', 'œ')]:
+            sent = sent.replace(before, after)
+        sent = sent.strip('-')
+    # 1-1 replacements only (must not change the number of characters
     replace_from = "ǽǣáàâäąãăåćčçďéèêëęěğìíîĩĭıïĺľłńñňòóôõöøŕřśšşťţùúûũüǔỳýŷÿźẑżžÁÀÂÄĄÃĂÅĆČÇĎÉÈÊËĘĚĞÌÍÎĨĬİÏĹĽŁŃÑŇÒÓÔÕÖØŔŘŚŠŞŤŢÙÚÛŨÜǓỲÝŶŸŹẐŻŽſ"
     replace_into = "ææaaaaaaaacccdeeeeeegiiiiiiilllnnnoooooorrsssttuuuuuuyyyyzzzzAAAAAAAACCCDEEEEEEGIIIIIIILLLNNNOOOOOORRSSSTTUUUUUUYYYYZZZZs"
     table = sent.maketrans(replace_from, replace_into)
@@ -161,7 +172,7 @@ def space_before(idx, sent):
 ######## Normaliation pipeline #########
 class NormalisationPipeline(Pipeline):
 
-    def __init__(self, beam_size=5, batch_size=32, tokenise_func=None, cache_file=None, **kwargs):
+    def __init__(self, beam_size=5, batch_size=32, tokenise_func=None, cache_file=None, no_postproc=False, **kwargs):
         self.beam_size = beam_size
         # classic tokeniser function (used for alignments)
         if tokenise_func is not None:
@@ -170,7 +181,10 @@ class NormalisationPipeline(Pipeline):
             self.classic_tokenise = basic_tokenise
 
         # load lexicon
-        self.lexicon_orig, self.lexicon_homog = self.load_lexicon(cache_file=cache_file)
+        if no_postproc:
+            self.lexicon_orig, self.lexicon_homog = None, None
+        else:
+            self.lexicon_orig, self.lexicon_homog = self.load_lexicon(cache_file=cache_file)
         super().__init__(**kwargs)
 
 
@@ -187,11 +201,11 @@ class NormalisationPipeline(Pipeline):
         for entry_dict in dataset['test']:
             entry = entry_dict['form']
             orig_words.append(entry.lower())
-            if homogenise(entry) not in homog_words:
-                homog_words[homogenise(entry)] = entry
-            else:
+            if homogenise(entry) in homog_words and homog_words[homogenise(entry)] != entry.lower():
                 remove.add(homogenise(entry))
-            
+            if homogenise(entry) not in homog_words:
+                homog_words[homogenise(entry)] = entry.lower()
+
         for entry in remove:
             del homog_words[entry]
 
@@ -203,11 +217,8 @@ class NormalisationPipeline(Pipeline):
         preprocess_params = {}
         if truncation is not None:
             preprocess_params["truncation"] = truncation
-
         forward_params = generate_kwargs
-
         postprocess_params = {}
-
         if clean_up_tokenisation_spaces is not None:
             postprocess_params["clean_up_tokenisation_spaces"] = clean_up_tokenisation_spaces
 
@@ -226,15 +237,8 @@ class NormalisationPipeline(Pipeline):
 
 
     def normalise(self, line):
-        #line = unicodedata.normalize('NFKC', line)
-        #line = self.make_printable(line)
-        for before, after in [('[«»\“\”]', '"'),
-                              ('[‘’]', "'"),
-                              (' +', ' '),
-                              ('\"+', '"'),
-                              ("'+", "'"),
-                              ('^ *', ''),
-                              (' *$', '')]:
+        for before, after in [('[«»\“\”]', '"'), ('[‘’]', "'"), (' +', ' '), ('\"+', '"'),
+                              ("'+", "'"), ('^ *', ''), (' *$', '')]:
             line = re.sub(before, after, line)
         return line.strip() + ' </s>'
     
@@ -269,7 +273,6 @@ class NormalisationPipeline(Pipeline):
 
     def _forward(self, model_inputs, **generate_kwargs):
         in_b, input_length = model_inputs["input_ids"].shape
-
         generate_kwargs["min_length"] = generate_kwargs.get("min_length", self.model.config.min_length)
         generate_kwargs["max_length"] = generate_kwargs.get("max_length", self.model.config.max_length)
         generate_kwargs['num_beams'] = self.beam_size
@@ -279,47 +282,66 @@ class NormalisationPipeline(Pipeline):
         output_ids = output_ids.reshape(in_b, out_b // in_b, *output_ids.shape[1:])
         return {"output_ids": output_ids}
 
-    def postprocess(self, model_outputs, clean_up_tokenisation_spaces=False):
+    def postprocess(self, model_outputs, clean_up_tok_spaces=False):
         records = []
         for output_ids in model_outputs["output_ids"][0]:
-            record = {
-                "text": self.tokenizer.decode(
-                    output_ids,
-                    skip_special_tokens=True,
-                    clean_up_tokenisation_spaces=clean_up_tokenisation_spaces,
-                )
-            }
+            record = {"text": self.tokenizer.decode(output_ids, skip_special_tokens=True,
+                                                    clean_up_tokenisation_spaces=clean_up_tok_spaces).strip()}
             records.append(record)
         return records
 
-    def postprocess_correct_sents(self, alignment):
+    def postprocess_correct_sent(self, alignment):
         output = []
         for i, (orig_word, pred_word, _) in enumerate(alignment):
-            postproc_word, alignment = self.postprocess_correct_word(orig_word, pred_word, alignment)
-            alignment[i] = (orig_word, pred_word, _) # replace prediction in the alignment
+            if orig_word != '':
+                postproc_word = self.postprocess_correct_word(orig_word, pred_word, alignment)
+                alignment[i] = (orig_word, postproc_word, -1) # replace prediction in the alignment
         return alignment
 
     def postprocess_correct_word(self, orig_word, pred_word, alignment):
+        #print('*' + pred_word + '*' + orig_word + '*')
         # pred_word exists in lexicon, take it
+        orig_caps = self.get_caps(orig_word)
         if pred_word.lower() in self.lexicon_orig:
-            return pred_word, alignment
+            #print('pred exists')
+            return self.set_caps(pred_word, *orig_caps)
         # otherwise, if original word exists, take that
         if orig_word.lower() in self.lexicon_orig:
-            return orig_word, alignment
-        pred_replacement = self.lexicon_homog.get(homogenise(pred_word), None)
+            #print('orig word = ', pred_word, orig_word)
+            return orig_word
+        pred_replacement = self.lexicon_homog.get(homogenise(pred_word, True), None)
         # otherwise if pred word is in the lexicon with some changes, take that
         if pred_replacement is not None:
-            alignment = (alignment[0], pred_replacement, alignment[2])
-            return pred_replacement, alignment
-        orig_replacement = self.lexicon_homog.get(homogenise(orig_word), None)
+            #print('pred replace = ', pred_word, pred_replacement)
+            return self.add_orig_punct(pred_word, self.set_caps(pred_replacement, *orig_caps))
+        orig_replacement = self.lexicon_homog.get(homogenise(orig_word, True), None)
         # otherwise if orig word is in the lexicon with some changes, take that
         if orig_replacement is not None:
-            alignment =	(orig_replacement, alignment[1], alignment[2])
-            return orig_replacement, alignment
+            #print('orig replace = ', pred_word, orig_replacement)
+            return self.add_orig_punct(orig_word, self.set_caps(orig_replacement, *orig_caps))
         # otherwise return original word (or pred?) + postprocessing?
-        return orig_word, alignment
+        #print('last orig replace = ', pred_word, orig_word)
 
+        # TODO: how about, if close enough between src and pred, return pred?
+        return orig_word
+
+    def get_surrounding_punct(self, word):
+        beginning_match = re.match("^(['\-]*)", word)
+        beginning, end = '', ''
+        if beginning_match:
+            beginning = beginning_match.group(1)
+        end_match = re.match("(['\-]*)$", word)
+        if end_match:
+            end = end.group(1)
+        return beginning, end
+
+    def add_orig_punct(self, old_word, new_word):
+        beginning, end = self.get_surrounding_punct(old_word)
+        return beginning + new_word + end
+    
     def get_caps(self, word):
+        # remove any non-alphatic characters at begining or end
+        word = word.strip("-'")
         first, second, allcaps = False, False, False
         if len(word) > 0 and word[0].upper() == word[0]:
             first = True
@@ -335,45 +357,28 @@ class NormalisationPipeline(Pipeline):
         elif first and second:
             return word[0].upper() + word[1].upper() + word[2:]
         elif first:
-            return word[0].upper()
+            if len(word) > 1:
+                return word[0].upper() + word[1:]
+            else:
+                return word[0].upper() + word[1:]
         elif second:
-            return word[1].upper()
+            if len(word) > 2:
+                return word[0] + word[1].upper() + word[2:]
+            elif len(word) > 1:
+                return word[0] + word[1].upper() + word[2:]
+            else:
+                return word[0]
         else:
             return word
-    
-    def lexicon_lookup(self, candidate):
-        norm_candidate = homogenise(candidate.lower())
-        replacements = []
-        for candidate_word in candidate.split('▁'):
-            capitals = self.get_caps(candidate_word)
-            replacements.append([])
-            for word in self.lexicon:
-                if homogenise(word.lower()) == candidate_word:
-                    if len(replacements[-1]) > 0:
-                        return None # if ambiguity skip
-                    replacements[-1].append(self.set_caps(candidate, *capitals))
 
-        if [] not in replacements:
-            return ' '.join([x[0] for x in replacements]) # or some better strategy
-        else:
-            return None
-
-    def __call__(self, *args, **kwargs):
+    def __call__(self, input_sents, **kwargs):
         r"""
-        Generate the output text(s) using text(s) given as inputs.
+        Generate the output texts using texts given as inputs.
         Args:
-            args (`str` or `List[str]`):
+            args (`List[str]`):
                 Input text for the encoder.
-            return_tensors (`bool`, *optional*, defaults to `False`):
-                Whether or not to include the tensors of predictions (as token indices) in the outputs.
-            return_text (`bool`, *optional*, defaults to `True`):
-                Whether or not to include the decoded texts in the outputs.
-            clean_up_tokenisation_spaces (`bool`, *optional*, defaults to `False`):
-                Whether or not to clean up the potential extra spaces in the text output.
-            truncation (`TruncationStrategy`, *optional*, defaults to `TruncationStrategy.DO_NOT_TRUNCATE`):
-                The truncation strategy for the tokenisation within the pipeline. `TruncationStrategy.DO_NOT_TRUNCATE`
-                (default) will never truncate, but it is sometimes desirable to truncate the input to fit the model's
-                max_length instead of throwing an error down the line.
+            apply_postprocessing (`Bool`):
+                Apply postprocessing using the lexicon
             generate_kwargs:
                 Additional keyword arguments to pass along to the generate method of the model (see the generate method
                 corresponding to your framework [here](./model#generative-models)).
@@ -383,24 +388,18 @@ class NormalisationPipeline(Pipeline):
             - **generated_token_ids** (`torch.Tensor` or `tf.Tensor`, present when `return_tensors=True`) -- The token
               ids of the generated text.
         """
-
-        result = super().__call__(*args, **kwargs)
-        if (isinstance(args[0], list)
-            and all(isinstance(el, str) for el in args[0])
-            and all(len(res) == 1 for res in result)):
-            output = []
-            for i in range(len(result)):
-                input_sent, pred_sent = args[0][i].strip(), result[i][0]['text'].strip()
-                alignment, pred_sent_tok = self.align(input_sent, pred_sent)
-                alignment = self.postprocess_correct_sents(alignment)
-                pred_sent = ''.join([x[1] if x[1] != '' else '\n' for x in alignment]).replace('\n', ' ') # reconstruct pred from alignmentx
-                char_spans = self.get_char_idx_align(input_sent, pred_sent, alignment)
-
-                output.append({'text': result[i][0]['text'], 'alignment': char_spans})
-            return output
-                    
-        else:
-            return [{'text': result, 'alignment': self.align(args, result[0]['text'].strip())}]
+        result = super().__call__(input_sents, **kwargs)
+            
+        output = []
+        for i in range(len(result)):
+            input_sent, pred_sent = input_sents[i].strip(), result[i][0]['text'].strip()
+            alignment, pred_sent_tok = self.align(input_sent, pred_sent)
+            if self.lexicon_orig is not None:
+                alignment = self.postprocess_correct_sent(alignment)
+            pred_sent = self.get_pred_from_alignment(alignment)
+            char_spans = self.get_char_idx_align(input_sent, pred_sent, alignment)
+            output.append({'text': pred_sent, 'alignment': char_spans})
+        return output
 
     def align(self, sent_ref, sent_pred):
         sent_ref_tok = self.classic_tokenise(re.sub('[  ]', '  ', sent_ref))
@@ -411,8 +410,8 @@ class NormalisationPipeline(Pipeline):
             if i_ref == 0 and i_pred == 0:
                 continue
             # spaces in both, add straight away
-            if i_ref <= len(sent_ref_tok) and sent_ref_tok[i_ref-1] == ' ' and \
-               i_pred <= len(sent_pred_tok) and sent_pred_tok[i_pred-1] == ' ':
+            if i_ref <= len(sent_ref_tok) and sent_ref_tok[i_ref-1] == ' ' \
+                and i_pred <= len(sent_pred_tok) and sent_pred_tok[i_pred-1] == ' ':
                 alignment.append((current_word[0].strip(), current_word[1].strip(), weight-last_weight))
                 last_weight = weight
                 current_word = ['', '']
@@ -426,13 +425,20 @@ class NormalisationPipeline(Pipeline):
                         seen1.append(i_ref)
                 if i_pred <= len(sent_pred_tok) and i_pred not in seen2:
                     if i_pred > 0:
-                        current_word[1] += sent_pred_tok[i_pred-1] if sent_pred_tok[i_pred-1] != ' ' else '▁'
+                        current_word[1] += sent_pred_tok[i_pred-1] if sent_pred_tok[i_pred-1] != ' ' else ' ' #'▁'
                         end_space = '' if space_after(i_pred, sent_pred_tok) else ''# '░'
                         seen2.append(i_pred)
                 if i_ref <= len(sent_ref_tok) and sent_ref_tok[i_ref-1] == ' ' and current_word[0].strip() != '':
                     alignment.append((current_word[0].strip(), current_word[1].strip() + end_space, weight-last_weight))
                     last_weight = weight
                     current_word = ['', '']
+                # space in ref but aligned to nothing in pred (under-translation)
+                elif i_ref <= len(sent_ref_tok) and sent_ref_tok[i_ref-1] == ' ' and current_word[1].strip() == '':
+                    alignment.append((current_word[0].strip(), current_word[1].strip(), weight-last_weight))
+                    last_weight = weight
+                    current_word = ['', '']
+                    seen1.append(i_ref)
+                    seen2.append(i_pred)
         # final word
         alignment.append((current_word[0].strip(), current_word[1].strip(), weight-last_weight))
         # check that both strings are entirely covered
@@ -445,45 +451,51 @@ class NormalisationPipeline(Pipeline):
             '\n2: ' + re.sub(' +', ' ', recovered2) + "\n2: " + re.sub(' +', ' ', sent_pred_tok)
         return alignment, sent_pred_tok
 
+    def get_pred_from_alignment(self, alignment):
+         return re.sub(' +', ' ', ''.join([x[1] if x[1] != "" else '\n' for x in alignment]).replace('\n', ' '))
     
     def get_char_idx_align(self, sent_ref, sent_pred, alignment):
         covered_ref, covered_pred = 0, 0
-        ref_chars = [i for i, character in enumerate(sent_ref) if character not in [' ']]
-        pred_chars = [i for i, character in enumerate(sent_pred) if character not in [' ']]
+        ref_chars = [i for i, character in enumerate(sent_ref) if character not in [' ']] + [len(sent_ref)]
+        pred_chars = [i for i, character in enumerate(sent_pred)] + [len(sent_pred)]# if character not in [' ']]
         align_idx = []
-
         for a_ref, a_pred, _ in alignment:
             if a_ref == '' and a_pred == '':
+                covered_pred += 1
                 continue
-            a_pred = re.sub(' +', '', a_pred).strip()
-            span_ref = [ref_chars[covered_ref], ref_chars[covered_ref + len(a_ref) - 1]]
+            a_pred = re.sub(' +', ' ', a_pred).strip()
+            span_ref = [ref_chars[covered_ref], ref_chars[covered_ref + len(a_ref)]]
             covered_ref += len(a_ref)
-            span_pred = [pred_chars[covered_pred], pred_chars[covered_pred + max(0, len(a_pred) - 1)]]
-            covered_pred += max(0, len(a_pred))
+            span_pred = [pred_chars[covered_pred], pred_chars[covered_pred + len(a_pred)]]
+            covered_pred += len(a_pred)
             align_idx.append((span_ref, span_pred))
 
         return align_idx
    
-def normalise_text(list_sents, batch_size=32, beam_size=5):
+def normalise_text(list_sents, batch_size=32, beam_size=5, cache_file=None):
     tokeniser = AutoTokenizer.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
     model = AutoModelForSeq2SeqLM.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
     normalisation_pipeline = NormalisationPipeline(model=model,
                                                    tokenizer=tokeniser,
                                                    batch_size=batch_size,
                                                    beam_size=beam_size,
-                                                   cache_file=".normalisation_lefff.pickle")
+                                                   cache_file=cache_file,
+                                                   no_postproc=no_postproc)
     normalised_outputs = normalisation_pipeline(list_sents)
     return normalised_outputs
 
-def normalise_from_stdin(batch_size=32, beam_size=5):
+def normalise_from_stdin(batch_size=32, beam_size=5, cache_file=None, no_postproc=False):
     tokeniser = AutoTokenizer.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
     model = AutoModelForSeq2SeqLM.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
     normalisation_pipeline = NormalisationPipeline(model=model,
-                                              tokenizer=tokeniser,
+                                                   tokenizer=tokeniser,
                                                    batch_size=batch_size,
                                                    beam_size=beam_size,
-                                                   cache_file=".normalisation_lefff.pickle")
+                                                   cache_file=cache_file,
+                                                   no_postproc=no_postproc
+                                                   )
     list_sents = []
+    #ex = ["7. Qu'vne force plus grande de ſi peu que l'on voudra, que celle auec laquelle l'eau de la hauteur de trente & vn pieds, tend à couler en bas, ſuffit pour faire admettre ce vuide apparent, & meſme ſi grãd que l'on voudra, c'eſt à dire, pour faire des-vnir les corps d'vn ſi grand interualle que l'on voudra, pourueu qu'il n'y ait point d'autre obſtacle à leur ſeparation ny à leur eſloignement, que l'horreur que la Nature a pour ce vuide apparent."]
     for sent in sys.stdin:
         list_sents.append(sent.strip())
     normalised_outputs = normalisation_pipeline(list_sents)
@@ -491,32 +503,41 @@ def normalise_from_stdin(batch_size=32, beam_size=5):
         alignment=sent['alignment']
 
         # printing in order to debug
-        print('src = ', list_sents[s])
-        print('norm = ', sent)
+        #print('src = ', list_sents[s])
+        print(sent['text'])
         # checking that the alignment makes sense
-        for b, a in alignment:
-            print('input: ' + ''.join([list_sents[s][x] for x in range(b[0], max(len(b), b[1]+1))]) + '')
-            print('pred: ' + ''.join([sent['text'][x] for x in range(a[0], max(len(a), a[1]+1))]) + '')
+        #for b, a in alignment:
+        #    print('input: ' + ''.join([list_sents[s][x] for x in range(b[0], max(len(b), b[1]))]) + '')
+        #    print('pred: ' + ''.join([sent['text'][x] for x in range(a[0], max(len(a), a[1]))]) + '')
 
     return normalised_outputs
 
     
 if __name__ == '__main__':
-
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('-k', '--batch_size', type=int, default=32, help='Set the batch size for decoding')
     parser.add_argument('-b', '--beam_size', type=int, default=5, help='Set the beam size for decoding')
     parser.add_argument('-i', '--input_file', type=str, default=None, help='Input file. If None, read from STDIN')
+    parser.add_argument('-c', '--cache_lexicon', type=str, default=None, help='Path to cache the lexicon file to speed up loading')
+    parser.add_argument('-n', '--no_postproc', default=False, action='store_true', help='Deactivate postprocessing to speed up normalisation, but this may degrade the output')
+        
     args = parser.parse_args()
 
     if args.input_file is None:
-         normalise_from_stdin(batch_size=args.batch_size, beam_size=args.beam_size)
+         normalise_from_stdin(batch_size=args.batch_size,
+                              beam_size=args.beam_size,
+                              cache_file=args.cache_lexicon,
+                              no_postproc=args.no_postproc)
     else:
          list_sents = []
          with open(args.input_file) as fp:
               for line in fp:
                    list_sents.append(line.strip())
-         output_sents = normalise_text(list_sents, batch_size=args.batch_size, beam_size=args.beam_size)
+         output_sents = normalise_text(list_sents,
+                                       batch_size=args.batch_size,
+                                       beam_size=args.beam_size,
+                                       cache_file=args.cache_lexicon,
+                                       no_postproc=args.no_postproc)
          for output_sent in output_sents:
-              print(output_sent)
+              print(output_sent['text'])
