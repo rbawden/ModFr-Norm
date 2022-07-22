@@ -392,11 +392,13 @@ class NormalisationPipeline(Pipeline):
             
         output = []
         for i in range(len(result)):
+            print(i)
             input_sent, pred_sent = input_sents[i].strip(), result[i][0]['text'].strip()
             alignment, pred_sent_tok = self.align(input_sent, pred_sent)
             if self.lexicon_orig is not None:
                 alignment = self.postprocess_correct_sent(alignment)
             pred_sent = self.get_pred_from_alignment(alignment)
+            print(pred_sent)
             char_spans = self.get_char_idx_align(input_sent, pred_sent, alignment)
             output.append({'text': pred_sent, 'alignment': char_spans})
         return output
