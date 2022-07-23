@@ -340,8 +340,9 @@ class NormalisationPipeline(Pipeline):
         return beginning + new_word + end
     
     def get_caps(self, word):
+        #print(word)
         # remove any non-alphatic characters at begining or end
-        word = word.strip("-'")
+        word = word.strip("-' ")
         first, second, allcaps = False, False, False
         if len(word) > 0 and word[0].upper() == word[0]:
             first = True
@@ -349,6 +350,7 @@ class NormalisationPipeline(Pipeline):
             second = True
         if word.upper() == word:
             allcaps = True
+        #print(first, second, allcaps)
         return first, second, allcaps
 
     def set_caps(self, word, first, second, allcaps):
@@ -392,7 +394,7 @@ class NormalisationPipeline(Pipeline):
             
         output = []
         for i in range(len(result)):
-            print(i)
+            #print(i)
             input_sent, pred_sent = input_sents[i].strip(), result[i][0]['text'].strip()
             alignment, pred_sent_tok = self.align(input_sent, pred_sent)
             if self.lexicon_orig is not None:
@@ -414,7 +416,10 @@ class NormalisationPipeline(Pipeline):
             # spaces in both, add straight away
             if i_ref <= len(sent_ref_tok) and sent_ref_tok[i_ref-1] == ' ' \
                 and i_pred <= len(sent_pred_tok) and sent_pred_tok[i_pred-1] == ' ':
-                alignment.append((current_word[0].strip(), current_word[1].strip(), weight-last_weight))
+                if current_word[0] == '' and current_word[1] == '':
+                    alignment.append((' ', ' ', weight-last_weight))
+                else:
+                    alignment.append((current_word[0], current_word[1], weight-last_weight))
                 last_weight = weight
                 current_word = ['', '']
                 seen1.append(i_ref)
@@ -436,7 +441,7 @@ class NormalisationPipeline(Pipeline):
                     current_word = ['', '']
                 # space in ref but aligned to nothing in pred (under-translation)
                 elif i_ref <= len(sent_ref_tok) and sent_ref_tok[i_ref-1] == ' ' and current_word[1].strip() == '':
-                    alignment.append((current_word[0].strip(), current_word[1].strip(), weight-last_weight))
+                    alignment.append((current_word[0], current_word[1], weight-last_weight))
                     last_weight = weight
                     current_word = ['', '']
                     seen1.append(i_ref)
@@ -454,23 +459,40 @@ class NormalisationPipeline(Pipeline):
         return alignment, sent_pred_tok
 
     def get_pred_from_alignment(self, alignment):
-         return re.sub(' +', ' ', ''.join([x[1] if x[1] != "" else '\n' for x in alignment]).replace('\n', ' '))
+         return re.sub(' +', ' ', ''.join([x[1] if x[1] != '' else '\n' for x in alignment]).replace('\n', ''))
     
     def get_char_idx_align(self, sent_ref, sent_pred, alignment):
         covered_ref, covered_pred = 0, 0
-        ref_chars = [i for i, character in enumerate(sent_ref) if character not in [' ']] + [len(sent_ref)]
+        ref_chars = [i for i, character in enumerate(sent_ref)] + [len(sent_ref)]  #if character not in [' ']] + [len(sent_ref)]
         pred_chars = [i for i, character in enumerate(sent_pred)] + [len(sent_pred)]# if character not in [' ']]
         align_idx = []
+        #print(sent_pred)
+        #print(sent_ref)
+        #print(alignment)
+        #input()
         for a_ref, a_pred, _ in alignment:
             if a_ref == '' and a_pred == '':
                 covered_pred += 1
                 continue
             a_pred = re.sub(' +', ' ', a_pred).strip()
+            #print('***')
+            #print(len(ref_chars))
+            #print(covered_pred)
+            #print(len(a_ref))
+            #print(''.join([x for x in sent_ref if x != ' '][:covered_ref]))
+            #print('ref = ', sent_ref)
             span_ref = [ref_chars[covered_ref], ref_chars[covered_ref + len(a_ref)]]
             covered_ref += len(a_ref)
+            #print('---')
+            #print(len(pred_chars))
+            #print(covered_pred)
+            #print('pred = ', sent_pred[:covered_pred])
+            #print('ref = ', sent_ref[:covered_ref])
+            #print(len(a_pred))
             span_pred = [pred_chars[covered_pred], pred_chars[covered_pred + len(a_pred)]]
             covered_pred += len(a_pred)
             align_idx.append((span_ref, span_pred))
+            #print(''.join([sent_pred[x] for x in range(span_pred[0], span_pred[1])]))
 
         return align_idx
    
@@ -497,7 +519,7 @@ def normalise_from_stdin(batch_size=32, beam_size=5, cache_file=None, no_postpro
                                                    no_postproc=no_postproc
                                                    )
     list_sents = []
-    #ex = ["7. Qu'vne force plus grande de ſi peu que l'on voudra, que celle auec laquelle l'eau de la hauteur de trente & vn pieds, tend à couler en bas, ſuffit pour faire admettre ce vuide apparent, & meſme ſi grãd que l'on voudra, c'eſt à dire, pour faire des-vnir les corps d'vn ſi grand interualle que l'on voudra, pourueu qu'il n'y ait point d'autre obſtacle à leur ſeparation ny à leur eſloignement, que l'horreur que la Nature a pour ce vuide apparent."]
+    ex = ["7. Qu'vne force plus grande de ſi peu que l'on voudra, que celle auec laquelle l'eau de la hauteur de trente & vn pieds, tend à couler en bas, ſuffit pour faire admettre ce vuide apparent, & meſme ſi grãd que l'on voudra, c'eſt à dire, pour faire des-vnir les corps d'vn ſi grand interualle que l'on voudra, pourueu qu'il n'y ait point d'autre obſtacle à leur ſeparation ny à leur eſloignement, que l'horreur que la Nature a pour ce vuide apparent."]
     for sent in sys.stdin:
         list_sents.append(sent.strip())
     normalised_outputs = normalisation_pipeline(list_sents)
@@ -506,7 +528,7 @@ def normalise_from_stdin(batch_size=32, beam_size=5, cache_file=None, no_postpro
 
         # printing in order to debug
         #print('src = ', list_sents[s])
-        print(sent['text'])
+        #print(sent['text'])
         # checking that the alignment makes sense
         #for b, a in alignment:
         #    print('input: ' + ''.join([list_sents[s][x] for x in range(b[0], max(len(b), b[1]))]) + '')
