@@ -400,7 +400,7 @@ class NormalisationPipeline(Pipeline):
             if self.lexicon_orig is not None:
                 alignment = self.postprocess_correct_sent(alignment)
             pred_sent = self.get_pred_from_alignment(alignment)
-            print(pred_sent)
+            #print(pred_sent)
             char_spans = self.get_char_idx_align(input_sent, pred_sent, alignment)
             output.append({'text': pred_sent, 'alignment': char_spans})
         return output
@@ -528,7 +528,7 @@ def normalise_from_stdin(batch_size=32, beam_size=5, cache_file=None, no_postpro
 
         # printing in order to debug
         #print('src = ', list_sents[s])
-        #print(sent['text'])
+        print(sent['text'])
         # checking that the alignment makes sense
         #for b, a in alignment:
         #    print('input: ' + ''.join([list_sents[s][x] for x in range(b[0], max(len(b), b[1]))]) + '')
