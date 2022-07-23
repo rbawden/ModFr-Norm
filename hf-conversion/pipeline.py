@@ -394,7 +394,7 @@ class NormalisationPipeline(Pipeline):
             
         output = []
         for i in range(len(result)):
-            #print(i)
+            os.sys.stderr.write(str(i) + ':' + input_sents[i].strip() + '\n')
             input_sent, pred_sent = input_sents[i].strip(), result[i][0]['text'].strip()
             alignment, pred_sent_tok = self.align(input_sent, pred_sent)
             if self.lexicon_orig is not None:
