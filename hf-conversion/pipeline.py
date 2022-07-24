@@ -325,7 +325,7 @@ class NormalisationPipeline(Pipeline):
         # otherwise if orig word is in the lexicon with some changes, take that
         if orig_replacement is not None:
             #print('orig replace = ', pred_word, orig_replacement)
-            return self.add_orig_punct(orig_word, rule_basedself.set_caps(orig_replacement, *orig_caps))
+            return self.add_orig_punct(orig_word, self.set_caps(orig_replacement, *orig_caps))
         # otherwise return original word (or pred?) + postprocessing?
         #print('last orig replace = ', pred_word, orig_word)
 
