@@ -20,6 +20,13 @@ def basic_tokenise(string):
         string = re.sub(char + '(?! )' , char + ' ', string)
     return string.strip()
 
+def rule_based(word):
+    if word is None:
+        return word
+    for before, after in [('ſ', 's')]:
+        word = word.replace(before, after)
+    return word
+
 def homogenise(sent, allow_alter_length=False):
     '''
     Homogenise an input sentence by lowercasing, removing diacritics, etc.
@@ -314,16 +321,16 @@ class NormalisationPipeline(Pipeline):
         if pred_replacement is not None:
             #print('pred replace = ', pred_word, pred_replacement)
             return self.add_orig_punct(pred_word, self.set_caps(pred_replacement, *orig_caps))
-        orig_replacement = self.lexicon_homog.get(homogenise(orig_word, True), None)
+        orig_replacement = rule_based(self.lexicon_homog.get(homogenise(orig_word, True), None))
         # otherwise if orig word is in the lexicon with some changes, take that
         if orig_replacement is not None:
             #print('orig replace = ', pred_word, orig_replacement)
-            return self.add_orig_punct(orig_word, self.set_caps(orig_replacement, *orig_caps))
+            return self.add_orig_punct(orig_word, rule_basedself.set_caps(orig_replacement, *orig_caps))
         # otherwise return original word (or pred?) + postprocessing?
         #print('last orig replace = ', pred_word, orig_word)
 
         # TODO: how about, if close enough between src and pred, return pred?
-        return orig_word
+        return rule_based(orig_word)
 
     def get_surrounding_punct(self, word):
         beginning_match = re.match("^(['\-]*)", word)
@@ -344,6 +351,8 @@ class NormalisationPipeline(Pipeline):
         # remove any non-alphatic characters at begining or end
         word = word.strip("-' ")
         first, second, allcaps = False, False, False
+        if not re.match('[a-zàéèçîïôÔ]', word, re.I):
+            return False, False, False
         if len(word) > 0 and word[0].upper() == word[0]:
             first = True
         if len(word) > 1 and word[1].upper() == word[1]:
@@ -394,12 +403,14 @@ class NormalisationPipeline(Pipeline):
             
         output = []
         for i in range(len(result)):
-            os.sys.stderr.write(str(i) + ':' + input_sents[i].strip() + '\n')
+            #os.sys.stderr.write(str(i) + ':' + input_sents[i].strip() + '\n')
             input_sent, pred_sent = input_sents[i].strip(), result[i][0]['text'].strip()
             alignment, pred_sent_tok = self.align(input_sent, pred_sent)
+            #print(pred_sent)
             if self.lexicon_orig is not None:
                 alignment = self.postprocess_correct_sent(alignment)
             pred_sent = self.get_pred_from_alignment(alignment)
+            #print(alignment)
             #print(pred_sent)
             char_spans = self.get_char_idx_align(input_sent, pred_sent, alignment)
             output.append({'text': pred_sent, 'alignment': char_spans})
@@ -408,39 +419,73 @@ class NormalisationPipeline(Pipeline):
     def align(self, sent_ref, sent_pred):
         sent_ref_tok = self.classic_tokenise(re.sub('[  ]', '  ', sent_ref))
         sent_pred_tok = self.classic_tokenise(re.sub('[  ]', '  ', sent_pred))
+        #print(sent_ref_tok)
+        #print(sent_pred_tok)
+        #exit()
         backpointers = wedit_distance_align(homogenise(sent_ref_tok), homogenise(sent_pred_tok))
+        #print('__')
+        #print(backpointers)
+        #print(len(sent_ref_tok))
+        #print(len(sent_pred_tok))
+        #print([sent_ref_tok[x[0]-1] + '-->' + sent_pred_tok[x[1]-1] + '(' + str(round(x[2],1)) + ')' for x in backpointers[1:]])
+        #exit()
+        #print('__')
         alignment, current_word, seen1, seen2, last_weight = [], ['', ''], [], [], 0
         for i_ref, i_pred, weight in backpointers:
             if i_ref == 0 and i_pred == 0:
                 continue
-            # spaces in both, add straight away
+            # next characters are both spaces -> add current word straight away
             if i_ref <= len(sent_ref_tok) and sent_ref_tok[i_ref-1] == ' ' \
-                and i_pred <= len(sent_pred_tok) and sent_pred_tok[i_pred-1] == ' ':
+                and i_pred <= len(sent_pred_tok) and sent_pred_tok[i_pred-1] == ' ' \
+                and i_ref not in seen1 and i_pred not in seen2:
+
+                # if current word is empty -> insert a space on both sides
                 if current_word[0] == '' and current_word[1] == '':
                     alignment.append((' ', ' ', weight-last_weight))
+                    #print('adding space both sides')
+                # else add the current word to both sides
                 else:
+                    #print('current word not empty', current_word)
                     alignment.append((current_word[0], current_word[1], weight-last_weight))
                 last_weight = weight
                 current_word = ['', '']
                 seen1.append(i_ref)
                 seen2.append(i_pred)
+            # if space in ref and dash in pred
+            elif i_ref <= len(sent_ref_tok) and sent_ref_tok[i_ref-1] == ' ' \
+                and i_pred <= len(sent_pred_tok) and sent_pred_tok[i_pred-1] == '-' \
+                and i_ref not in seen1 and i_pred not in seen2 \
+                and current_word[0] == '' and current_word[1] == '':
+                alignment.append((' ', '', weight-last_weight))
+                last_weight = weight
+                current_word = ['', '-']
+                seen1.append(i_ref)
+                seen2.append(i_pred)
+                #print('space in ref and dash in pred')
+                #exit()
             else:
                 end_space = '' #'░'
+                # add new character to ref
                 if i_ref <= len(sent_ref_tok) and i_ref not in seen1:
                     if i_ref > 0:
+                        #print('adding new letter to ref = ', sent_ref_tok[i_ref-1])
                         current_word[0] += sent_ref_tok[i_ref-1]
                         seen1.append(i_ref)
+                # add new character to pred
                 if i_pred <= len(sent_pred_tok) and i_pred not in seen2:
                     if i_pred > 0:
+                        #print('adding new letter to pred = ', sent_pred_tok[i_pred-1])
                         current_word[1] += sent_pred_tok[i_pred-1] if sent_pred_tok[i_pred-1] != ' ' else ' ' #'▁'
                         end_space = '' if space_after(i_pred, sent_pred_tok) else ''# '░'
                         seen2.append(i_pred)
                 if i_ref <= len(sent_ref_tok) and sent_ref_tok[i_ref-1] == ' ' and current_word[0].strip() != '':
+                    #print('space in ref, add current word to alignment')
                     alignment.append((current_word[0].strip(), current_word[1].strip() + end_space, weight-last_weight))
                     last_weight = weight
                     current_word = ['', '']
                 # space in ref but aligned to nothing in pred (under-translation)
                 elif i_ref <= len(sent_ref_tok) and sent_ref_tok[i_ref-1] == ' ' and current_word[1].strip() == '':
+                    #print('undertranslation')
                     alignment.append((current_word[0], current_word[1], weight-last_weight))
                     last_weight = weight
                     current_word = ['', '']
@@ -463,7 +508,8 @@ class NormalisationPipeline(Pipeline):
     
     def get_char_idx_align(self, sent_ref, sent_pred, alignment):
         covered_ref, covered_pred = 0, 0
-        ref_chars = [i for i, character in enumerate(sent_ref)] + [len(sent_ref)]  #if character not in [' ']] + [len(sent_ref)]
+        #ref_chars = [i for i, character in enumerate(sent_ref) if character not in [' ']] + [len(sent_ref)]
+        ref_chars = [i for i, character in enumerate(sent_ref)] + [len(sent_ref)]  #
         pred_chars = [i for i, character in enumerate(sent_pred)] + [len(sent_pred)]# if character not in [' ']]
         align_idx = []
         #print(sent_pred)
@@ -480,6 +526,7 @@ class NormalisationPipeline(Pipeline):
             #print(covered_pred)
             #print(len(a_ref))
             #print(''.join([x for x in sent_ref if x != ' '][:covered_ref]))
+            #print(''.join([x for x in sent_ref][:covered_ref]))
             #print('ref = ', sent_ref)
             span_ref = [ref_chars[covered_ref], ref_chars[covered_ref + len(a_ref)]]
             covered_ref += len(a_ref)
