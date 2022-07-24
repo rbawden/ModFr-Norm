@@ -497,10 +497,10 @@ class NormalisationPipeline(Pipeline):
         recovered1 = re.sub(' +', ' ', ' '.join([x[0] for x in alignment]))
         recovered2 = re.sub(' +', ' ', ' '.join([x[1] for x in alignment]))
 
-        assert recovered1 == re.sub('[  ]+', ' ', sent_ref_tok), \
-            '\n1: *' + re.sub(' +', ' ', recovered1) + "*\n1: *" + re.sub('[  ]+', ' ', sent_ref_tok) + '*'
+        assert re.sub('[  ]+', ' ', recovered1) == re.sub('[  ]+', ' ', sent_ref_tok), \
+            '\n1: *' + re.sub('[  ]+', ' ', recovered1) + "*\n1: *" + re.sub('[  ]+', ' ', sent_ref_tok) + '*'
         assert re.sub('[░▁ ]+', '', recovered2) == re.sub('[▁ ]+', '', sent_pred_tok), \
-            '\n2: ' + re.sub(' +', ' ', recovered2) + "\n2: " + re.sub('[  ]+', ' ', sent_pred_tok)
+            '\n2: ' + re.sub('[  ]+', ' ', recovered2) + "\n2: " + re.sub('[  ]+', ' ', sent_pred_tok)
         return alignment, sent_pred_tok
 
     def get_pred_from_alignment(self, alignment):
