@@ -651,8 +651,8 @@ class NormalisationPipeline(Pipeline):
         return align_idx
    
 def normalise_text(list_sents, batch_size=32, beam_size=5, cache_file=None):
-    tokeniser = AutoTokenizer.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
-    model = AutoModelForSeq2SeqLM.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
+    tokeniser = AutoTokenizer.from_pretrained("rbawden/modern_french_normalisation")
+    model = AutoModelForSeq2SeqLM.from_pretrained("rbawden/modern_french_normalisation")
     normalisation_pipeline = NormalisationPipeline(model=model,
                                                    tokenizer=tokeniser,
                                                    batch_size=batch_size,
@@ -663,8 +663,8 @@ def normalise_text(list_sents, batch_size=32, beam_size=5, cache_file=None):
     return normalised_outputs
 
 def normalise_from_stdin(batch_size=32, beam_size=5, cache_file=None, no_postproc=False):
-    tokeniser = AutoTokenizer.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
-    model = AutoModelForSeq2SeqLM.from_pretrained("rbawden/modern_french_normalisation", use_auth_token=True)
+    tokeniser = AutoTokenizer.from_pretrained("rbawden/modern_french_normalisation")
+    model = AutoModelForSeq2SeqLM.from_pretrained("rbawden/modern_french_normalisation")
     normalisation_pipeline = NormalisationPipeline(model=model,
                                                    tokenizer=tokeniser,
                                                    batch_size=batch_size,
