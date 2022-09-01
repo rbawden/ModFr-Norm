@@ -201,8 +201,8 @@ class NormalisationPipeline(Pipeline):
         for entry_dict in dataset['test']:
             entry = entry_dict['form'].lower()
             orig_lefff_words.append(entry)
-            for mod_entry in self._create_modified_versions(entry):
-                if mod_entry in mapping_to_lefff and mapping_to_lefff[homogenise(entry)] != entry.lower():
+            for mod_entry in set(self._create_modified_versions(entry)):
+                if mod_entry in mapping_to_lefff and mapping_to_lefff[mod_entry] != entry:
                     remove.add(mod_entry)
                 if mod_entry not in mapping_to_lefff:
                     mapping_to_lefff[mod_entry] = entry
@@ -217,7 +217,7 @@ class NormalisationPipeline(Pipeline):
     def _create_modified_versions(self, entry=None):
         if entry is None:
             return []
-        return self._remove_diacritics(entry), self._vowel_u_to_vowel_v(entry), self._consonant_v_to_consonant_u(entry), self._y_to_i(entry), self._eacute_to_e_s(entry), self._vowelcircumflex_to_vowel_s(entry)
+        return self._remove_diacritics(entry), self._vowel_u_to_vowel_v(entry), self._consonant_v_to_consonant_u(entry), self._y_to_i(entry), self._i_to_y(entry), self._eacute_to_e_s(entry), self._vowelcircumflex_to_vowel_s(entry)
 
     def _remove_diacritics(self, s=None, allow_alter_length=True):
         # 1-1 replacements only (must not change the number of characters
@@ -253,6 +253,10 @@ class NormalisationPipeline(Pipeline):
     
     def _y_to_i(self, s=None):
         s = s.replace('y', 'i')
+        return s
+
+    def _i_to_y(self, s=None):
+        s = s.replace('i', 'y')
         return s
 
     def _eacute_to_e_s(self, s=None, allow_alter_length=True):
@@ -456,6 +460,7 @@ class NormalisationPipeline(Pipeline):
             if self.orig_lefff_words is not None:
                 alignment = self.postprocess_correct_sent(alignment)
             pred_sent = self.get_pred_from_alignment(alignment)
+            pred_sent = self.post_cleaning(pred_sent)
             #print(alignment)
             #print(pred_sent)
             char_spans = self.get_char_idx_align(input_sent, pred_sent, alignment)
