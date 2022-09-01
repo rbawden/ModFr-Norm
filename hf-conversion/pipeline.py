@@ -400,11 +400,9 @@ class NormalisationPipeline(Pipeline):
         # remove any non-alphatic characters at begining or end
         word = word.strip("-' ")
         first, second, allcaps = False, False, False
-        if not re.match('[a-zàéèçîïôÔ]', word, re.I):
-            return False, False, False
-        if len(word) > 0 and word[0].upper() == word[0]:
+        if len(word) > 0 and word[0].lower() != word[0]:
             first = True
-        if len(word) > 1 and word[1].upper() == word[1]:
+        if len(word) > 1 and word[1].lower() != word[1]:
             second = True
         if word.upper() == word:
             allcaps = True
@@ -467,7 +465,7 @@ class NormalisationPipeline(Pipeline):
             output.append({'text': pred_sent, 'alignment': char_spans})
         return output
 
-    def post_cleaning(self, s, apply_non_trivial_regexps=True):
+    def post_cleaning(self, s):
         s = s.replace(' ' , '')
         s = s.replace('ſ' , 's')
         s = s.replace('ß' , 'ss')
@@ -480,47 +478,6 @@ class NormalisationPipeline(Pipeline):
         s = s.replace('õ' , 'on')
         s = re.sub('ũ([mbp])' , r'um\1', s)
         s = s.replace('ũ' , 'un')
-        if apply_non_trivial_regexps:
-            s = re.sub(r'\bI([aeE])' , r'J\1', s)
-            s = re.sub(r'\bi([aeou])' , r'j\1', s)
-            s = re.sub(r'([uaoncü])y\b' , r'\1i', s)
-            s = re.sub(r'\b((?:ce)?)([lh])i\b' , r'\1\2ui', s)
-            s = re.sub(r'\b([mRft])i\b' , r'\1oi', s)
-            s = re.sub(r'\bvi\b' , r'vois', s)
-            s = re.sub(r'\b(vr)i\b' , r'\1ai', s)
-            s = re.sub(r'\bvu([aeiou])' , r'v\1', s)
-            s = re.sub(r'\bvn' , r'un', s)
-            s = re.sub(r"\bI'" , r"J'", s)
-            s = re.sub(r"\bi'" , r"j'", s)
-            s = re.sub(r'\bi\b' , r'ai', s)
-            s = re.sub(r'es(tr|m)e((?:s|nt)?)\b' , r'ê\1e\2', s)
-            s = re.sub(r'as(tr|m)e((?:s|nt)?)\b' , r'â\1e\2', s)
-            s = re.sub(r'is(tr|m)e((?:s|nt)?)\b' , r'î\1e\2', s)
-            s = re.sub(r'us(tr|m)e((?:s|nt)?)\b' , r'û\1e\2', s)
-            s = re.sub(r'os(tr|m)e((?:s|nt)?)\b' , r'ô\1e\2', s)
-            s = re.sub(r's(tr|m)e((?:s|nt)?)\b' , r'\1e\2', s)
-            s = re.sub(r'é(mes?)\b' , r'ê\1', s)
-            s = re.sub(r'au([eo])' , r'av\1', s)
-            s = re.sub(r'\besté\b' , r'été', s)
-            s = re.sub(r'\bestes\b' , r'êtes', s)
-            s = re.sub(r'estoi((?:en)?)t\b' , r'étai\1t', s)
-            s = re.sub(r'(ser|aur|av|fais)oi((?:en)?)t\b' , r'\1ai\2t', s)
-            s = re.sub(r'^A\b' , r'À' , s);
-            s = re.sub(r'\b(ap|t)res' , r'\1rès', s)
-            s = re.sub(r'\ba(mes?)\b' , r'â\1', s)
-            s = re.sub(r'\bii\b' , r'ici', s)
-            s = re.sub(r'sçi\b' , r'sais', s)
-            s = re.sub(r'sç' , r's', s)
-            s = re.sub(r'([^aeou])e(res?)\b' , r'\1è\2', s)
-            s = re.sub(r'to[ûu](?:si|j)ours?' , r'toujours', s)
-            s = re.sub(r'([aeiou])i([aiou])' , r'\1j\2', s)
-            s = re.sub(r'([aeiou])u([aeiou])' , r'\1v\2', s)
-            s = re.sub(r'usm' , r'ûm', s)
-            s = re.sub(r'osm' , r'ôm', s)
-            s = re.sub(r'ë\b' , r'e', s)
-            s = re.sub(r'avecques?' , r'avec', s)
-            s = re.sub(r'aprés\b' , r'après', s)
-            s = re.sub(r'\bes(tan?t)' , r'é\1', s)            
         return s
 
     def align(self, sent_ref, sent_pred):
