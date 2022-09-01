@@ -388,7 +388,7 @@ class NormalisationPipeline(Pipeline):
             beginning = beginning_match.group(1)
         end_match = re.match("(['\-]*)$", word)
         if end_match:
-            end = end.group(1)
+            end = end_match.group(1)
         return beginning, end
 
     def add_orig_punct(self, old_word, new_word):
