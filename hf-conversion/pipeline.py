@@ -20,13 +20,6 @@ def basic_tokenise(string):
         string = re.sub(char + '(?! )' , char + ' ', string)
     return string.strip()
 
-def rule_based(word):
-    if word is None:
-        return word
-    for before, after in [('ſ', 's')]:
-        word = word.replace(before, after)
-    return word
-
 def homogenise(sent, allow_alter_length=False):
     '''
     Homogenise an input sentence by lowercasing, removing diacritics, etc.
@@ -189,15 +182,15 @@ class NormalisationPipeline(Pipeline):
 
         # load lexicon
         if no_postproc:
-            self.lexicon_orig, self.lexicon_homog = None, None
+            self.orig_lefff_words, self.mapping_to_lefff = None, None
         else:
-            self.lexicon_orig, self.lexicon_homog = self.load_lexicon(cache_file=cache_file)
+            self.orig_lefff_words, self.mapping_to_lefff = self.load_lexicon(cache_file=cache_file)
         super().__init__(**kwargs)
 
 
     def load_lexicon(self, cache_file=None):
-        orig_words = []
-        homog_words = {}
+        orig_lefff_words = []
+        mapping_to_lefff = {}
         remove = set([])
 
         # load pickled version if there
@@ -206,20 +199,79 @@ class NormalisationPipeline(Pipeline):
         dataset = load_dataset("sagot/lefff_morpho")
 
         for entry_dict in dataset['test']:
-            entry = entry_dict['form']
-            orig_words.append(entry.lower())
-            if homogenise(entry) in homog_words and homog_words[homogenise(entry)] != entry.lower():
-                remove.add(homogenise(entry))
-            if homogenise(entry) not in homog_words:
-                homog_words[homogenise(entry)] = entry.lower()
+            entry = entry_dict['form'].lower()
+            orig_lefff_words.append(entry)
+            for mod_entry in self._create_modified_versions(entry):
+                if mod_entry in mapping_to_lefff and mapping_to_lefff[homogenise(entry)] != entry.lower():
+                    remove.add(mod_entry)
+                if mod_entry not in mapping_to_lefff:
+                    mapping_to_lefff[mod_entry] = entry
 
         for entry in remove:
-            del homog_words[entry]
+            del mapping_to_lefff[entry]
 
         if cache_file is not None:
-            pickle.dump((orig_words, homog_words), open(cache_file, 'wb'))
-        return orig_words, homog_words
+            pickle.dump((orig_lefff_words, mapping_to_lefff), open(cache_file, 'wb'))
+        return orig_lefff_words, mapping_to_lefff
+
+    def _create_modified_versions(self, entry=None):
+        if entry is None:
+            return []
+        return self._remove_diacritics(entry), self._vowel_u_to_vowel_v(entry), self._consonant_v_to_consonant_u(entry), self._y_to_i(entry), self._eacute_to_e_s(entry), self._vowelcircumflex_to_vowel_s(entry)
+
+    def _remove_diacritics(self, s=None, allow_alter_length=True):
+        # 1-1 replacements only (must not change the number of characters
+        replace_from = "ǽǣáàâäąãăåćčçďéèêëęěğìíîĩĭıïĺľłńñňòóôõöøŕřśšşťţùúûũüǔỳýŷÿźẑżžÁÀÂÄĄÃĂÅĆČÇĎÉÈÊËĘĚĞÌÍÎĨĬİÏĹĽŁŃÑŇÒÓÔÕÖØŔŘŚŠŞŤŢÙÚÛŨÜǓỲÝŶŸŹẐŻŽſ"
+        replace_into = "ææaaaaaaaacccdeeeeeegiiiiiiilllnnnoooooorrsssttuuuuuuyyyyzzzzAAAAAAAACCCDEEEEEEGIIIIIIILLLNNNOOOOOORRSSSTTUUUUUUYYYYZZZZs"
+        table = s.maketrans(replace_from, replace_into)
+        s = s.translate(table)
+        # n-m replacemenets
+        if allow_alter_length:
+            for before, after in [
+                    ('œ', 'oe'),
+                    ('æ', 'ae'),
+                    ('ƣ', 'oi'),
+                    ('ĳ', 'ij'),
+                    ('ȣ', 'ou'),
+                    ('Œ', 'OE'),
+                    ('Æ', 'AE'),
+                    ('Ƣ', 'OI'),
+                    ('Ĳ', 'IJ'),
+                    ('Ȣ', 'OU')
+                    ]:
+                s = s.replace(before, after)
+            s = s.strip('-')
+        return s
+
+    def _vowel_u_to_vowel_v(self, s=None):
+        s = re.sub('([aeiou])u' , r'\1v', s)
+        return s
     
+    def _consonant_v_to_consonant_u(self, s=None):
+        s = re.sub('([^aeiou])v' , r'\1u', s)
+        return s
+    
+    def _y_to_i(self, s=None):
+        s = s.replace('y', 'i')
+        return s
+
+    def _eacute_to_e_s(self, s=None, allow_alter_length=True):
+        if allow_alter_length:
+            s = s.replace('é', 'es')
+        return s
+
+    def _vowelcircumflex_to_vowel_s(self, s=None, allow_alter_length=True):
+        if allow_alter_length:
+            for before, after in [
+                    ('â', 'as'),
+                    ('ê', 'es'),
+                    ('î', 'is'),
+                    ('ô', 'os'),
+                    ('û', 'us'),
+                    ]:
+                s = s.replace(before, after)
+        return s
+
     def _sanitize_parameters(self, clean_up_tokenisation_spaces=None, truncation=None, **generate_kwargs):
         preprocess_params = {}
         if truncation is not None:
@@ -309,28 +361,21 @@ class NormalisationPipeline(Pipeline):
         #print('*' + pred_word + '*' + orig_word + '*')
         # pred_word exists in lexicon, take it
         orig_caps = self.get_caps(orig_word)
-        if pred_word.lower() in self.lexicon_orig:
+        if pred_word.lower() in self.orig_lefff_words:
             #print('pred exists')
             return self.set_caps(pred_word, *orig_caps)
         # otherwise, if original word exists, take that
-        if orig_word.lower() in self.lexicon_orig:
+        if orig_word.lower() in self.orig_lefff_words:
             #print('orig word = ', pred_word, orig_word)
             return orig_word
-        pred_replacement = self.lexicon_homog.get(homogenise(pred_word, True), None)
+        pred_replacement = self.mapping_to_lefff.get(pred_word, None)
         # otherwise if pred word is in the lexicon with some changes, take that
         if pred_replacement is not None:
             #print('pred replace = ', pred_word, pred_replacement)
             return self.add_orig_punct(pred_word, self.set_caps(pred_replacement, *orig_caps))
-        orig_replacement = rule_based(self.lexicon_homog.get(homogenise(orig_word, True), None))
-        # otherwise if orig word is in the lexicon with some changes, take that
-        if orig_replacement is not None:
-            #print('orig replace = ', pred_word, orig_replacement)
-            return self.add_orig_punct(orig_word, self.set_caps(orig_replacement, *orig_caps))
-        # otherwise return original word (or pred?) + postprocessing?
-        #print('last orig replace = ', pred_word, orig_word)
 
-        # TODO: how about, if close enough between src and pred, return pred?
-        return rule_based(orig_word)
+        # TODO: how about, if orig_word and pred_word are close enough, return pred_word, else orig_word
+        return orig_word
 
     def get_surrounding_punct(self, word):
         beginning_match = re.match("^(['\-]*)", word)
@@ -405,9 +450,10 @@ class NormalisationPipeline(Pipeline):
         for i in range(len(result)):
             #os.sys.stderr.write(str(i) + ':' + input_sents[i].strip() + '\n')
             input_sent, pred_sent = input_sents[i].strip(), result[i][0]['text'].strip()
+            pred_sent = self.post_cleaning(pred_sent)
             alignment, pred_sent_tok = self.align(input_sent, pred_sent)
             #print(pred_sent)
-            if self.lexicon_orig is not None:
+            if self.orig_lefff_words is not None:
                 alignment = self.postprocess_correct_sent(alignment)
             pred_sent = self.get_pred_from_alignment(alignment)
             #print(alignment)
@@ -415,6 +461,62 @@ class NormalisationPipeline(Pipeline):
             char_spans = self.get_char_idx_align(input_sent, pred_sent, alignment)
             output.append({'text': pred_sent, 'alignment': char_spans})
         return output
+
+    def post_cleaning(self, s, apply_non_trivial_regexps=True):
+        s = s.replace(' ' , '')
+        s = s.replace('ſ' , 's')
+        s = s.replace('ß' , 'ss')
+        s = s.replace('&' , 'et')
+        s = re.sub('ẽ([mbp])' , r'em\1', s)
+        s = s.replace('ẽ' , 'en')
+        s = re.sub('ã([mbp])' , r'am\1', s)
+        s = s.replace('ã' , 'an')
+        s = re.sub('õ([mbp])' , r'om\1', s)
+        s = s.replace('õ' , 'on')
+        s = re.sub('ũ([mbp])' , r'um\1', s)
+        s = s.replace('ũ' , 'un')
+        if apply_non_trivial_regexps:
+            s = re.sub(r'\bI([aeE])' , r'J\1', s)
+            s = re.sub(r'\bi([aeou])' , r'j\1', s)
+            s = re.sub(r'([uaoncü])y\b' , r'\1i', s)
+            s = re.sub(r'\b((?:ce)?)([lh])i\b' , r'\1\2ui', s)
+            s = re.sub(r'\b([mRft])i\b' , r'\1oi', s)
+            s = re.sub(r'\bvi\b' , r'vois', s)
+            s = re.sub(r'\b(vr)i\b' , r'\1ai', s)
+            s = re.sub(r'\bvu([aeiou])' , r'v\1', s)
+            s = re.sub(r'\bvn' , r'un', s)
+            s = re.sub(r"\bI'" , r"J'", s)
+            s = re.sub(r"\bi'" , r"j'", s)
+            s = re.sub(r'\bi\b' , r'ai', s)
+            s = re.sub(r'es(tr|m)e((?:s|nt)?)\b' , r'ê\1e\2', s)
+            s = re.sub(r'as(tr|m)e((?:s|nt)?)\b' , r'â\1e\2', s)
+            s = re.sub(r'is(tr|m)e((?:s|nt)?)\b' , r'î\1e\2', s)
+            s = re.sub(r'us(tr|m)e((?:s|nt)?)\b' , r'û\1e\2', s)
+            s = re.sub(r'os(tr|m)e((?:s|nt)?)\b' , r'ô\1e\2', s)
+            s = re.sub(r's(tr|m)e((?:s|nt)?)\b' , r'\1e\2', s)
+            s = re.sub(r'é(mes?)\b' , r'ê\1', s)
+            s = re.sub(r'au([eo])' , r'av\1', s)
+            s = re.sub(r'\besté\b' , r'été', s)
+            s = re.sub(r'\bestes\b' , r'êtes', s)
+            s = re.sub(r'estoi((?:en)?)t\b' , r'étai\1t', s)
+            s = re.sub(r'(ser|aur|av|fais)oi((?:en)?)t\b' , r'\1ai\2t', s)
+            s = re.sub(r'^A\b' , r'À' , s);
+            s = re.sub(r'\b(ap|t)res' , r'\1rès', s)
+            s = re.sub(r'\ba(mes?)\b' , r'â\1', s)
+            s = re.sub(r'\bii\b' , r'ici', s)
+            s = re.sub(r'sçi\b' , r'sais', s)
+            s = re.sub(r'sç' , r's', s)
+            s = re.sub(r'([^aeou])e(res?)\b' , r'\1è\2', s)
+            s = re.sub(r'to[ûu](?:si|j)ours?' , r'toujours', s)
+            s = re.sub(r'([aeiou])i([aiou])' , r'\1j\2', s)
+            s = re.sub(r'([aeiou])u([aeiou])' , r'\1v\2', s)
+            s = re.sub(r'usm' , r'ûm', s)
+            s = re.sub(r'osm' , r'ôm', s)
+            s = re.sub(r'ë\b' , r'e', s)
+            s = re.sub(r'avecques?' , r'avec', s)
+            s = re.sub(r'aprés\b' , r'après', s)
+            s = re.sub(r'\bes(tan?t)' , r'é\1', s)            
+        return s
 
     def align(self, sent_ref, sent_pred):
         sent_ref_tok = self.classic_tokenise(re.sub('[  ]', '  ', sent_ref))
