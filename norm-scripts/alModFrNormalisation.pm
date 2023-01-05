@@ -23,7 +23,7 @@ sub almodfrnormalise {
   if ($apply_nontrivial_regexps) {
     s/\bI([aeE])/J$1/g;
     s/\bi([aeou])/j$1/g;
-    s/[uaoncü]y\b/$1i/g;
+    s/([uaoncü])y\b/$1i/g;
     s/\b((?:ce)?)([lh])i\b/$1$2ui/g;
     s/\b([mRft])i\b/$1oi/g;
     s/\bvi\b/vois/g;
