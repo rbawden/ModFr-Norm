@@ -20,6 +20,12 @@ def basic_tokenise(string):
         string = re.sub(char + '(?! )' , char + ' ', string)
     return string.strip()
 
+def basic_tokenise_bs(string):
+    # separate punctuation
+    string = re.sub('(?<! )([,\.;\?!:\)\("…\'‘’”“«»\-])', r' \1', string)
+    string = re.sub('([,\.;\?!:\)\("…\'‘’”“«»\-])(?! )' , r'\1 ', string)
+    return string.strip()
+
 def homogenise(sent, allow_alter_length=False):
     '''
     Homogenise an input sentence by lowercasing, removing diacritics, etc.
@@ -115,9 +121,10 @@ def _wedit_dist_insertion_cost(c1, c2):
 
 def wedit_distance_align(s1, s2):
     """
-    Calculate the minimum Levenshtein edit-distance based alignment
+    Calculate the minimum Levenshtein weighted edit-distance based alignment
     mapping between two strings. The alignment finds the mapping
-    from string s1 to s2 that minimizes the edit distance cost.
+    from string s1 to s2 that minimizes the edit distance cost, where each
+    operation is weighted by a dedicated weighting function.
     For example, mapping "rain" to "shine" would involve 2
     substitutions, 2 matches and an insertion resulting in
     the following mapping:
@@ -159,6 +166,71 @@ def wedit_distance_align(s1, s2):
     alignment = _wedit_dist_backtrace(lev)
     return alignment
 
+def _last_left_t_init(sigma):
+    return {c: 0 for c in sigma}
+
+def wedit_distance(s1, s2):
+    """
+    Calculate the Levenshtein weighted edit-distance between two strings.
+    The weighted edit distance is the number of characters that need to be
+    substituted, inserted, or deleted, to transform s1 into s2, weighted 
+    by a dedicated weighting function.
+    For example, transforming "rain" to "shine" requires three steps,
+    consisting of two substitutions and one insertion:
+    "rain" -> "sain" -> "shin" -> "shine".  These operations could have
+    been done in other orders, but at least three steps are needed.
+
+    Allows specifying the cost of substitution edits (e.g., "a" -> "b"),
+    because sometimes it makes sense to assign greater penalties to
+    substitutions.
+
+    This also optionally allows transposition edits (e.g., "ab" -> "ba"),
+    though this is disabled by default.
+
+    :param s1, s2: The strings to be analysed
+    :param transpositions: Whether to allow transposition edits
+    :type s1: str
+    :type s2: str
+    :type substitution_cost: int
+    :type transpositions: bool
+    :rtype: int
+    """
+    # set up a 2-D array
+    len1 = len(s1)
+    len2 = len(s2)
+    lev = _wedit_dist_init(len1 + 1, len2 + 1)
+
+    # retrieve alphabet
+    sigma = set()
+    sigma.update(s1)
+    sigma.update(s2)
+
+    # set up table to remember positions of last seen occurrence in s1
+    last_left_t = _last_left_t_init(sigma)
+
+    # iterate over the array
+    # i and j start from 1 and not 0 to stay close to the wikipedia pseudo-code
+    # see https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
+    for i in range(len1):
+        last_right_buf = 0
+        for j in range(len2):
+            last_left = last_left_t[s2[j - 1]]
+            last_right = last_right_buf
+            if s1[i - 1] == s2[j - 1]:
+                last_right_buf = j
+            _wedit_dist_step(
+                lev,
+                i + 1,
+                j + 1,
+                s1,
+                s2,
+                last_left,
+                last_right,
+                transpositions=False,
+            )
+        last_left_t[s1[i - 1]] = i
+    return lev[len1-1][len2-1]
+
 def space_after(idx, sent):
     if idx < len(sent) -1 and sent[idx + 1] == ' ':
         return True
@@ -185,42 +257,89 @@ class NormalisationPipeline(Pipeline):
         self.no_postproc_lex = no_postproc_lex
         # load lexicon
         if no_postproc_lex:
-            self.orig_lefff_words, self.mapping_to_lefff = None, None
+            self.orig_lefff_words, self.mapping_to_lefff, self.mapping_to_lefff2 = None, None, None
         else:
-            self.orig_lefff_words, self.mapping_to_lefff = self.load_lexicon(cache_file=cache_file)
+            self.orig_lefff_words, self.mapping_to_lefff, self.mapping_to_lefff2 = self.load_lexicon(cache_file=cache_file)
         super().__init__(**kwargs)
 
 
     def load_lexicon(self, cache_file=None):
         orig_lefff_words = []
         mapping_to_lefff = {}
+        mapping_to_lefff2 = {}
         remove = set([])
+        remove2 = set([])
 
         # load pickled version if there
         if cache_file is not None and os.path.exists(cache_file):
             return pickle.load(open(cache_file, 'rb'))
         dataset = load_dataset("sagot/lefff_morpho")
 
-        for entry_dict in dataset['test']:
-            entry = entry_dict['form'].lower()
+        for entry in set([x['form'].lower() for x in dataset['test']]):
             orig_lefff_words.append(entry)
+            orig_lefff_words.append("-"+entry)
             for mod_entry in set(self._create_modified_versions(entry)):
                 if mod_entry in mapping_to_lefff and mapping_to_lefff[mod_entry] != entry:
                     remove.add(mod_entry)
-                if mod_entry not in mapping_to_lefff:
+                    if mod_entry != mod_entry.upper():
+                        remove.add(mod_entry)
+                if mod_entry not in mapping_to_lefff and mod_entry != entry:
                     mapping_to_lefff[mod_entry] = entry
+                    if mod_entry != mod_entry.upper():
+                        mapping_to_lefff2[mod_entry.upper()] = entry.upper()
+                for mod_entry2 in set(self._create_modified_versions(mod_entry)):
+                    if mod_entry2 in mapping_to_lefff2 and mapping_to_lefff2[mod_entry2] != entry:
+                        remove2.add(mod_entry2)
+                        if mod_entry2 != mod_entry2.upper():
+                            remove2.add(mod_entry2)
+                    if mod_entry2 not in mapping_to_lefff2 and mod_entry2 != entry:
+                        mapping_to_lefff2[mod_entry2] = entry
+                        if mod_entry2 != mod_entry2.upper():
+                            mapping_to_lefff2[mod_entry2.upper()] = entry.upper()
+                for mod_entry2 in set(self._create_further_modified_versions(mod_entry)):
+                    if mod_entry2 in mapping_to_lefff2 and mapping_to_lefff2[mod_entry2] != entry:
+                        remove2.add(mod_entry2)
+                        if mod_entry2 != mod_entry2.upper():
+                            remove2.add(mod_entry2)
+                    if mod_entry2 not in mapping_to_lefff2 and mod_entry2 != entry:
+                        mapping_to_lefff2[mod_entry2] = entry
+                        if mod_entry2 != mod_entry2.upper():
+                            mapping_to_lefff2[mod_entry2.upper()] = entry.upper()
+            for mod_entry2 in set(self._create_further_modified_versions(entry)):
+                if mod_entry2 in mapping_to_lefff2 and mapping_to_lefff2[mod_entry2] != entry:
+                    remove2.add(mod_entry2)
+                    if mod_entry2 != mod_entry2.upper():
+                        remove2.add(mod_entry2)
+                if mod_entry2 not in mapping_to_lefff2 and mod_entry2 != entry:
+                    mapping_to_lefff2[mod_entry2] = entry
+                    if mod_entry2 != mod_entry2.upper():
+                        mapping_to_lefff2[mod_entry2.upper()] = entry.upper()
+                    
+        for mod_entry in list(mapping_to_lefff.keys()):
+            if mod_entry != "":
+                mapping_to_lefff["-"+mod_entry] = "-"+mapping_to_lefff[mod_entry]
+        for mod_entry2 in list(mapping_to_lefff2.keys()):
+            if mod_entry2 != "":
+                mapping_to_lefff2["-"+mod_entry2] = "-"+mapping_to_lefff2[mod_entry2]
 
         for entry in remove:
             del mapping_to_lefff[entry]
+        for entry in remove2:
+            del mapping_to_lefff2[entry]
 
         if cache_file is not None:
-            pickle.dump((orig_lefff_words, mapping_to_lefff), open(cache_file, 'wb'))
-        return orig_lefff_words, mapping_to_lefff
+            pickle.dump((orig_lefff_words, mapping_to_lefff, mapping_to_lefff2), open(cache_file, 'wb'))
+        return orig_lefff_words, mapping_to_lefff, mapping_to_lefff2
 
     def _create_modified_versions(self, entry=None):
         if entry is None:
             return []
-        return self._remove_diacritics(entry), self._vowel_u_to_vowel_v(entry), self._consonant_v_to_consonant_u(entry), self._y_to_i(entry), self._i_to_y(entry), self._eacute_to_e_s(entry), self._vowelcircumflex_to_vowel_s(entry)
+        return self._remove_diacritics(entry), self._vu_vowel_to_v_vowel(entry), self._vowel_u_to_vowel_v(entry), self._consonant_v_to_consonant_u(entry), self._y_to_i(entry), self._i_to_y(entry), self._eacute_to_e_s(entry), self._final_eacute_to_e_z(entry), self._egrave_to_eacute(entry), self._vowelcircumflex_to_vowel_s(entry), self._ce_to_ee(entry)
+
+    def _create_further_modified_versions(self, entry=None):
+        if entry is None:
+            return []
+        return self._s_to_f(entry), self._ss_to_ff(entry), self._s_to_ff(entry), self._first_s_to_f(entry), self._first_s_to_ff(entry), self._last_s_to_f(entry), self._last_s_to_ff(entry), self._sit_to_st(entry), self._ee_to_ce(entry), self._z_to_s(entry)
 
     def _remove_diacritics(self, s=None, allow_alter_length=True):
         # 1-1 replacements only (must not change the number of characters
@@ -246,6 +365,10 @@ class NormalisationPipeline(Pipeline):
             s = s.strip('-')
         return s
 
+    def _vu_vowel_to_v_vowel(self, s=None):
+        s = re.sub('v([aeiou])' , r'vu\1', s)
+        return s
+    
     def _vowel_u_to_vowel_v(self, s=None):
         s = re.sub('([aeiou])u' , r'\1v', s)
         return s
@@ -262,9 +385,64 @@ class NormalisationPipeline(Pipeline):
         s = s.replace('i', 'y')
         return s
 
+    def _ss_to_ff(self, s=None):
+        s = s.replace('ss', 'ff')
+        return s
+
+    def _s_to_f(self, s=None):
+        s = s.replace('s', 'f')
+        return s
+
+    def _s_to_ff(self, s=None):
+        s = s.replace('s', 'ff')
+        return s
+
+    def _first_s_to_f(self, s=None):
+        s = re.sub('s' , r'f', s)
+        return s
+
+    def _last_s_to_f(self, s=None):
+        s = re.sub('^(.*)s' , r'\1f', s)
+        return s
+
+    def _first_s_to_ff(self, s=None):
+        s = re.sub('s' , r'ff', s)
+        return s
+
+    def _last_s_to_ff(self, s=None):
+        s = re.sub('^(.*)s' , r'\1ff', s)
+        return s
+
+    def _ee_to_ce(self, s=None):
+        s = s.replace('ee', 'ce')
+        return s
+
+    def _sit_to_st(self, s=None):
+        s = s.replace('sit', 'st')
+        return s
+
+    def _z_to_s(self, s=None):
+        s = s.replace('z', 's')
+        return s
+
+    def _ce_to_ee(self, s=None):
+        s = s.replace('ce', 'ee')
+        return s
+
     def _eacute_to_e_s(self, s=None, allow_alter_length=True):
         if allow_alter_length:
-            s = s.replace('é', 'es')
+            s = re.sub('é(.)' , r'es\1', s)
+            s = re.sub('ê(.)' , r'es\1', s)
+        return s
+
+    def _final_eacute_to_e_z(self, s=None, allow_alter_length=True):
+        if allow_alter_length:
+            s = re.sub('é$' , r'ez', s)
+            s = re.sub('ê$' , r'ez', s)
+        return s
+
+    def _egrave_to_eacute(self, s=None):
+        s = re.sub('è(.)' , r'é\1', s)
         return s
 
     def _vowelcircumflex_to_vowel_s(self, s=None, allow_alter_length=True):
@@ -367,19 +545,61 @@ class NormalisationPipeline(Pipeline):
     def postprocess_correct_word(self, orig_word, pred_word, alignment):
         # pred_word exists in lexicon, take it
         orig_caps = self.get_caps(orig_word)
+        if re.match("^[0-9]+$", orig_word) or re.match("^[XVUI]+$", orig_word):
+            orig_word = orig_word.replace('U', 'V')
+#            print('DEBUG:00: ', orig_word)
+            return orig_word
         if pred_word.lower() in self.orig_lefff_words:
             #print('pred exists')
+#            print('DEBUG:0a: ', orig_word, " => ", pred_word)
             return self.set_caps(pred_word, *orig_caps)
         # otherwise, if original word exists, take that
         if orig_word.lower() in self.orig_lefff_words:
+#            print('DEBUG:0b: ', orig_word)
             return orig_word
-        pred_replacement = self.mapping_to_lefff.get(pred_word, None)
-        # otherwise if pred word is in the lexicon with some changes, take that
-        if pred_replacement is not None:
-            return self.add_orig_punct(pred_word, self.set_caps(pred_replacement, *orig_caps))
 
-        # TODO: how about, if orig_word and pred_word are close enough, return pred_word, else orig_word
-        return orig_word
+        pred_replacement = None
+        # otherwise if pred word is in the lexicon with some changes, take that
+        if pred_word != '' and pred_word != ' ':
+            pred_replacement = self.mapping_to_lefff.get(pred_word, None)
+        if pred_replacement is not None:
+#            print('DEBUG:1: ', pred_word, " (",  pred_replacement, ", ", *orig_caps, ")")
+#            print(" => ", self.add_orig_punct(pred_word, self.set_caps(pred_replacement, *orig_caps)))
+            return self.add_orig_punct(pred_word, self.set_caps(pred_replacement, *orig_caps))
+        # otherwise if orig word is in the lexicon with some changes, take that
+        orig_replacement = self.mapping_to_lefff.get(orig_word, None)
+        if orig_replacement is not None:
+#            print('DEBUG:2: ', pred_word, " (", orig_replacement, ", ",  *orig_caps, ")")
+#            print(" => ", self.add_orig_punct(pred_word, self.set_caps(orig_replacement, *orig_caps)))
+            return self.add_orig_punct(pred_word, self.set_caps(orig_replacement, *orig_caps))
+
+        # otherwise if pred word is in the lexicon with more changes, take that
+        if pred_word != '' and pred_word != ' ':
+            pred_replacement = self.mapping_to_lefff2.get(pred_word, None)
+        if pred_replacement is not None:
+#            print('DEBUG:3: ', pred_word, " (", pred_replacement, ", ", *orig_caps, ")")
+#            print(" => ", self.add_orig_punct(pred_word, self.set_caps(pred_replacement, *orig_caps)))
+            return self.add_orig_punct(pred_word, self.set_caps(pred_replacement, *orig_caps))
+        # otherwise if orig word is in the lexicon with more changes, take that
+        orig_replacement = self.mapping_to_lefff2.get(orig_word, None)
+        if orig_replacement is not None:
+#            print('DEBUG:4: ', pred_word, " (", orig_replacement, ", ",  *orig_caps, ")")
+#            print(" => ", self.add_orig_punct(pred_word, self.set_caps(orig_replacement, *orig_caps)))
+            return self.add_orig_punct(pred_word, self.set_caps(orig_replacement, *orig_caps))
+
+        if orig_word == pred_word:
+#            print('DEBUG:0c: <', orig_word, ">")
+            return orig_word
+        if orig_word == " " and pred_word == "":
+#            print('DEBUG:0d: <', orig_word, ">")
+            return orig_word
+
+        wed = wedit_distance(pred_word,orig_word)
+        if wed > 2:
+            print("DEBUG:O",orig_word,"(P:",pred_word,":",wed,")")
+            return orig_word
+        print("DEBUG:P",self.add_orig_punct(pred_word, self.set_caps(pred_word, *orig_caps)),"(P:",pred_word,"vs. O:",orig_word,":",wed,")")
+        return self.add_orig_punct(pred_word, self.set_caps(pred_word, *orig_caps))
 
     def get_surrounding_punct(self, word):
         beginning_match = re.match("^(['\-]*)", word)
@@ -393,7 +613,14 @@ class NormalisationPipeline(Pipeline):
 
     def add_orig_punct(self, old_word, new_word):
         beginning, end = self.get_surrounding_punct(old_word)
-        return beginning + new_word + end
+        output = ''
+        if beginning != None and not re.match("^"+re.escape(beginning), new_word):
+            output += beginning
+        if new_word != None:
+            output += new_word
+        if end != None and not re.match(re.escape(end)+"$", new_word):
+            output += end
+        return output
     
     def get_caps(self, word):
         # remove any non-alphatic characters at begining or end
@@ -408,6 +635,8 @@ class NormalisationPipeline(Pipeline):
         return first, second, allcaps
 
     def set_caps(self, word, first, second, allcaps):
+        if word == None:
+            return None
         if allcaps:
             return word.upper()
         elif first and second:
@@ -450,12 +679,15 @@ class NormalisationPipeline(Pipeline):
         for i in range(len(result)):
             #os.sys.stderr.write(str(i) + ':' + input_sents[i].strip() + '\n')
             input_sent, pred_sent = input_sents[i].strip(), result[i][0]['text'].strip()
+            input_sent = input_sent.replace('ſ' , 's')
             if not self.no_post_clean:
                 pred_sent = self.post_cleaning(pred_sent)
             alignment, pred_sent_tok = self.align(input_sent, pred_sent)
             #print(pred_sent)
+#            print("ALIGNMENT: ", alignment)
             if not self.no_postproc_lex:
                 alignment = self.postprocess_correct_sent(alignment)
+#            print("POSTPROCESSED ALIGNMENT: ", alignment)
             pred_sent = self.get_pred_from_alignment(alignment)
             if not self.no_post_clean:
                 pred_sent = self.post_cleaning(pred_sent)
@@ -479,8 +711,12 @@ class NormalisationPipeline(Pipeline):
         return s
 
     def align(self, sent_ref, sent_pred):
+#        print("INPUT SENT: <",sent_ref,">")
+#        print("PRED SENT: <",sent_pred,">")
         sent_ref_tok = self.classic_tokenise(re.sub('[  ]', '  ', sent_ref))
         sent_pred_tok = self.classic_tokenise(re.sub('[  ]', '  ', sent_pred))
+#        print("INPUT SENT TOK: <",sent_ref_tok,">")
+#        print("PRED SENT TOK: <",sent_pred_tok,">")
         backpointers = wedit_distance_align(homogenise(sent_ref_tok), homogenise(sent_pred_tok))
         alignment, current_word, seen1, seen2, last_weight = [], ['', ''], [], [], 0
         for i_ref, i_pred, weight in backpointers:
