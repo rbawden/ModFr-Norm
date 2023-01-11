@@ -177,7 +177,7 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 
 #### Dev set
 
-In bold the best results presented in the paper. The results for the HuggingFace model are in bold when they match or surpass the best results.
+In bold the best results presented in the paper. The results for the HuggingFace model are in bold when they are similar to or surpass the best results.
 
 | Method | WordAcc (ref) | WordAcc (sym) | WordAcc (ref) OOV | Levenshtein | BLEU | ChrF |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -201,7 +201,7 @@ In bold the best results presented in the paper. The results for the HuggingFace
 
 #### Test set
 
-In bold the best results presented in the paper. The results for the HuggingFace model are in bold when they match or surpass the best results.
+In bold the best results presented in the paper. The results for the HuggingFace model are in bold when they are similar to or surpass the best results.
 
 | Method | WordAcc (ref) | WordAcc (sym) | WordAcc (ref) OOV | Levenshtein | BLEU | ChrF |
 | --- | --- | --- | --- | --- | --- | --- |
