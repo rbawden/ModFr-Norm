@@ -189,6 +189,7 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 | LSTM+lex | 97.30±0.14 | 97.11±0.11 | 81.08±0.09 | 1.10±0.09 | 93.36±0.40 | 97.73±0.08 |
 | Transformer | 96.79±0.05 | 96.58±0.07 | 76.78±0.71 | 1.26±0.04 | 92.17±0.06 | 97.27±0.05 |
 | Transformer+lex | 96.92±0.09 | 96.70±0.10 | 79.10±0.85 | 1.23±0.05 | 92.51±0.17 | 97.40±0.09 |
+| | | | | | |
 | HuggingFace | 96.83 | 97.04 | 77.17 | 1.81 | 92.76 | 97.51 |
 | HuggingFace+lex | | | | | |
 | HuggingFace+clean | | | | | |
@@ -212,8 +213,11 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 | LSTM+lex | 96.63±0.08 | 96.25±0.10 | **78.35±0.79** | 1.64±0.05 | 92.07±0.25 | 96.95±0.10 |
 | Transformer | 96.27±0.05 | 95.89±0.07 | 75.73±0.38 | 1.81±0.01 | 91.30±0.08 | 96.65±0.05 |
 | Transformer+lex | 96.39±0.07 | 96.01±0.09 | **77.51±1.00** | 1.78±0.02 | 91.62±0.14 | 96.76±0.08 |
-| HuggingFace transformer | | | | | |
-| HuggingFace transformer w/out postprocessing | | | | | |
+| | | | | | |
+| HuggingFace | | | | | |
+| HuggingFace+lex | | | | | |
+| HuggingFace+clean | | | | | |
+| HuggingFace+lex+clean | | | | | |
 
 ### Alignment
 
