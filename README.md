@@ -12,7 +12,7 @@ To use the model on the command line:
 cat INPUT_FILE | python hf-conversion/pipeline.py -k BATCH_SIZE -b BEAM_SIZE > OUTPUT_FILE
 ```
 
-You can also use the pipeline class python-internally as follows (you need to have the pipeline.py file locally to do this), if you have transformers>=4.21.0.
+You can also use the pipeline class python-internally as follows, if you have transformers>=4.21.0.
 
 ```
 from transformers import pipeline
