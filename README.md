@@ -177,6 +177,8 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 
 #### Dev set
 
+In bold the best results presented in the paper. The results for the HuggingFace model are in bold when they match or surpass the best results.
+
 | Method | WordAcc (ref) | WordAcc (sym) | WordAcc (ref) OOV | Levenshtein | BLEU | ChrF |
 | --- | --- | --- | --- | --- | --- | --- |
 | Identity | 73.92 | 73.95 | 47.91 | 7.72 | 42.33 | 74.95|
@@ -193,13 +195,15 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 | Transformer+lex | 96.92±0.09 | 96.70±0.10 | 79.10±0.85 | 1.23±0.05 | 92.51±0.17 | 97.40±0.09 |
 | | | | | | |
 | HuggingFace | 96.83 | 97.04 | 77.17 | 1.81 | 92.76 | 97.51 |
-| HuggingFace+lex | | | | | |
+| HuggingFace+lex | 97.53 | 97.56 | 84.25 | 0.68 | 93.36 | 98.10 |
 | HuggingFace+clean | 96.83 | 07.04 | 77.17 | 1.18 | 92.77 | 97.51 |
 | HuggingFace+lex+clean | 97.56 | 97.59 | 84.31 | 0.67 | 93.42 | 98.13 |
 
 
 
 #### Test set
+
+In bold the best results presented in the paper. The results for the HuggingFace model are in bold when they match or surpass the best results.
 
 | Method | WordAcc (ref) | WordAcc (sym) | WordAcc (ref) OOV | Levenshtein | BLEU | ChrF |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -217,9 +221,9 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 | Transformer+lex | 96.39±0.07 | 96.01±0.09 | **77.51±1.00** | 1.78±0.02 | 91.62±0.14 | 96.76±0.08 |
 | | | | | | |
 | HuggingFace | | | | | |
-| HuggingFace+lex | | | | | |
-| HuggingFace+clean | | | | | |
-| HuggingFace+lex+clean | | | | | |
+| HuggingFace+lex | 96.95 | 96.98 | 82.57 | 0.87 | 92.15 | 97.60 |
+| HuggingFace+clean | 96.06 | 96.44 | 76.46 | 1.81 | 91.69 | 96.77 |
+| HuggingFace+lex+clean | 97.00 | 97.03 | **82.60** | 0.85 | 92.26 | 97.65 |
 
 ### Alignment
 
