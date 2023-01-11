@@ -21,7 +21,9 @@ print(list_outputs)
 
 To disable postprocessing (faster but less good normalisation), set the arguments no_postproc_lex and no_post_clean to True when instantiating the pipeline:
 
-```normaliser = pipeline(model="rbawden/modern_french_normalisation", no_postproc_lex=True, no_post_clean=True, batch_size=32, beam_size=5, cache_file="./cache.pickle", trust_remote_code=True)```
+```
+normaliser = pipeline(model="rbawden/modern_french_normalisation", no_postproc_lex=True, no_post_clean=True, batch_size=32, beam_size=5, cache_file="./cache.pickle", trust_remote_code=True)
+```
 
 
 To use the model on the command line, call the `pipeline.py` file after you have downloaded it locally:
