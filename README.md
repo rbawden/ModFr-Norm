@@ -199,8 +199,6 @@ In bold the best results presented in the paper. The results for the HuggingFace
 | HuggingFace+clean | 96.83 | 07.04 | 77.17 | 1.18 | 92.77 | 97.51 |
 | HuggingFace+lex+clean | 97.56 | 97.59 | 84.31 | 0.67 | 93.42 | 98.13 |
 
-
-
 #### Test set
 
 In bold the best results presented in the paper. The results for the HuggingFace model are in bold when they match or surpass the best results.
@@ -220,7 +218,7 @@ In bold the best results presented in the paper. The results for the HuggingFace
 | Transformer | 96.27±0.05 | 95.89±0.07 | 75.73±0.38 | 1.81±0.01 | 91.30±0.08 | 96.65±0.05 |
 | Transformer+lex | 96.39±0.07 | 96.01±0.09 | **77.51±1.00** | 1.78±0.02 | 91.62±0.14 | 96.76±0.08 |
 | | | | | | |
-| HuggingFace | | | | | |
+| HuggingFace | 96.06 | 96.44 | 76.46 | 1.81 | 91.69 | 96.77 |
 | HuggingFace+lex | 96.95 | 96.98 | 82.57 | 0.87 | 92.15 | 97.60 |
 | HuggingFace+clean | 96.06 | 96.44 | 76.46 | 1.81 | 91.69 | 96.77 |
 | HuggingFace+lex+clean | 97.00 | 97.03 | **82.60** | 0.85 | 92.26 | 97.65 |
