@@ -194,7 +194,7 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 | | | | | | |
 | HuggingFace | 96.83 | 97.04 | 77.17 | 1.81 | 92.76 | 97.51 |
 | HuggingFace+lex | | | | | |
-| HuggingFace+clean | | | | | |
+| HuggingFace+clean | 96.83 | 07.04 | 77.17 | 1.18 | 92.77 | 97.51 |
 | HuggingFace+lex+clean | 97.56 | 97.59 | 84.31 | 0.67 | 93.42 | 98.13 |
 
 
