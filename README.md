@@ -189,8 +189,12 @@ where `r2h` means that the reference is used as basis for the alignment, `h2r` t
 | LSTM+lex | 97.30±0.14 | 97.11±0.11 | 81.08±0.09 | 1.10±0.09 | 93.36±0.40 | 97.73±0.08 |
 | Transformer | 96.79±0.05 | 96.58±0.07 | 76.78±0.71 | 1.26±0.04 | 92.17±0.06 | 97.27±0.05 |
 | Transformer+lex | 96.92±0.09 | 96.70±0.10 | 79.10±0.85 | 1.23±0.05 | 92.51±0.17 | 97.40±0.09 |
-| HuggingFace transformer | | | | | |
-| HuggingFace transformer w/out postprocessing | | | | | |
+| HuggingFace | 96.83 | 97.04 | 77.17 | 1.81 | 92.76 | 97.51 |
+| HuggingFace+lex | | | | | |
+| HuggingFace+clean | | | | | |
+| HuggingFace+lex+clean | 97.56 | 97.59 | 84.31 | 0.67 | 93.42 | 98.13 |
+
+
 
 #### Test set
 
