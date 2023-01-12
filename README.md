@@ -5,27 +5,30 @@ This repository contains the scripts and models to reproduce the results of the 
 
 ## Normalisation model on HuggingFace: Recommended model for easy use
 
-As well as the models trained in the paper (see below for instructions on how to use and retrain them), we distribute one of our models in an easily useable format, distributed by HuggingFace [here](https://huggingface.co/rbawden/modern_french_normalisation). It is a transformer model (equivalent to the one trained in the paper), ported to HuggingFace, fine-tuned, and also includes more rigorous post-processing (which can be disabled for faster normalisation).
+As well as the models trained in the paper (see below for instructions on how to use and retrain them), we also distribute a model compatible with HuggingFace [here](https://huggingface.co/rbawden/modern_french_normalisation). It is a transformer model (equivalent to the one trained in the paper), ported to HuggingFace, fine-tuned, and including more rigorous post-processing (which can be disabled for faster normalisation). 
 
-To use the model on the command line:
-```
-cat INPUT_FILE | python hf-conversion/pipeline.py -k BATCH_SIZE -b BEAM_SIZE > OUTPUT_FILE
-```
-
-You can also use the pipeline class python-internally as follows (you need to have the pipeline.py file locally to do this):
+You can use it within your code as follows (if you have transformers>=4.21.0.
 
 ```
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-from pipeline import NormalisationPipeline # N.B. local file
-cache_lexicon_path="~/.normalisation_lex.pickle" # optionally set a path to store the processed lexicon (speeds up loading)
-tokeniser = AutoTokenizer.from_pretrained("rbawden/modern_french_normalisation")
-model = AutoModelForSeq2SeqLM.from_pretrained("rbawden/modern_french_normalisation")
-norm_pipeline = NormalisationPipeline(model=model, tokenizer=tokeniser, batch_size=32, beam_size=5, cache_file=cache_lexicon_path)
+from transformers import pipeline
+normaliser = pipeline(model="rbawden/modern_french_normalisation", batch_size=32, beam_size=5, cache_file="./cache.pickle", trust_remote_code=True)
                                               
 list_inputs = ["Elle haïſſoit particulierement le Cardinal de Lorraine;", "Adieu, i'iray chez vous tantoſt vous rendre grace."]
-list_outputs = norm_pipeline(list_inputs)
+list_outputs = normaliser(list_inputs)
 print(list_outputs)
 >> [{'text': 'Elle haïssait particulièrement le Cardinal de Lorraine; ', 'alignment': [([0, 3], [0, 3]), ([5, 12], [5, 12]), ([14, 29], [14, 29]), ([31, 32], [31, 32]), ([34, 41], [34, 41]), ([43, 44], [43, 44]), ([46, 53], [46, 53]), ([54, 54], [54, 54])]}, {'text': "Adieu, j'irai chez vous tantôt vous rendre grâce. ", 'alignment': [([0, 4], [0, 4]), ([5, 5], [5, 5]), ([7, 8], [7, 8]), ([9, 12], [9, 12]), ([14, 17], [14, 17]), ([19, 22], [19, 22]), ([24, 30], [24, 29]), ([32, 35], [31, 34]), ([37, 42], [36, 41]), ([44, 48], [43, 47]), ([49, 49], [48, 48])]}]
+```
+
+To disable postprocessing (faster but less good normalisation), set the arguments no_postproc_lex and no_post_clean to True when instantiating the pipeline:
+
+```
+normaliser = pipeline(model="rbawden/modern_french_normalisation", no_postproc_lex=True, no_post_clean=True, batch_size=32, beam_size=5, cache_file="./cache.pickle", trust_remote_code=True)
+```
+
+
+To use the model on the command line, call the `pipeline.py` file after you have downloaded it locally:
+```
+cat INPUT_FILE | python hf-conversion/pipeline.py -k BATCH_SIZE -b BEAM_SIZE > OUTPUT_FILE
 ```
 
 Results for this model are shown in the results table below. It performs similarly to the statistical model. Additional postprocessing avoids the hallucination that can be seen with neural models, and it also includes improved postprocessing with the lexicon. These postprocessing steps can be deactivated for faster normalisation, but with reduced performance.
