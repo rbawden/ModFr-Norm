@@ -7,7 +7,7 @@ This repository contains the scripts and models to reproduce the results of the 
 
 As well as the models trained in the paper (see below for instructions on how to use and retrain them), we also distribute a model compatible with HuggingFace [here](https://huggingface.co/rbawden/modern_french_normalisation). It is a transformer model (equivalent to the one trained in the paper), ported to HuggingFace, fine-tuned, and including more rigorous post-processing (which can be disabled for faster normalisation). 
 
-You can use it within your code as follows (if you have transformers>=4.21.0.
+You can use it within your code as follows (if you have transformers>=4.21.0).
 
 ```
 from transformers import pipeline
