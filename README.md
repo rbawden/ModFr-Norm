@@ -199,7 +199,7 @@ In bold the best results presented in the paper. The results for the HuggingFace
 | | | | | | |
 | *HuggingFace* | 96.83 | 97.04 | 77.17 | 1.81 | 92.76 | 97.51 |
 | *HuggingFace+lex* | 97.53 | **97.56** | **84.25** | 0.68 | **93.36** | **98.10** |
-| *HuggingFace+clean* | 96.83 | 07.04 | 77.17 | 1.18 | 92.77 | 97.51 |
+| *HuggingFace+clean* | 96.83 | 97.04 | 77.17 | 1.18 | 92.77 | 97.51 |
 | *HuggingFace+lex+clean* | 97.56 | **97.59** | **84.31** | 0.67 | **93.42** | **98.13** |
 
 #### Test set
