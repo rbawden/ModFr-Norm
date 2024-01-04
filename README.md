@@ -16,8 +16,9 @@ normaliser = pipeline(model="rbawden/modern_french_normalisation", batch_size=32
 list_inputs = ["Elle haïſſoit particulierement le Cardinal de Lorraine;", "Adieu, i'iray chez vous tantoſt vous rendre grace."]
 list_outputs = normaliser(list_inputs)
 print(list_outputs)
->> [{'text': 'Elle haïssait particulièrement le Cardinal de Lorraine; ', 'alignment': [([0, 3], [0, 3]), ([5, 12], [5, 12]), ([14, 29], [14, 29]), ([31, 32], [31, 32]), ([34, 41], [34, 41]), ([43, 44], [43, 44]), ([46, 53], [46, 53]), ([54, 54], [54, 54])]}, {'text': "Adieu, j'irai chez vous tantôt vous rendre grâce. ", 'alignment': [([0, 4], [0, 4]), ([5, 5], [5, 5]), ([7, 8], [7, 8]), ([9, 12], [9, 12]), ([14, 17], [14, 17]), ([19, 22], [19, 22]), ([24, 30], [24, 29]), ([32, 35], [31, 34]), ([37, 42], [36, 41]), ([44, 48], [43, 47]), ([49, 49], [48, 48])]}]
+>> [{'text': 'Elle haïssait particulièrement le Cardinal de Lorraine;', 'alignment': [([0, 4], [0, 4]), ([4, 5], [4, 5]), ([5, 13], [5, 13]), ([13, 14], [13, 14]), ([14, 30], [14, 30]), ([30, 31], [30, 31]), ([31, 33], [31, 33]), ([33, 34], [33, 34]), ([34, 42], [34, 42]), ([42, 43], [42, 43]), ([43, 45], [43, 45]), ([45, 46], [45, 46]), ([46, 54], [46, 54]), ([54, 55], [54, 55])]}, {'text': "Adieu, j'irai chez vous tantôt vous rendre grâce.", 'alignment': [([0, 5], [0, 5]), ([5, 6], [5, 6]), ([6, 7], [6, 7]), ([7, 9], [7, 9]), ([9, 13], [9, 13]), ([13, 14], [13, 14]), ([14, 18], [14, 18]), ([18, 19], [18, 19]), ([19, 23], [19, 23]), ([23, 24], [23, 24]), ([24, 31], [24, 30]), ([31, 32], [30, 31]), ([32, 36], [31, 35]), ([36, 37], [35, 36]), ([37, 43], [36, 42]), ([43, 44], [42, 43]), ([44, 49], [43, 48]), ([49, 50], [48, 49])]}]
 ```
+The alignment represents pairs of input-predicition text spans (i.e. which span of the input sentence aligns with which span of the prediction). The indices are spans from one inter-character position to another, e.g. `[0, 4]` indicates a span from position 0 to position 4 (e.g. `Elle` in the first example).
 
 To disable postprocessing (faster but less good normalisation), set the arguments no_postproc_lex and no_post_clean to True when instantiating the pipeline:
 
